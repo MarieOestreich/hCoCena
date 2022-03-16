@@ -1,0 +1,174 @@
+---
+title: "hcocena_markdown_V2_satellite"
+author: "Marie Oestreich"
+date: "26 2 2021"
+output: html_document
+---
+
+# Suggest Top Most Variant Genes
+
+```{r suggest top most variant genes}
+
+hcocena::suggest_topvar()
+
+```
+
+
+# Checking data distribution
+
+  To get a better feeling for the datasets and to detect possible outliers or prominent differences within datasets, the distribution of count values across all samples per dataset can be visualized either as boxplots or frequency distributions, by setting the plot_type parameter to “boxplot” or “freqdist”, respectively. Within the defined save folder, a folder named “sample_distribution_plots” will be created to which these plots will be saved. 
+  The "log_2" parameter accepts a Boolean determining if the counts should be represented to the base of 2 in the plot or not. 
+  "plot" can be set to TRUE if the created plots are meant to be printed into the R Markdown as well as saved to PDFs or it can be set to FALSE, if they should only be saved and not printed. If the total number of samples is very large, setting this parameter to FALSE is advised in order to prevent the knitted R Markdown from becoming too long.
+
+
+```{r data distribution plots, warning = FALSE}
+
+plot_sample_distributions(plot_type = "boxplot",
+                          log_2 = F, 
+                          plot = T)
+
+```
+
+
+# PCA 
+
+  Plots one PCA for each data set. 
+  Parameters:
+    - 'which': one of "all" (uses all genes), "topvar" (uses top most variant genes, cannot be used before running "Data processing part I" in the main markdown), or "network" (uses the genes present in network, cannot be run before finishing "Data processing part II" in the main markdown).
+    - 'color_by': default is "none" (coloring all dots black), alternatively, set this to a vector of column names (c("name of col in annotation 1", "name of col in annotation 2", ...)), containing the groups by which you want to color.
+    
+  Plots will be saved as PDFs to your save folder.
+    
+
+```{r PCA, warning = FALSE}
+
+PCA(which = "all", color_by = c("merged", "merged"))
+
+```
+
+
+
+# Cytoscape
+
+  Model layout in Cytoscape (https://cytoscape.org/download.html). Cytoscape MUST BE OPEN for this to work. To shorten the time needed, please read the docs to the export_to_cytoscape function (?export_to_cytoscape). 
+  
+## Export Network
+  
+```{r Cytoscape export}
+
+export_to_cytoscape()
+
+```
+
+
+## Import Layout
+
+```{r Import layout}
+
+import_layout_from_cytoscape()
+
+```
+
+
+
+## Plot Network
+
+
+```{r Plot network}
+
+plot_integrated_network( layout = hcobject[["integrated_output"]][["cluster_calc"]][["layout"]] )
+
+```
+
+
+
+# Cluster scores
+
+  For every gene, the ratio of its edges to genes in the same cluster to its total number of edges is determined. The corresponding values are returned as a data frame and a box plot is generated showing the scores for each of the clusters.
+  
+```{r cluster scores}
+
+get_cluster_scores()
+
+```
+
+
+# Hub gene detection
+
+  Hub gene detection is available for clusters. Hub genes are determined using a combined ranking based on weighted degree centrality, weighted closeness centrality and weighted betweenness centrality. A high quality version of the plots will be available in your save folder. 
+  Parameters:
+  
+  - 'top': An integer. All genes are ranked based on their hub potential, this parameter defines the number of the top ranked genes to be considered a hub gene. Default value is 10. 
+  - 'save': A Boolean. Whether or not a labelled hub-network per cluster is to be save to PDF. Default is FASLE.
+  - 'tree_layout': A Boolean. Whether or not to depict the network witht tree layout, implying a sort of hierarchical structure to the network.
+  - 'TF_only': Either FALSE (default, all genes in clsuter are considered for hub genes), or "all" (all genes from transcriptionfactor supplementary file are considered for hub genes), or any gene category listed in the last column of the provided transcriptionfactor supplementary file (only that subgroup condired for hub genes).
+  - 'Plot': A Boolean. Wheather or not to plot the network (per cluster) with highlighted hub nodes. Default is FALSE.
+        
+Mean expression values of found hubs will be plotted as a heatmap per cluster, rows are scaled. 
+A table of hubs per cluster will be exported as an Excel file. This table is also returned as output.
+  
+
+  
+```{r Hub gene detection}
+
+
+find_hubs(top = 10, 
+          save = F, 
+          tree_layout = F, 
+          TF_only = "TF", 
+          Plot = T, clusters = c("lightblue"))
+
+```
+  
+
+
+# Visualize specific gene set
+  
+  Plots the mean expression values per condition for the given genes for each dataset as a heatmap. Values are scaled across rows.
+  
+```{r visualize specific gene set}
+
+visualize_gene_expression(genes = c("STAT6", "MAFG", "ETS2", "RUNX1", "TFE3", "HES6", "IRF4", "FOXQ1", "CREB5", "SPN", "SOX8", "SIP1", "FOXD2", "GTF3C3", "BATF3", "EGR3", "FOS"), name = "IL4_genes")
+
+visualize_gene_expression(genes = c("MAFA", "IRF9", "IRF7", "STAT2", "STAT1", "NFIX", "ELF4", "ETV7"), name = "IGNg_genes")
+
+```
+  
+
+
+# Plotting network coloured by GFC
+
+  For visualization of the GFC for every gene under the different observed groups, the network can be additionally replotted once for every group, with nodes being coloured according to their GFC value. This provides a more detailed resolution of the information acquired from the module heatmap.
+ 
+
+```{r plot network with GFCs, fig.width=10, fig.height=7}
+
+plot_GFC_network()
+
+```
+
+
+# Transcription factor query
+
+  The result is plotted and can be found in higher quality the save folder.
+
+```{r, fig.width = 10, fig.height = 7, echo = F}
+
+check_tf("IRF7")
+
+check_tf("IRF9")
+
+```
+
+
+
+# Write session info
+
+  Write the variables' values set in this run to a file for easy reproducibility.
+  
+```{r write session info}
+
+write_session_info()
+
+```
+

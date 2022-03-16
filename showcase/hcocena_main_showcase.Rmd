@@ -1,0 +1,361 @@
+---
+title: "hCoCena_V2.0_main"
+author: "Marie Oestreich"
+date: "26 2 2021"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+# Pre-Integration Phase
+
+## load hCoCena package
+```{r}
+library(hcocena)
+```
+
+
+## create hCoCena-Object
+
+```{r}
+init_object()
+```
+
+
+## Working directory setup
+
+  Please set the following parameters to strings that state the path to your scripts, data, etc.:
+  
+  + dir_scripts: path of your script folder
+  + dir_count_data: path of your count files folder
+  + dir_annotation: path of your annotation files folder
+  + dir_reference_files: path of your reference files folder
+  + dir_output: path to the location in which the save folder for this analyses should be created
+
+```{r}
+
+init_wd(dir_count_data = "D:/PhD_backups/PhD/hCoCena/test_case/data/",
+        dir_annotation = "D:/PhD_backups/PhD/hCoCena/test_case/annotation/",
+        dir_reference_files = "D:/PhD_backups/PhD/hCoCena/test_case/reference_files/",
+        dir_output = "D:/PhD_backups/PhD/hCoCena/test_case/")
+
+```
+
+  Ensure that all directories exist with the following chunk:
+
+```{r check directories}
+check_dirs()
+```
+
+  Please define a folder in which your results shall be saved using the 'name' variable. 
+  The folder is created automatically, if it does not yet exist in the set directory.
+  
+```{r, warning = FALSE}
+
+init_save_folder(name = "outputs_test")
+
+```
+
+
+## Defining layers
+
+  For detailed information regarding file structures and different options for providing data, refer to the  chapter on "defining layers" in the information file.
+    
+```{r defining Omics Layers}
+# NOTE: We are loading the data from existing R objects, that you will find in the stat_envo.RData, which you will have to load before running this cell.
+
+define_layers(list( Array = c("data_array", "annotation_array"),
+                   RNA_Seq = c("data_seq", "annotation_seq") )
+              )
+
+set_supp_files(Tf = "TFcat.txt", 
+               Hall = "h.all.v6.1.symbols.gmt", 
+               Go = "c5.bp.v7.0.symbols.gmt")
+
+```
+
+
+  
+
+## Define global settings
+
+  For detailed information regarding the different settings, refer to the  chapter on "defining global settings" in the information file.
+
+```{r global settings}
+
+set_global_settings(organism = "human", 
+    								control_keyword = "none", 
+    								variable_of_interest = "merged", 
+    								min_nodes_number_for_network = 25, 
+    								min_nodes_number_for_cluster = 25,
+    								range_GFC = 2.0,
+    								layout_algorithm = "layout_with_fr",
+    								data_in_log = T)
+
+```
+
+
+
+## Data import
+
+  For detailed information regarding the different parameters, refer to the  chapter on "data import" in the information file.
+
+
+```{r data import}
+
+read_data(sep_counts = "\t",
+           sep_anno = "\t", 
+           gene_symbol_col = "SYMBOL",
+           sample_col = "SampleID",
+           count_has_rn = F,
+           anno_has_rn = F)
+
+read_supplementary()
+
+```
+
+
+## Define layer-specific settings
+
+  For detailed information regarding the different settings, refer to the  chapter on "defining layer-specific settings" in the information file.
+  
+
+```{r layer-specific settings}
+
+set_layer_settings(top_var = c(7700, 7664), 
+                                     min_corr = rep(0.9, length(hcobject[["layers"]])), 
+                                     range_cutoff_length = rep(50, length(hcobject[["layers"]])),
+                                     print_distribution_plots = rep(F, length(hcobject[["layers"]])))
+
+
+```
+
+
+
+## OPTIONAL: Visualizing data distribution
+
+  There is an option to plot the distribution of counts for each sample to check for outliers or prominent differences between samples. To do so, refer to "Checking data distribution" in the satellite markdown.
+  
+  
+## OPTIONAL: PCA
+
+  You can visualize your data in a PCA. To do so, please refer to the satellite markdown, section "PCA".
+  
+
+## Data processing part I
+
+  For detailed information on what happens in this step and what parameters can be set, please refer to the section "Data processing part I" in the information file.
+  
+
+```{r expression analysis up to cutoff}
+
+run_expression_analysis_1(corr_method = "spearman")
+
+```
+
+## Data processing part II
+
+
+  Choosing the cut-offs:
+
+  Set a correlation cut-off for each of your data sets. To aid this choice, the following plot presents the different cut-off statistics per data set. For more details on cut-offs and the information in this plot as well as the parameters, refer to the information file, section "Choosing the cut-offs".
+  
+  
+```{r fig.height = 8, fig.width = 8}
+
+plot_cutoffs(interactive = T)
+
+```
+  
+  
+  The order in which the cutoffs are subsequently defined must correspond to the order in which the layers have previously been specified.
+  
+
+```{r choose cutoff}
+
+set_cutoff(cutoff_vector = c(0.982,0.982))
+
+```
+
+
+  Checking the scale-free topology
+
+  For each dataset, the logged degree distribution and the linear regression are plotted to visualise the preservation of the scale-free topology criterion.
+
+
+```{r plot degree distribution for chosen cutoff, message = F, warning = F}
+
+plot_deg_dist()
+
+```
+
+
+  Heatmap of top most variant genes and GFC calculation
+
+  For detailed information on what happens in this step as well as on the parameter settings, please refer to the section on "Data processing part II" in the information file.
+
+
+```{r, fig.width = 10, fig.height = 7}
+
+run_expression_analysis_2()
+
+```
+
+# Integration Phase
+
+## Layer integration
+
+  Integrating the layer-specific networks
+  
+  Here, the previously constructed layer-specific networks will be integrated into one network that combines the information. The integration can be based on the union or intersection of layer-specific networks and edges that are present in several networks at different length can be included based on different options. For detailed information, please refer to the information file, section "Layer integration".
+  
+```{r merge networks}
+
+build_integrated_network(mode = "u", multi_edges = "min")
+
+```
+
+  
+
+# Post-Integration Phase
+
+## Module detection
+
+  Clustering the network
+  
+  In this step, modules of strong co-expression will be detected in the network and their expression pattern across conditions will be represented in a GFC heatmap. For detailed information on module detection and different parameter settings, refer to the "Module detection" section in the information file.
+  NOTE: You can export your clustering for future use. To do so, please refer to the satellite script, section "Export clustering".
+  NOTE 2: Instead of clustering your network here, you can alternatively import a clustering model. To do so, please use the import_clusters() function (see satellite markdown for infos).
+  
+```{r compute clusters and plot module heatmap}
+cluster_calculation(no_of_iterations = 50)
+plot_cluster_heatmap()
+```
+
+
+## OPTIONAL: correlate numeric or categorical meta data with clusters
+
+  To see how numeric or categorical meta information correlates to the expression patterns of a cluster, refer to the satellite markdown, section "Correlate numeric meta data with clusters" and "Correlate categorical meta data with clusters", respectively.
+
+
+## Plotting the network coloured by module
+
+NOTE: due to issues in the communication between R and Cytoscape, please refer to the satellite markdown, section "Cytoscape" if you chose Cytoscape as the option for the network layout in your global settings.
+
+
+```{r plot network coloured by cluster, fig.width=10, fig.height=7}
+# Cytoscape option used (see satellite markdown)
+#plot_integrated_network() 
+
+```
+
+
+## OPTIONAL: Cluster scores
+
+  If you would like to evaluate how well each gene belongs to its asserted cluster, please refer to the satellite markdown, section "Cluster scores".
+  
+
+## OPTIONAL: Hub gene detection
+
+  Hub gene detection is available for clusters or the entire network. Please refer to the satellite markdown, section "Hub gene detection".
+  
+
+## OPTIONAL: Colour single cluster
+
+  You can plot the network with a cluster of interest highlighted (colour and node size), using the chunk in the satellite markdown in section "Colour single cluster".
+  
+
+## OPTIONAL: Visualize specific gene set
+
+  You can plot the mean expression values per condition for a list of genes as a heatmap.
+  You find the corresponding function in the satellite markdown under "Visualize specific gene set".
+  
+  
+## OPTIONAL: Colour specific gene set
+
+  You further have the option of replotting the network and highlighting a particular gene set. To do so, please refer to the satellite markdown, section "Colour specific gene set".
+
+
+## OPTIONAL: Evaluating the different community detection algorithms
+
+  If you want to compare the default louvain clustering to other algorithms, please refer to the section "Evaluating different community detection algorithms" in the satellite markdown.
+  
+  
+## OPTIONAL: Regrouping samples
+
+  If you noticed that the variable of interest ("voi") does not go well with the clustering of the heatmaps returned by "run_expression_analysis_2" or as seen in the PCA, when evaluating different clustering algorithms, you can assign new group labels to your samples based on the data structure rather than meta information. In this case, please refer to the section "Regrouping samples" in the satellite markdown.
+  
+
+## OPTIONAL: Module analysis and meta-annotation
+
+  You have the option to analyse the genes present in the found modules with regard to shared functionality or enriched gene sets as well as to annotate the groups of samples with meta information from your annotation file. To do so, please refer to the satelite markdown, section "Module analysis and meta-annotation".
+  
+
+## OPTIONAL: Final module heatmap and network
+
+  If you regrouped your samples AND/OR conducted any steps in the "Module analysis and meta-annotation"-section, the heatmap will be replotted updated with respect to the grouping and annotation information along with the network coloured by modules. Of You have neither regrouped your sample nor analysed your modules or samples groups, this chunk will provide the exact same output as the previous one and can be skipped. 
+  For detailed information on which parameters are available here and how to set them, please refer to the information file, section "Plotting the final heatmap".
+  
+```{r create cluster heatmap, fig.width = 10, fig.height = 7}
+
+plot_cluster_heatmap()
+
+plot_integrated_network(layout = hcobject[["integrated_output"]][["cluster_calc"]][["layout"]], 
+                        save = F)
+
+```
+
+## OPTIONAL: Replotting of heatmap with different variable of interest
+
+  In case you are uncertain if the "voi" you have initially chosen is the right choice for your analysis, you are given the opportunity to replot the final module heatmap based on a different annotation variable. To do so, please refer to the section "Replotting of heatmap with different variable of interest" in the satellite markdown.
+
+
+## OPTIONAL: Plotting network coloured by GFC
+
+  You can re-plot the network for each condition colouring the nodes according to their GFC in the different conditions. To do so, please refer to the section "Plotting network coloured by GFC" in the satellite markdown.
+  
+  
+## Database enrichment
+
+  Enrichment analysis of the found modules using the GO, KEGG, Hallmark and Reactome databases. For detailed information on parameter settings, please refer to the information file, section "Database enrichment".
+  The outputs all have a slot called "enrichment", that contains the clusterProfiler enrich-object for each cluster. This can be used as input for further clusterProfiler visualisations. Please refer to the clsuterProfiler documentation.
+  
+```{r GO profiling, fig.width = 10, fig.height = 7, message = F, warning = F}
+
+go_profiling(level = 4, top = 5, ont = "BP", fast = F, 
+             clusters = c("turquoise", "lightblue", "gold", "darkorange", "plum", "orchid", "wheat", "lightgreen"), qval = 0.1)
+
+# kegg_profiling(top = 5, 
+#              clusters = c("turquoise", "lightblue", "gold", "darkorange", "plum", "orchid", "wheat", "lightgreen", "sandybrown"), qval = 0.1)
+
+Hallmark_profiling(top = 5, 
+             clusters = c("turquoise", "lightblue", "gold", "darkorange", "plum", "orchid", "wheat", "lightgreen"), qval = 0.1)
+
+# reactome_profiling(top = 5, 
+#              clusters = c("turquoise", "lightblue", "gold", "darkorange", "plum", "orchid", "wheat", "lightgreen", "sandybrown"), qval = 0.1)
+
+```
+
+
+## Transcription factor enrichment analyses with ChEA3
+
+  Transcription factor enrichment analysis for each module and for the entire network based on ChEA3 (Kennan AB, 2019). For more details, refer to the information file, section "Transcription factor enrichment analyses with ChEA3". The plots can be found in the save folder, descriptions on how to read them can also be found in the mentioned information file section.
+  
+```{r , fig.width = 10, fig.height = 7}
+
+TF_overrep()
+TF_enrich_all(topTF = 100, topTarget = 30)
+
+plot_TF_enrichment()
+
+```
+  
+## OPTIONAL: Transcription factor query
+
+  To query the output of the "TF_enrich_all()" function for a specific transcription factor, please refer to the satellite markdown, section "Transcription factor query". 
+  
+
+
+
+
+
