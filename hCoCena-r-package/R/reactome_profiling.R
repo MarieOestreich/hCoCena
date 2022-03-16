@@ -61,7 +61,8 @@ reactome_profiling <- function(top, padj = "BH", clusters = c("all"), qval = 0.0
       }else{
         tmp <- tmp[base::order(tmp$qvalue, decreasing = F),]
         if(base::nrow(tmp) < top){
-          top_GO[[c]] <- tmp$Description
+          diff <- top-base::nrow(tmp)
+          top_GO[[c]] <- c(tmp$Description, rep(NA, diff))
         }else{
           top_GO[[c]] <- tmp$Description[1:top]
         }
@@ -91,7 +92,7 @@ reactome_profiling <- function(top, padj = "BH", clusters = c("all"), qval = 0.0
   mm <- reshape2::melt(m)
   
   p2 <- ggplot2::ggplot(mm, ggplot2::aes(Var1, Var2, fill = value))+
-    ggplot2::geom_tile(color = "white", size = 2)+
+    ggplot2::geom_tile(color = "white", height = 1)+
     #ggplot2::coord_equal()+
     ggplot2::scale_fill_gradientn(colors = grDevices::colorRampPalette(base::rev(RColorBrewer::brewer.pal(n = 11, name = "RdBu")))(base::length(base::seq(-2, 2, by = .1))))+
     ggplot2::ylab("")+
@@ -100,12 +101,12 @@ reactome_profiling <- function(top, padj = "BH", clusters = c("all"), qval = 0.0
     ggplot2::theme(legend.position = "none", axis.text.x = ggplot2::element_text(angle=90))+
     ggplot2::scale_x_discrete(limits = base::as.character(base::unique(ggplot_df[base::order(ggplot_df$val), "cluster"])))
 
-  cp <- egg::ggarrange(p, p2, ncol=1, heights = c(3,1))
+  cp <- egg::ggarrange(p, p2, ncol=1, heights = c(2,1))
   
   
   Cairo::CairoPDF(file = base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]], "/DJplot_Reactome_top_",
                                 top, ".pdf"),
-                  width = 12, height = 10)
+                  width = 12, height = 12)
 
   #graphics::plot(cp)
   print(cp)

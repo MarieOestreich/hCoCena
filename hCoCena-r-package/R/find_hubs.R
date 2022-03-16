@@ -72,7 +72,10 @@ find_hubs <- function(top = 10,
  
   #plot_hub_exp(hubs_df = hubs_df)
   for(col in base::colnames(hubs_df)){
-    visualize_gene_expression(genes = dplyr::pull(hubs_df, col), name = base::paste0(col, "_hubs"))
+    if(!all(dplyr::pull(hubs_df, col)== " ")){
+      visualize_gene_expression(genes = dplyr::pull(hubs_df, col), name = base::paste0(col, "_hubs"), width = 25)
+    }
+    
   }
   
   

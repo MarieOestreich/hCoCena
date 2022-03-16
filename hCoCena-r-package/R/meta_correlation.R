@@ -26,12 +26,13 @@ meta_correlation_num <- function(set, meta, p_val = 0.05){
 
   
   cors$color <- base::apply(cors, 1, function(x){
-    if(x["p"] > p_val){
+    if(as.double(x["p"]) > p_val){
       return(NA)
     }else{
-      return(x["r"])
+      return(as.double(x["r"]))
     }
   }) %>% base::as.numeric()
+
   
   
   g <- ggplot2::ggplot(data = cors, ggplot2::aes(x = group_x, 
@@ -46,10 +47,13 @@ meta_correlation_num <- function(set, meta, p_val = 0.05){
       panel.grid.major = ggplot2::element_blank(),
       panel.border = ggplot2::element_blank(),
       panel.background = ggplot2::element_blank(),
-      axis.ticks = ggplot2::element_blank())+
+      axis.ticks = ggplot2::element_blank(),
+      axis.text.x = ggplot2::element_text(angle = 90))+
     ggplot2::scale_y_discrete(position = "right")
   
   graphics::plot(g)
+  ggplot2::ggsave(base::paste0("numerical_meta_correlation_", hcobject[["layers_names"]][set], ".pdf"),
+                  g, device = cairo_pdf, width = 10, height = 8, path = base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]]))
   
 }
 

@@ -52,12 +52,17 @@ visualize_gene_expression <- function(genes, name = NULL, width = 15, height = 1
       return(paste0(r, " [", color, "]"))
     }) %>% base::unlist()
     
+    # re-arrange columns according to heatmap order:
+    colorder = colnames(hcobject$integrated_output$GFC_all_layers)[-ncol(hcobject$integrated_output$GFC_all_layers)]
+    colorder <- colorder[ComplexHeatmap::column_order(hcobject$integrated_output$cluster_calc$heatmap_cluster)]
+    mexp <- mexp[,colorder]
+    
     hm <- pheatmap::pheatmap(mexp, 
                               scale = "row", 
                               cluster_rows = F,
                               cluster_cols = F, 
-                              cellwidth = 60, 
-                              cellheight = 30, 
+                              cellwidth = 30, 
+                              cellheight = 15, 
                               main = base::paste0(hcobject[["layers_names"]][x], ": mean expression per condition"), 
                               color = grDevices::colorRampPalette(base::rev(RColorBrewer::brewer.pal(n = 11, name = "BrBG")))(51))
     plotls[[x]] <- hm[["gtable"]]
