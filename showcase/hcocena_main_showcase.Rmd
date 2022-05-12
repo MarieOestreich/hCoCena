@@ -24,19 +24,21 @@ init_object()
 
 ## Working directory setup
 
-  Please set the following parameters to strings that state the path to your scripts, data, etc.:
+  Please set the following parameters to strings that state the path to your data, etc. For more information on the different files and how to pass them to the 
+  function, please refer to the following section of the wiki: https://github.com/MarieOestreich/hCoCena/wiki/General-Backgroud-Information#count-files-annotation-files--reference-files
   
-  + dir_scripts: path of your script folder
-  + dir_count_data: path of your count files folder
-  + dir_annotation: path of your annotation files folder
-  + dir_reference_files: path of your reference files folder
-  + dir_output: path to the location in which the save folder for this analyses should be created
+  + dir_count_data: path of your count files folder, set FALSE if you are NOT loading expression data from files but instead are using existing 
+  data frames in your environment.
+  + dir_annotation: path of your annotation files folder, set FALSE if you are NOT loading annotation data from files but instead are using existing 
+  data frames in your environment.
+  + dir_reference_files: path of your reference files folder (the folder with corresponding files can be downloaded from the github repo https://github.com/MarieOestreich/hCoCena, they are contained in the folder 'reference_files')
+  + dir_output: path to the location in which the save folder for this analyses should be created (e.g., "~/" for your home directory).
 
 ```{r}
 
-init_wd(dir_count_data = "D:/PhD_backups/PhD/hCoCena/test_case/data/",
-        dir_annotation = "D:/PhD_backups/PhD/hCoCena/test_case/annotation/",
-        dir_reference_files = "D:/PhD_backups/PhD/hCoCena/test_case/reference_files/",
+init_wd(dir_count_data = FALSE,
+        dir_annotation = FALSE,
+        dir_reference_files = "D:/PhD_backups/PhD/hCoCena/test_case/reference_files/", #the folder that contains the reference files
         dir_output = "D:/PhD_backups/PhD/hCoCena/test_case/")
 
 ```

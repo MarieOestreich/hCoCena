@@ -13,12 +13,21 @@ write_session_info <- function(){
   # file names of data sets
   base::writeLines(base::c("Count files:"), f, sep = "\n")
   for(i in 1:base::length(hcobject[["layers"]])){
-    filepath <- base::paste0("    ", hcobject[["working_directory"]][["dir_count_data"]], hcobject[["layers"]][[i]][[1]])
+    if(hcobject[["working_directory"]][["dir_count_data"]] == FALSE){
+      filepath <- base::paste0("    ", "-count data loaded from R object, not from file-")
+    }else{
+      filepath <- base::paste0("    ", hcobject[["working_directory"]][["dir_count_data"]], hcobject[["layers"]][[i]][[1]])
+    }
     base::writeLines(base::c(filepath), f, sep = "\n")
   }
   base::writeLines(base::c("Annotation files:"), f, sep = "\n")
   for(i in 1:base::length(hcobject[["layers"]])){
-    filepath <- base::paste0("    ", hcobject[["working_directory"]][["dir_annotation"]], hcobject[["layers"]][[i]][[2]])
+    if(hcobject[["working_directory"]][["dir_annotation"]] == FALSE){
+      filepath <- base::paste0("    ", "-annotation data loaded from R object, not from file-")
+    }else{
+      filepath <- base::paste0("    ", hcobject[["working_directory"]][["dir_annotation"]], hcobject[["layers"]][[i]][[2]])
+    }
+    
     base::writeLines(base::c(filepath), f, sep = "\n")
   }
   
