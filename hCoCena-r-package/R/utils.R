@@ -1133,6 +1133,9 @@ merge_GFCs <- function(GFC_when_missing = -hcobject[["global_settings"]][["range
 #' @noRd
 
 fix_dir <- function(directory){
+  if(directory == FALSE){
+    return(directory)
+  }
   # check existance of path:
   if(!base::dir.exists(directory)){
     stop( "The directory '", directory, "' does not exist.")
