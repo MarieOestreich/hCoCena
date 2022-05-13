@@ -7,6 +7,11 @@ output:
   pdf_document: default
 ---
 
+# Introduction
+
+This Markdown contains the base workflow of hcocena. For a fully functional analysis, these steps are mandatory unless declared otherwise (flagged with OPTIONAL). Feel free to expand upon this base analysis with the provided satellite functions or your custom scripts. You will find detailed information on the satellite functions as well as intermediate outputs that you can use for your custom analyses in the repository's Wiki.
+
+
 # Pre-Integration Phase
 
 ## load hCoCena package
@@ -24,8 +29,7 @@ init_object()
 
 ## Working directory setup
 
-  Please set the following parameters to strings that state the path to your data, etc. For more information on the different files and how to pass them to the 
-  function, please refer to the following section of the wiki: https://github.com/MarieOestreich/hCoCena/wiki/General-Backgroud-Information#count-files-annotation-files--reference-files
+  Please set the following parameters to strings that state the path to your expression data, meta data, etc. For more information on the different files and how to pass them to the function, please refer to the following section of the wiki: https://github.com/MarieOestreich/hCoCena/wiki/General-Backgroud-Information#count-files-annotation-files--reference-files
   
   + dir_count_data: path of your count files folder, set FALSE if you are NOT loading expression data from files but instead are using existing 
   data frames in your environment.
@@ -54,14 +58,14 @@ check_dirs()
   
 ```{r, warning = FALSE}
 
-init_save_folder(name = "outputs_test")
+init_save_folder(name = "disposable_test_folder")
 
 ```
 
 
 ## Defining layers
 
-  For detailed information regarding file structures and different options for providing data, refer to the  chapter on "defining layers" in the information file.
+  For detailed information regarding the structures of the count and annotation data as well as different options for providing data, refer to the function documentation by entering ?hcocena::define_layers into the console.
     
 ```{r defining Omics Layers}
 # NOTE: We are loading the data from existing R objects, that you will find in the stat_envo.RData, which you will have to load before running this cell.
@@ -81,7 +85,7 @@ set_supp_files(Tf = "TFcat.txt",
 
 ## Define global settings
 
-  For detailed information regarding the different settings, refer to the  chapter on "defining global settings" in the information file.
+  For detailed information regarding the different settings, enter ?hcocena::set_global_settings into the console.
 
 ```{r global settings}
 
@@ -100,30 +104,30 @@ set_global_settings(organism = "human",
 
 ## Data import
 
-  For detailed information regarding the different parameters, refer to the  chapter on "data import" in the information file.
+  For detailed information regarding the different parameters, enter ?hcocena::read_data into the console.
 
 
 ```{r data import}
 
-read_data(sep_counts = "\t",
-           sep_anno = "\t", 
-           gene_symbol_col = "SYMBOL",
-           sample_col = "SampleID",
-           count_has_rn = F,
-           anno_has_rn = F)
+read_data()
 
 read_supplementary()
 
 ```
 
 
+## OPTIONAL: Data-Based Definition of Top Most Variant Genes
+
+Find inflection points in the ranked variances to filter for the top most variant genes in a data-driven way. 
+
 ## Define layer-specific settings
 
-  For detailed information regarding the different settings, refer to the  chapter on "defining layer-specific settings" in the information file.
+  For detailed information regarding the different settings, enter ?hcocena::set_layer_settings into the console.
   
 
 ```{r layer-specific settings}
 
+# 7700 and 7664 are selected based on suggestions by the suggest_topvar() function in the satellite markdown
 set_layer_settings(top_var = c(7700, 7664), 
                                      min_corr = rep(0.9, length(hcobject[["layers"]])), 
                                      range_cutoff_length = rep(50, length(hcobject[["layers"]])),
@@ -151,7 +155,7 @@ set_layer_settings(top_var = c(7700, 7664),
 
 ```{r expression analysis up to cutoff}
 
-run_expression_analysis_1(corr_method = "spearman")
+run_expression_analysis_1(corr_method = "rho")
 
 ```
 

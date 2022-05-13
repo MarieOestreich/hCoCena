@@ -7,9 +7,11 @@
 init_wd(dir_count_data, dir_annotation, dir_reference_files, dir_output)
 }
 \arguments{
-\item{dir_count_data}{A string specifying the path of the folder containing the count data files. All count files should be found in the same directory. For further specifications regarding the count files, see the documentation of read_data().}
+\item{dir_count_data}{A string specifying the path of the folder containing the count data files. All count files should be found in the same directory. For further specifications regarding the count files, see the documentation of read_data().
+NOTE: if you are NOT loading your expression data from files, but instead use dataframe already existing in your environment, set this parameter to FALSE.}
 
-\item{dir_annotation}{A string specifying the path of the folder containing the annotation data files. All annotation files should be found in the same directory. For further specifications regarding the annotation files, see the documentation of read_data().}
+\item{dir_annotation}{A string specifying the path of the folder containing the annotation data files. All annotation files should be found in the same directory. For further specifications regarding the annotation files, see the documentation of read_data().
+NOTE: if you are NOT loading your expression data from files, but instead use dataframe already existing in your environment, set this parameter to FALSE.}
 
 \item{dir_reference_files}{A string specifying the path of the folder containing the reference files needed for some analysis steps. The files can be found on the GitHub repository under 'reference files'. For details on the files and how to exchange them, refer to the README in the repository.}
 

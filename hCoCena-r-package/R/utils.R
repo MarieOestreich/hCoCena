@@ -250,7 +250,7 @@ read_anno <- function(file, rown = T, sep = "\t", sample_col){
 #'  Therefore, the Pearson correlation values can be weighted with Bayesian correlation values. To do so, set the “bayes”-parameter to TRUE. Default is FALSE, using only Pearson correlations.
 #' @param alpha A numeric value from [0,1]. Allows to adjust the strength of the Bayes weighting: For alpha = 0 the Pearson correlation values remain unaltered, for alpha = 1 the Pearson correlation value and the Bayesian correlation value contribute equally to the final correlation.
 #' @param prior An integer, either 2 or 3, using prior 2 or 3 for the Bayes weighting as described in "Bayesian correlation analysis for sequence count data" by Sánchez-Taltavull et al. (2016).
-#' @param corr_method Method for the correlation calculation if bayes is FALSE. Either 'pearson' or 'spearman'.
+#' @param corr_method Method for the correlation calculation if bayes is FALSE. Either 'pearson', 'spearman' or 'rho'(single-cell).
 #' @noRd
 
 
@@ -331,6 +331,20 @@ run_expression_analysis_1_body <- function(x,
 }
 
 
+#' Calculate p-value
+#' 
+#' Calculates the p-value ofd a given value based on a reference distribution.
+#' @param x Value for which to calculate the p-value
+#' @param mu The mean of the reference population
+#' @param sigma The standard deviation of the reference population
+#' @param n The size of the reference population
+#' @noRd
+
+calc_pval <- function(x, mu, sigma, n){
+  z <- (x-mu)/(sigma/base::sqrt(n))
+  p <- stats::pnorm(-base::abs(z))
+  return(p)
+}
 
 
 
@@ -381,7 +395,22 @@ pwcorr <- function(dd2,
       base::rownames(correlation_matrix[["r"]]) <- base::colnames(correlation_matrix[["r"]])
       base::rownames(correlation_matrix[["P"]]) <- base::colnames(correlation_matrix[["P"]])
     }else{
-      correlation_matrix <- Hmisc::rcorr(base::as.matrix(dd2), type=corr_method)
+      if(corr_method == 'rho'){
+        correlation_matrix <- list()
+        correlation_matrix[["r"]] <- propr::perb(counts = base::as.matrix(dd2), select = colnames(dd2))@matrix
+        pmat <- lapply(as.vector(correlation_matrix[["r"]]), 
+                       calc_pval, 
+                       mu = mean(correlation_matrix[["r"]]),
+                       sigma = sd(correlation_matrix[["r"]]), 
+                       n = ncol(correlation_matrix[["r"]])*nrow(correlation_matrix[["r"]])) %>% 
+          unlist() %>% 
+          matrix(., nrow = nrow(correlation_matrix[["r"]]), byrow = FALSE)
+        colnames(pmat) <- colnames(correlation_matrix[["r"]])
+        rownames(pmat) <- rownames(correlation_matrix[["r"]])
+        correlation_matrix[["P"]] <- pmat
+      }else{
+        correlation_matrix <- Hmisc::rcorr(base::as.matrix(dd2), type=corr_method)
+      }
     }
   }else if(base::length(import) == 1 & !base::is.null(import)){
     # import matrix
@@ -392,7 +421,22 @@ pwcorr <- function(dd2,
     base::rownames(correlation_matrix[["r"]]) <- base::colnames(correlation_matrix[["r"]])
     base::rownames(correlation_matrix[["P"]]) <- base::colnames(correlation_matrix[["P"]])
   }else{
-    correlation_matrix <- Hmisc::rcorr(as.matrix(dd2), type=corr_method)
+    if(corr_method == 'rho'){
+      correlation_matrix <- list()
+      correlation_matrix[["r"]] <- propr::perb(counts = base::as.matrix(dd2), select = colnames(dd2))@matrix
+      pmat <- lapply(as.vector(correlation_matrix[["r"]]), 
+                     calc_pval, 
+                     mu = mean(correlation_matrix[["r"]]),
+                     sigma = sd(correlation_matrix[["r"]]), 
+                     n = ncol(correlation_matrix[["r"]])*nrow(correlation_matrix[["r"]])) %>% 
+        unlist() %>% 
+        matrix(., nrow = nrow(correlation_matrix[["r"]]), byrow = FALSE)
+      colnames(pmat) <- colnames(correlation_matrix[["r"]])
+      rownames(pmat) <- rownames(correlation_matrix[["r"]])
+      correlation_matrix[["P"]] <- pmat
+    }else{
+      correlation_matrix <- Hmisc::rcorr(base::as.matrix(dd2), type=corr_method)
+    }
   }
   
   # export correlations and p-values for future re-runs to avoid the bottleneck:

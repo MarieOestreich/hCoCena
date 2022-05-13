@@ -35,7 +35,7 @@ Therefore, the Pearson correlation values can be weighted with Bayesian correlat
 
 \item{alpha}{A numeric value from 0 to 1. Allows to adjust the strength of the Bayes weighting: For alpha = 0 the Pearson correlation values remain unaltered, for alpha = 1 the Pearson correlation value and the Bayesian correlation value contribute equally to the final correlation.}
 
-\item{corr_method}{Default is "pearson", but can alternatively be set to "spearman".}
+\item{corr_method}{Default is "pearson", but can alternatively be set to "spearman" or "rho" in case of single-cell data (according to Skinnider et al., https://www.nature.com/articles/s41592-019-0372-4).}
 }
 \description{
 This function executes the frist part of the data processing procedure. It leads up to choosing the correlation cut-off for each layer.
