@@ -26,8 +26,12 @@ PCA <- function(which = "all", color_by = "none", ellipses = F){
       message("Invalid parameter setting: which = ", which, " is not recognized.")
     }
     
-    if(color_by == "none"){
-      groups <- "none"
+    if(length(color_by) == 1){
+      if(color_by == "none"){
+        groups <- "none"
+      }else{
+        groups <- dplyr::pull(hcobject[["data"]][[base::paste0("set", x, "_anno")]], color_by)
+      }
     }else{
       groups <- dplyr::pull(hcobject[["data"]][[base::paste0("set", x, "_anno")]], color_by[x])
     }

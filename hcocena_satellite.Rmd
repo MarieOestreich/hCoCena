@@ -238,6 +238,32 @@ plot_cluster_heatmap()
 ```
 
 
+# Network comparison
+
+## Compare clusters of 2 networks
+
+  This function calculates and visualizes the Jaccard-Index of all pairs of clusters from two networks.
+This allows the comparison of the two networks with respect to the clusters they form and how those clusters relate to each other.
+For details on parameters, please refer to the fucntion documentation with ?hcocena::network_comparison_1
+
+```{r , fig.width=5, fig.height=7}
+network_comparison_1(gtc1_path = 'D:/PhD_backups/PhD/hCoCena/test_case/disposable_test_folder/gtc.txt',
+                     gtc2_path = 'D:/PhD_backups/PhD/hCoCena/test_case/disposable_test_folder/gtc_0982_0982.txt')
+```
+
+## Compare degree distribution of gene set
+
+  This function accepts two networks and a set of genes. It then calculates the degree-distribution of each gene in both networks and also the Jaccard-Index
+of each gene's neighbourhoods in the two networks. The results are visualized in a 2D dot plot.
+This allows the comparison of the two networks with respect to the connectivity of selected genes.
+For details on parameters, please refer to the fucntion documentation with ?hcocena::network_comparison_2
+
+```{r}
+network_comparison_2(net1 = g, 
+                     net2 = hcobject$integrated_output$merged_net, 
+                     gene_vec = c( "YME1L1", "SLC2A5", "SIAH2", "GPI", "IL10RB"))
+```
+
 
 # Regrouping samples
 

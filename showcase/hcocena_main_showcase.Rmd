@@ -155,7 +155,7 @@ set_layer_settings(top_var = c(7700, 7664),
 
 ```{r expression analysis up to cutoff}
 
-run_expression_analysis_1(corr_method = "rho")
+run_expression_analysis_1(corr_method = "spearman")
 
 ```
 
@@ -167,7 +167,7 @@ run_expression_analysis_1(corr_method = "rho")
   Set a correlation cut-off for each of your data sets. To aid this choice, the following plot presents the different cut-off statistics per data set. For more details on cut-offs and the information in this plot as well as the parameters, refer to the information file, section "Choosing the cut-offs".
   
   
-```{r fig.height = 8, fig.width = 8}
+```{r fig.height = 8, fig.width = 10}
 
 plot_cutoffs(interactive = T)
 
@@ -179,7 +179,7 @@ plot_cutoffs(interactive = T)
 
 ```{r choose cutoff}
 
-set_cutoff(cutoff_vector = c(0.982,0.982))
+set_cutoff(cutoff_vector = c(0.7,0.7))
 
 ```
 
