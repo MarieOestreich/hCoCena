@@ -1,26 +1,37 @@
 ---
-title: "hCoCena_V2.0_main"
+title: "hCoCena showcase (main)"
 author: "Marie Oestreich"
-date: "26 2 2021"
+date: "22 5 2022"
 output:
   html_document: default
   pdf_document: default
 ---
 
-# Introduction
 
-This Markdown contains the base workflow of hcocena. For a fully functional analysis, these steps are mandatory unless declared otherwise (flagged with OPTIONAL). Feel free to expand upon this base analysis with the provided satellite functions or your custom scripts. You will find detailed information on the satellite functions as well as intermediate outputs that you can use for your custom analyses in the repository's Wiki.
+# Introduction
+  This markdown, in combination with the markdown 'hcocena_satellite_showcase.Rmd' illustrate how to use the hCoCena tool on a small example using two data sets.
+Both data sets measure the transcription profiles of Macrophages when treated with Interferon Gamma, Interleukin-4 or at Baseline (untreated). 
+However, one data set was generated using RNA-Sequencing, while the other was generated using a Microarray.
+
+The main-Markdown contains the base workflow of hCoCena. For a fully functional analysis, these steps are mandatory unless declared otherwise (flagged with OPTIONAL). Feel free to expand upon this base analysis with the provided satellite functions or your custom scripts. You will find detailed information on the satellite functions as well as intermediate outputs that you can use for your custom analyses in the repository's Wiki (https://github.com/MarieOestreich/hCoCena/wiki).
 
 
 # Pre-Integration Phase
+  This part includes all the steps that lead up to the actual integration procedure of the data sets.
 
 ## load hCoCena package
+
+  First, we are going to load the hCoCena R-package. For information on how to download and install the package, please refer to the 'install_hcocena.R' script that your can find int the Github repository.
+
 ```{r}
 library(hcocena)
 ```
 
 
 ## create hCoCena-Object
+
+  Now, we will create the 'hcobject'. This is an object structure specifically designed for the hCoCena analysis and it will store all intermediate results of the analysis in a unified structure. For more information on the structure, please refer to the Wiki: https://github.com/MarieOestreich/hCoCena/wiki/Structure-of-the-hcobject.
+  The object will automatically be instantiated by running the function below, no parameters need to be set. 
 
 ```{r}
 init_object()
@@ -29,36 +40,50 @@ init_object()
 
 ## Working directory setup
 
-  Please set the following parameters to strings that state the path to your expression data, meta data, etc. For more information on the different files and how to pass them to the function, please refer to the following section of the wiki: https://github.com/MarieOestreich/hCoCena/wiki/General-Backgroud-Information#count-files-annotation-files--reference-files
+  In this step, we will indicate to hCoCena where it can find everything we need for the analysis: Our gene expression data (a.k.a. count data), our meta data (a.k.a. annotation), and our reference files. These will be used for example for highlighting transcription factors or doing an enrichment analysis. For more information on the different files and how to pass them to the function, please refer to the following section of the wiki: https://github.com/MarieOestreich/hCoCena/wiki/General-Backgroud-Information#count-files-annotation-files--reference-files.
   
-  + dir_count_data: path of your count files folder, set FALSE if you are NOT loading expression data from files but instead are using existing 
-  data frames in your environment.
-  + dir_annotation: path of your annotation files folder, set FALSE if you are NOT loading annotation data from files but instead are using existing 
-  data frames in your environment.
-  + dir_reference_files: path of your reference files folder (the folder with corresponding files can be downloaded from the github repo https://github.com/MarieOestreich/hCoCena, they are contained in the folder 'reference_files')
-  + dir_output: path to the location in which the save folder for this analyses should be created (e.g., "~/" for your home directory).
+  In this case, we will not read the expression data and the annotation from files, but instead use an R-environment that we have prepared for this showcase. You can find the environment in the repository's showcase folder, it is named 'start_envo.RData'. After downloading, we can load the environment like this:
+  
+```{r}
+# You will have to adapt the path depending on where you saved the downloaded file:
+
+
+load("~/Work/Repos/hCoCena/showcase/start_envo.RData")
+
+```
+  
+
+  Because we are not reading our data from file, we will set the directory for the count data ('dir_count_data'), as well as for the annotation ('dir_annotation') to FALSE.
+My reference files are stored at "~/Work/hcocena/reference_files/", hence the parameter 'dir_reference_files' is set accordingly. The files can be downloaded from the Github repository folder named 'reference files', after downloading, the path must be adapted according to where it was downloaded to.
+
+  Lastly, we define a directory where we want to create our analysis folder. I have a folder ("~/Work/hcocena/analyses/") where I store the results for my different analyses. In this folder, hCoCena will create a new folder specfically for this analysis and store all plots and other outputs there.
+
 
 ```{r}
 
 init_wd(dir_count_data = FALSE,
         dir_annotation = FALSE,
-        dir_reference_files = "D:/PhD_backups/PhD/hCoCena/test_case/reference_files/", #the folder that contains the reference files
-        dir_output = "D:/PhD_backups/PhD/hCoCena/test_case/")
+        dir_reference_files = "~/Work/hcocena/reference_files/", #the folder that contains the reference files
+        dir_output = "~/Work/hcocena/analyses/")
 
 ```
 
-  Ensure that all directories exist with the following chunk:
+
+  The following function assures that all directories given above exist and fixes missing slashes at the end. It requires no parameters. If a directory does not exist (might just be a typo!) it will produce an error.
+
 
 ```{r check directories}
 check_dirs()
 ```
 
-  Please define a folder in which your results shall be saved using the 'name' variable. 
-  The folder is created automatically, if it does not yet exist in the set directory.
+
+  In this step we are going to choose a name for the folder that hCoCena creates for our analysis (in the directory that we set in init_wd: dir_output).
+Since this is a showcase of the tool, I'll call it 'showcase':
+  
   
 ```{r, warning = FALSE}
 
-init_save_folder(name = "disposable_test_folder")
+init_save_folder(name = "showcase")
 
 ```
 
