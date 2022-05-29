@@ -955,7 +955,7 @@ GFC_calculation <- function(info_dataset, grouping_v, x) {
   } else {
     
     message("...The first column in the metadata will be used as the grouping variable",
-                "since the voi_id is not present in the metadata..."))
+                "since the voi_id is not present in the metadata...")
 
     info_dataset[["grpvar"]] = info_dataset[,1]
     
