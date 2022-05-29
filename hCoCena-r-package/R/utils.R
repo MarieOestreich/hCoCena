@@ -780,7 +780,7 @@ reshape_cutoff_stats <- function(cutoff_stats){
 
 run_expression_analysis_2_body <- function(x, grouping_v, plot_HM, method, additional_anno){
   
-  print(base::paste0("Currently processed dataset: ", hcobject[["layers_names"]][x]))
+  message("...Currently processed dataset: ", hcobject[["layers_names"]][x], '...')
 
   hcobject[["layer_specific_outputs"]][[base::paste0("set",x)]][["part2"]][["heatmap_out"]] <<- heatmap_network_genes(x = x, 
                                                               plot_HM = plot_HM,
@@ -811,7 +811,7 @@ heatmap_network_genes <- function(x, plot_HM, method, additional_anno){
   # extract annotation data for current data layer:
   info_dataset <- hcobject[["data"]][[base::paste0("set",x,"_anno")]]
 
-  print(base::paste0("...creating heatmap of top variable entities..."))
+  message("...creating heatmap of network genes...")
 
   # collect function output:
   output <- list()
@@ -846,8 +846,8 @@ heatmap_network_genes <- function(x, plot_HM, method, additional_anno){
   output[["filt_cutoff_data"]] <- filt_cutoff_data
   
   
-  print(base::paste0("After using the optimal cutoff of ", hcobject[["cutoff_vec"]][x], " the number of edges = ", 
-              base::nrow(filt_cutoff_data), " and the number of nodes = ", base::nrow(filt_cutoff_counts)))
+  message("...After using the optimal cutoff of ", hcobject[["cutoff_vec"]][x], " the number of edges = ", 
+              base::nrow(filt_cutoff_data), " and the number of nodes = ", base::nrow(filt_cutoff_counts), '...')
  
   col_list <- list()
   for(i in all_conditions){
@@ -939,7 +939,7 @@ gfc_calc <- function(grp, trans_norm, group_means){
 
 GFC_calculation <- function(info_dataset, grouping_v, x) {
   
-  print(base::paste0("...calculate Group-Fold-Changes..."))
+  message("...calculate Group-Fold-Changes...")
   
   if(!base::is.null(grouping_v)){
     info_dataset[["grpvar"]] <- info_dataset[,base::c(grouping_v)]
@@ -947,15 +947,15 @@ GFC_calculation <- function(info_dataset, grouping_v, x) {
   }
   else if(base::intersect(hcobject[["global_settings"]][["voi"]], base::colnames(info_dataset)) %>% base::length() > 0){
     
-    print(base::paste0("Variable: '", hcobject[["global_settings"]][["voi"]],
-                "' will be used as grouping variables."))
+    message("...Variable: '", hcobject[["global_settings"]][["voi"]],
+                "' will be used as grouping variables...")
     
     info_dataset[["grpvar"]] <- purrr::pmap(info_dataset[base::intersect(hcobject[["global_settings"]][["voi"]], base::colnames(info_dataset))],
                                                         paste, sep = "-") %>% base::unlist()
   } else {
     
-    print(base::paste0("the first column in the metadata will be used as the grouping variable",
-                "since the voi_id is not present in the metadata"))
+    message("...The first column in the metadata will be used as the grouping variable",
+                "since the voi_id is not present in the metadata..."))
 
     info_dataset[["grpvar"]] = info_dataset[,1]
     
@@ -964,7 +964,7 @@ GFC_calculation <- function(info_dataset, grouping_v, x) {
   
   if(hcobject[["global_settings"]][["control"]] == "none"){
 
-      print(base::paste0("GFC calculation with foldchange from mean"))
+      message("...GFC calculation with foldchange from mean...")
 
       # GFC calculation with foldchange from mean
       norm_data_anno <- base::merge(base::t(hcobject[["layer_specific_outputs"]][[base::paste0("set",x)]][["part1"]][["topvar"]]), base::subset(info_dataset, select = base::c("grpvar")), by = "row.names", all.x = T)
@@ -996,7 +996,7 @@ GFC_calculation <- function(info_dataset, grouping_v, x) {
       return(GFC_all_genes)
 
   }else{
-    print(base::paste0("GFC calculation with foldchange from control"))
+    message("...GFC calculation with foldchange from control...")
     # GFC calculation with foldchange from control
     norm_data_anno = base::merge(base::t(hcobject[["layer_specific_outputs"]][[base::paste0("set",x)]][["part1"]][["topvar"]]), base::subset(info_dataset, select = base::c("grpvar")), by = "row.names", all.x = T)
     

@@ -244,7 +244,7 @@ plot_cluster_heatmap()
 
   This function calculates and visualizes the Jaccard-Index of all pairs of clusters from two networks.
 This allows the comparison of the two networks with respect to the clusters they form and how those clusters relate to each other.
-For details on parameters, please refer to the fucntion documentation with ?hcocena::network_comparison_1
+For details on parameters, please refer to the function documentation with ?hcocena::network_comparison_1
 
 ```{r , fig.width=5, fig.height=7}
 network_comparison_1(gtc1_path = 'D:/PhD_backups/PhD/hCoCena/test_case/disposable_test_folder/gtc.txt',

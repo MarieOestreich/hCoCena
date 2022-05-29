@@ -321,7 +321,7 @@ plot_integrated_network(layout = hcobject[["integrated_output"]][["cluster_calc"
 
 ## OPTIONAL: Replotting of heatmap with different variable of interest
 
-  In case you are uncertain if the "voi" you have initially chosen is the right choice for your analysis, you are given the opportunity to replot the final module heatmap based on a different annotation variable. To do so, please refer to the section "Replotting of heatmap with different variable of interest" in the satellite markdown.
+  In case you are uncertain if the "voi" you have initially chosen is the right choice for your analysis, you are given the opportunity to re-plot the final module heatmap based on a different annotation variable. To do so, please refer to the section "Replotting of heatmap with different variable of interest" in the satellite markdown.
 
 
 ## OPTIONAL: Plotting network coloured by GFC
@@ -332,7 +332,9 @@ plot_integrated_network(layout = hcobject[["integrated_output"]][["cluster_calc"
 ## Database enrichment
 
   Enrichment analysis of the found modules using the GO, KEGG, Hallmark and Reactome databases. For detailed information on parameter settings, please run ?hcocena::go_profiling, ?hcocena::kegg_profiling, ?hcocena::Hallmark_profiling and ?hcocena::reactome_profiling
-  The outputs all have a slot called "enrichment", that contains the clusterProfiler enrich-object for each cluster. This can be used as input for further clusterProfiler visualisations. Please refer to the clusterProfiler documentation.
+  The outputs all have a slot called "enrichment"(find the results at hcobject[["integrated_output"]][["enrichments"]]), that contains the clusterProfiler enrich-object for each cluster. This can be used as input for further clusterProfiler visualisations. Please refer to the clusterProfiler documentation.
+  
+  PLEASE NOTE: hCoCena is accessing databases in this step. The gene sets in the databases change over time as the biological insight progresses. Hence, results might change over time based on changes to the database. That is not a bug in the hCoCena tool.
   
 ```{r GO profiling, fig.width = 10, fig.height = 7, message = F, warning = F}
 
