@@ -47,6 +47,7 @@ leiden_clustering <- function(g, num_it){
 
   # remove white clusters:
   clusters_df <- dplyr::filter(clusters_df, cluster %in% clusters_to_keep)
+  clusters_df$cluster <- 1:nrow(clusters_df)
 
   # inform how many clusters and accordingly how many genes were lost due to insufficient cluster size:
   print(base::paste0(base::length(base::unique(clusters_df_white$cluster)), 
