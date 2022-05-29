@@ -47,22 +47,25 @@ leiden_clustering <- function(g, num_it){
 
   # remove white clusters:
   clusters_df <- dplyr::filter(clusters_df, cluster %in% clusters_to_keep)
-  clusters_df$cluster <- 1:nrow(clusters_df)
 
   # inform how many clusters and accordingly how many genes were lost due to insufficient cluster size:
   print(base::paste0(base::length(base::unique(clusters_df_white$cluster)), 
                " cluster/s was/were smaller than the set minimum cluster size and therefore discarded.",
                " This removes ", base::nrow(clusters_df_white), " genes."))
 
-
+  # after potentially removing clusters, create look-up table to reset cluster counters to close created gaps:
+  cluster_look_up <- base::data.frame(original = base::unique(clusters_df$cluster), new = 1:length(base::unique(clusters_df$cluster)))
+  
   out <- base::lapply(base::unique(clusters_df$cluster), function(x){
 
     # extract genes present in current cluster:
     genes <- dplyr::filter(clusters_df, cluster == x) %>% 
       dplyr::pull(., "gene")
+    
+    new_label <- dplyr::filter(cluster_look_up, original == x) %>% dplyr::pull(., 'new')
 
     # cluster name:
-    col_clusters <- base::paste0("cluster ", x)
+    col_clusters <- base::paste0("cluster ", new_label)
     # number of genes in cluster:
     col_gene_no <- dplyr::filter(clusters_df, cluster == x) %>% 
       base::nrow()
@@ -71,7 +74,7 @@ leiden_clustering <- function(g, num_it){
     # is the cluster included in the network (i.e., is it large enough):
     col_cluster_included <- "yes"
     # cluster color:
-    col_color <- color.cluster[x]
+    col_color <- color.cluster[new_label]
     # order of conditions for following GFC values:
     col_conditions <- base::colnames(dplyr::select(hcobject[["integrated_output"]][["GFC_all_layers"]], -Gene)) %>% 
       base::paste0(., collapse = "#")
