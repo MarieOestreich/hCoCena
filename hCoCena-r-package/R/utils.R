@@ -6,7 +6,7 @@ get_cluster_colours <- function(){
   col_vec <- c("coral", "gold", "steelblue", "lightgreen", "turquoise", "plum", "maroon", "seagreen", "wheat", "slategray", "lightblue", 
                      "orchid", "darkgreen",  "darkorange", "darkgrey", "indianred", "pink", "sandybrown",   "khaki",  "darkblue", "cadetblue",
                      "greenyellow","cyan", "thistle", "darkmagenta",  "red", "blue", "green", "yellow", "brown", "black", "darkgoldenrod", 
-                     "cornsilk", "firebrick", "deeppink", "dodgerblue", "lightpink", "midnightblue", "slategray", "aquamarine", "chocolate", 
+                     "cornsilk", "firebrick", "deeppink", "dodgerblue", "lightpink", "midnightblue",  "aquamarine", "chocolate", 
                      "darkred", "navy", "olivedrab", "peachpuff", "tomato", "snow")
   return(col_vec)
 
