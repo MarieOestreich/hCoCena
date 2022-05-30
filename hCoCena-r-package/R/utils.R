@@ -2,14 +2,14 @@
 #' @noRd
 
 get_cluster_colours <- function(){
-
+  
   col_vec <- c("coral", "gold", "steelblue", "lightgreen", "turquoise", "plum", "maroon", "seagreen", "wheat", "slategray", "lightblue", 
-                     "orchid", "darkgreen",  "darkorange", "darkgrey", "indianred", "pink", "sandybrown",   "khaki",  "darkblue", "cadetblue",
-                     "greenyellow","cyan", "thistle", "darkmagenta",  "red", "blue", "green", "yellow", "brown", "black", "darkgoldenrod", 
-                     "cornsilk", "firebrick", "deeppink", "dodgerblue", "lightpink", "midnightblue",  "aquamarine", "chocolate", 
-                     "darkred", "navy", "olivedrab", "peachpuff", "tomato", "snow")
+               "orchid", "darkgreen",  "darkorange", "darkgrey", "indianred", "pink", "sandybrown",   "khaki",  "darkblue", "cadetblue",
+               "greenyellow","cyan", "thistle", "darkmagenta",  "red", "blue", "green", "yellow", "brown", "black", "darkgoldenrod", 
+               "cornsilk", "firebrick", "deeppink", "dodgerblue", "lightpink", "midnightblue", "slategray", "aquamarine", "chocolate", 
+               "darkred", "navy", "olivedrab", "peachpuff", "tomato", "snow")
   return(col_vec)
-
+  
 }
 
 
@@ -28,44 +28,40 @@ leiden_clustering <- function(g, num_it){
   
   # run Leiden algorithm ion network:
   partition <- leidenAlg::leiden.community(graph = g, n.iterations = num_it)
-
+  
   # extract found clusters and the genes belonging to them:
   clusters_df <- base::data.frame(cluster = base::as.numeric(partition$membership), gene = partition$names)
-
+  
   # the algo start enumeration at 0, increase to 1 for easier comaptibility with R fucntions:
   clusters_df$cluster <- clusters_df$cluster + 1
-
+  
   # get gene counts per cluster:
   cluster_frequencies <- base::table(clusters_df$cluster) %>% base::as.data.frame() 
-
+  
   # detect clusters large enough to be kept:
   clusters_to_keep <- dplyr::filter(cluster_frequencies, Freq >= hcobject[["global_settings"]][["min_nodes_number_for_cluster"]]) %>% 
     dplyr::pull(., "Var1")
   
   # define white clusters (those that are too small to be kept):
   clusters_df_white <- dplyr::filter(clusters_df, !cluster %in% clusters_to_keep)
-
+  
   # remove white clusters:
   clusters_df <- dplyr::filter(clusters_df, cluster %in% clusters_to_keep)
-
+  
   # inform how many clusters and accordingly how many genes were lost due to insufficient cluster size:
   print(base::paste0(base::length(base::unique(clusters_df_white$cluster)), 
-               " cluster/s was/were smaller than the set minimum cluster size and therefore discarded.",
-               " This removes ", base::nrow(clusters_df_white), " genes."))
-
-  # after potentially removing clusters, create look-up table to reset cluster counters to close created gaps:
-  cluster_look_up <- base::data.frame(original = base::unique(clusters_df$cluster), new = 1:length(base::unique(clusters_df$cluster)))
+                     " cluster/s was/were smaller than the set minimum cluster size and therefore discarded.",
+                     " This removes ", base::nrow(clusters_df_white), " genes."))
+  
   
   out <- base::lapply(base::unique(clusters_df$cluster), function(x){
-
+    
     # extract genes present in current cluster:
     genes <- dplyr::filter(clusters_df, cluster == x) %>% 
       dplyr::pull(., "gene")
     
-    new_label <- dplyr::filter(cluster_look_up, original == x) %>% dplyr::pull(., 'new')
-
     # cluster name:
-    col_clusters <- base::paste0("cluster ", new_label)
+    col_clusters <- base::paste0("cluster ", x)
     # number of genes in cluster:
     col_gene_no <- dplyr::filter(clusters_df, cluster == x) %>% 
       base::nrow()
@@ -74,7 +70,7 @@ leiden_clustering <- function(g, num_it){
     # is the cluster included in the network (i.e., is it large enough):
     col_cluster_included <- "yes"
     # cluster color:
-    col_color <- color.cluster[new_label]
+    col_color <- color.cluster[x]
     # order of conditions for following GFC values:
     col_conditions <- base::colnames(dplyr::select(hcobject[["integrated_output"]][["GFC_all_layers"]], -Gene)) %>% 
       base::paste0(., collapse = "#")
@@ -86,15 +82,15 @@ leiden_clustering <- function(g, num_it){
       base::paste0(., collapse = ",")
     # collect all information:
     out <- base::data.frame(clusters = col_clusters,
-                      gene_no = col_gene_no,
-                      gene_n = col_gene_n,
-                      cluster_included = col_cluster_included,
-                      color = col_color,
-                      conditions = col_conditions,
-                      grp_means = col_grp_means,
-                      vertexsize = 3)
+                            gene_no = col_gene_no,
+                            gene_n = col_gene_n,
+                            cluster_included = col_cluster_included,
+                            color = col_color,
+                            conditions = col_conditions,
+                            grp_means = col_grp_means,
+                            vertexsize = 3)
     return(out)
-    }) %>% rlist::list.rbind()
+  }) %>% rlist::list.rbind()
   return(out)
 }
 
