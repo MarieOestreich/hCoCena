@@ -7,6 +7,9 @@ output: html_document
 
 # Suggest Top Most Variant Genes
 
+  This function calculates the inflection points in the ranked variances to filter for the top most variant genes in a data-driven way.
+  In this case, there are 5 inflection points per dataset and we will keep the highest one in both caases to remove as few genes as possible.
+
 ```{r suggest top most variant genes}
 
 hcocena::suggest_topvar()
@@ -16,9 +19,7 @@ hcocena::suggest_topvar()
 
 # Checking data distribution
 
-  To get a better feeling for the datasets and to detect possible outliers or prominent differences within datasets, the distribution of count values across all samples per dataset can be visualized either as boxplots or frequency distributions, by setting the plot_type parameter to “boxplot” or “freqdist”, respectively. Within the defined save folder, a folder named “sample_distribution_plots” will be created to which these plots will be saved. 
-  The "log_2" parameter accepts a Boolean determining if the counts should be represented to the base of 2 in the plot or not. 
-  "plot" can be set to TRUE if the created plots are meant to be printed into the R Markdown as well as saved to PDFs or it can be set to FALSE, if they should only be saved and not printed. If the total number of samples is very large, setting this parameter to FALSE is advised in order to prevent the knitted R Markdown from becoming too long.
+  To get a better feeling for the datasets and to detect possible outliers or prominent differences within datasets, the distribution of count values across all samples per dataset can be visualized. Here we choose to visualize them as boxplots (alternative option is frequency distributions), we set log_2 = FALSE, because our data is already logged and we don't wish to log the scale again for plotting. And since we don't only want the plots to be saved as PDFs, but also have them printed hier into the markdown, we set plot = TRUE.
 
 
 ```{r data distribution plots, warning = FALSE}
@@ -32,12 +33,8 @@ plot_sample_distributions(plot_type = "boxplot",
 
 # PCA 
 
-  Plots one PCA for each data set. 
-  Parameters:
-    - 'which': one of "all" (uses all genes), "topvar" (uses top most variant genes, cannot be used before running "Data processing part I" in the main markdown), or "network" (uses the genes present in network, cannot be run before finishing "Data processing part II" in the main markdown).
-    - 'color_by': default is "none" (coloring all dots black), alternatively, set this to a vector of column names (c("name of col in annotation 1", "name of col in annotation 2", ...)), containing the groups by which you want to color.
-    
-  Plots will be saved as PDFs to your save folder.
+  We will also plot a PCA of our data: One PCA will be created per dataset, we want to use all genes (other options would be 'topvar' (only top-most-variant genes) or 'network' (only genes present in the co-expression network)). For details on these options, see ?hcocena::PCA.
+  We want to colour the samples by our variable of interest (which in both cases was an annotation column called 'merged').
     
 
 ```{r PCA, warning = FALSE}
@@ -52,7 +49,11 @@ PCA(which = "all", color_by = c("merged", "merged"))
 
   Model layout in Cytoscape (https://cytoscape.org/download.html). Cytoscape MUST BE OPEN for this to work. To shorten the time needed, please read the docs to the export_to_cytoscape function (?export_to_cytoscape). 
   
+  NOTE: instead of re-running this yourself (might take some time to load), you can also open the Cytoscape session that we created throughout the run and inspect the network. That will be faster and will still allow you to import the network coordinates from Cytoscape back into R (you can then immediately jump to 'import_layout_from_cytoscape' and can skip the export). You can find the Cytescape file of the network in the repository's 'showcase' folder, it is called 'cytoscape_session.cys'.
+  
 ## Export Network
+
+  This function exports the network to Cytoscape. There you can apply a variety of Cytoscape's great layout algorithms.
   
 ```{r Cytoscape export}
 
@@ -63,6 +64,8 @@ export_to_cytoscape()
 
 ## Import Layout
 
+  After deciding on a layout that optimally visualises the network structure, this function imports the nodes' coordinates into R.
+
 ```{r Import layout}
 
 import_layout_from_cytoscape()
@@ -72,7 +75,8 @@ import_layout_from_cytoscape()
 
 
 ## Plot Network
-
+  
+  After importing the coordinates, they can be used to plot the network. Since the Cytoscape coordinates are saved under hcobject[["integrated_output"]][["cluster_calc"]][["layout"]], we will provide that to the layout parameter.
 
 ```{r Plot network}
 
@@ -84,7 +88,7 @@ plot_integrated_network( layout = hcobject[["integrated_output"]][["cluster_calc
 
 # Cluster scores
 
-  For every gene, the ratio of its edges to genes in the same cluster to its total number of edges is determined. The corresponding values are returned as a data frame and a box plot is generated showing the scores for each of the clusters.
+  For every gene, the ratio of its edges to genes in the same cluster to its total number of edges is determined. The corresponding values are returned as a data frame and a box plot is generated showing the scores for each of the clusters. The data frame and the plot object will be saved under hcobject[["satellite_outputs"]][["cluster_scores"]].
   
 ```{r cluster scores}
 
@@ -95,17 +99,12 @@ get_cluster_scores()
 
 # Hub gene detection
 
-  Hub gene detection is available for clusters. Hub genes are determined using a combined ranking based on weighted degree centrality, weighted closeness centrality and weighted betweenness centrality. A high quality version of the plots will be available in your save folder. 
-  Parameters:
+  Hub gene detection is available for selected clusters or the entire network. Hub genes are determined using a combined ranking based on weighted degree centrality, weighted closeness centrality and weighted betweenness centrality. A high quality version of the plots will be available in your save folder. 
   
-  - 'top': An integer. All genes are ranked based on their hub potential, this parameter defines the number of the top ranked genes to be considered a hub gene. Default value is 10. 
-  - 'save': A Boolean. Whether or not a labelled hub-network per cluster is to be save to PDF. Default is FASLE.
-  - 'tree_layout': A Boolean. Whether or not to depict the network witht tree layout, implying a sort of hierarchical structure to the network.
-  - 'TF_only': Either FALSE (default, all genes in clsuter are considered for hub genes), or "all" (all genes from transcriptionfactor supplementary file are considered for hub genes), or any gene category listed in the last column of the provided transcriptionfactor supplementary file (only that subgroup condired for hub genes).
-  - 'Plot': A Boolean. Wheather or not to plot the network (per cluster) with highlighted hub nodes. Default is FALSE.
+  As an example, we will look for hub genes in the cluster 'lightblue'. We want the top 10 hub candidates (based on the centrality hub score), we don't want to save the network with the hub genes highlighted, the network should not be plotted using a tree layout, we are only interested in hubs that are also transcription factors (if there are less than 10 TFs in the cluster, we will get less than 10 hub candidates) and we set plot to TRUE so that the cluster network with hubs highlighted will be plotted (but not save since save = FALSE).
         
-Mean expression values of found hubs will be plotted as a heatmap per cluster, rows are scaled. 
-A table of hubs per cluster will be exported as an Excel file. This table is also returned as output.
+  Mean expression values of found hubs will be plotted as a heatmap per cluster, rows are scaled. 
+A table of hubs per cluster will be exported as an Excel file. This table is also returned as output to the hcobject.
   
 
   
@@ -124,13 +123,15 @@ find_hubs(top = 10,
 
 # Visualize specific gene set
   
-  Plots the mean expression values per condition for the given genes for each dataset as a heatmap. Values are scaled across rows.
+  Plots the mean expression values per condition ('variable of interest') for the given genes for each dataset as a heatmap. Values are scaled across rows.
+  
+  Here, we plot genes identified by Xue et al., 2014 (https://doi.org/10.1016/j.immuni.2014.01.006) as IL4-induced and IFNg-induced genes.
   
 ```{r visualize specific gene set}
 
 visualize_gene_expression(genes = c("STAT6", "MAFG", "ETS2", "RUNX1", "TFE3", "HES6", "IRF4", "FOXQ1", "CREB5", "SPN", "SOX8", "SIP1", "FOXD2", "GTF3C3", "BATF3", "EGR3", "FOS"), name = "IL4_genes")
 
-visualize_gene_expression(genes = c("MAFA", "IRF9", "IRF7", "STAT2", "STAT1", "NFIX", "ELF4", "ETV7"), name = "IGNg_genes")
+visualize_gene_expression(genes = c("MAFA", "IRF9", "IRF7", "STAT2", "STAT1", "NFIX", "ELF4", "ETV7"), name = "IFNg_genes")
 
 ```
   
@@ -138,7 +139,9 @@ visualize_gene_expression(genes = c("MAFA", "IRF9", "IRF7", "STAT2", "STAT1", "N
 
 # Plotting network coloured by GFC
 
-  For visualization of the GFC for every gene under the different observed groups, the network can be additionally replotted once for every group, with nodes being coloured according to their GFC value. This provides a more detailed resolution of the information acquired from the module heatmap.
+  For visualization of the GFC for every gene under the different observed groups (variable of interest), the network can be additionally re-plotted once for every group, with nodes being coloured according to their GFC value. This provides a more detailed resolution of the information acquired from the module heatmap.
+  
+  In this example, these networks show very nicely how the stimulus-specific patterns are preserved across technology, showing the suitability of the GFC approach for integration: The biological signal sominates, not the signal introduced by the sequencing technology.
  
 
 ```{r plot network with GFCs, fig.width=10, fig.height=7}
@@ -149,6 +152,8 @@ plot_GFC_network()
 
 
 # Transcription factor query
+
+  This function leverages the information collected with TF_enrich_all() (main markdown) to allow the user to query specific transcription factors of interest and see how their top targets are spread across modules. The goal is to uncover potential co-regulations between clusters.
 
   The result is plotted and can be found in higher quality the save folder.
 
@@ -164,7 +169,8 @@ check_tf("IRF9")
 
 # Write session info
 
-  Write the variables' values set in this run to a file for easy reproducibility.
+  The parameters of the analysis session are written to a text file to enhance reproducibility without keeping and sharing a markdown for every analysis. It documents the name of the files and their location used as count and annotation files, the global settings set in the session, the layer settings set for each dataset as well as the cut-offs and the clustering algorithm used. 
+  The file can be found in the save-folder.
   
 ```{r write session info}
 

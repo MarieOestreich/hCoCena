@@ -146,11 +146,11 @@ read_supplementary()
 
 ## OPTIONAL: Data-Based Definition of Top Most Variant Genes
 
-This chunk in the satellite markdown ('hcocena_satellite_showcase.Rmd') calculates the inflection points in the ranked variances to filter for the top most variant genes in a data-driven way. Running this function yields top 7700 for the array data and 7664 for the RNA-Seq data as the highest data-driven top-most-variant genes cutoff. 
+  This chunk in the satellite markdown ('hcocena_satellite_showcase.Rmd') calculates the inflection points in the ranked variances to filter for the top most variant genes in a data-driven way. Running this function yields top 7700 for the array data and 7664 for the RNA-Seq data as the highest data-driven top-most-variant genes cutoff. 
 
 ## Define layer-specific settings
 
-  After defining the gloabel (dataset-independent) setting further up, we will no define those specific to each dataset. We start with selecting the top-most-variable genes to keep based und the chunk we jsut ran in the satellite markdown. You can also set this to 'all' if you don't want to pre-filter your genes! We further set that we are interested in all gene pairs with minimum correlation 0.9 and that we want to inspect 50 different cutoffs between 0.9 and 1. We don't wan to see the node-degree distribution plot for all of those 50 cutoffs, so we set that parameter to FALSE.
+  After defining the global (dataset-independent) settings further up, we will now define those specific to each dataset. We start with selecting the top-most-variable genes to keep based on the chunk we just ran in the satellite markdown. You can also set this to 'all' if you don't want to pre-filter your genes! We further set that we are interested in all gene pairs with minimum correlation 0.9 and that we want to inspect 50 different cutoffs between 0.9 and 1. We don't wan to see the node-degree distribution plot for all of those 50 cutoffs, so we set that parameter to FALSE.
   For detailed information regarding the different settings, enter ?hcocena::set_layer_settings into the console.
   
 
