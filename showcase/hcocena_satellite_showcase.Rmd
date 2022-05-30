@@ -141,7 +141,7 @@ visualize_gene_expression(genes = c("MAFA", "IRF9", "IRF7", "STAT2", "STAT1", "N
 
   For visualization of the GFC for every gene under the different observed groups (variable of interest), the network can be additionally re-plotted once for every group, with nodes being coloured according to their GFC value. This provides a more detailed resolution of the information acquired from the module heatmap.
   
-  In this example, these networks show very nicely how the stimulus-specific patterns are preserved across technology, showing the suitability of the GFC approach for integration: The biological signal sominates, not the signal introduced by the sequencing technology.
+  In this example, these networks show very nicely how the stimulus-specific patterns are preserved across technology, showing the suitability of the GFC approach for integration: The biological signal dominates, not the signal introduced by the sequencing technology.
  
 
 ```{r plot network with GFCs, fig.width=10, fig.height=7}
