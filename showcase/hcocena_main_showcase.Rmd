@@ -383,21 +383,18 @@ Hallmark_profiling(top = 5,
 
   Transcription factor enrichment analysis for each module and for the entire network based on ChEA3 (Kennan AB, 2019). For more details, refer to the function documentations with ?hcocena::TF_overrep and ?hcocena::TF_enrich_all. The plots can be found in the save folder, descriptions on how to read them can be found running ?hcocena::plot_TF_enrichment.
   
-  PLEASE NOTE: hCoCena is accessing a database in this step. The contents of the database may change over time as the biological insight progresses. Hence, results might change over time based on changes to the database. That is not a bug in the hCoCena tool. It may also occur, that the database is momentarily unavailable due to maintanence or updates. Before running the chunk, you can check, if the server is running properly or currently under maintenance using this link: https://maayanlab.cloud/chea3/.
+  PLEASE NOTE: hCoCena is accessing a database in this step. The contents of the database may change over time as the biological insight progresses. Hence, results might change over time based on changes to the database. That is not a bug in the hCoCena tool. It may also occur, that the database is momentarily unavailable due to maintanence or updates. Before running the chunk, you can check, if the server is running properly or currently under maintenance using this link: https://maayanlab.cloud/chea3/api/enrich/.
   
   
 ```{r , fig.width = 10, fig.height = 7}
 
 TF_overrep()
-TF_enrich_all(topTF = 100, topTarget = 30)
 
 plot_TF_enrichment()
 
 ```
   
-## OPTIONAL: Transcription factor query
 
-  To query the output of the "TF_enrich_all()" function for a specific transcription factor, please refer to the satellite markdown, section "Transcription factor query". We will exemplify this here for 'IRF7' and 'IRF9'.
   
 
 

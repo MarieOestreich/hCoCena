@@ -151,21 +151,6 @@ plot_GFC_network()
 ```
 
 
-# Transcription factor query
-
-  This function leverages the information collected with TF_enrich_all() (main markdown) to allow the user to query specific transcription factors of interest and see how their top targets are spread across modules. The goal is to uncover potential co-regulations between clusters.
-
-  The result is plotted and can be found in higher quality the save folder.
-
-```{r, fig.width = 10, fig.height = 7, echo = F}
-
-check_tf("IRF7")
-
-check_tf("IRF9")
-
-```
-
-
 
 # Write session info
 
