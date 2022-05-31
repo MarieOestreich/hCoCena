@@ -29,19 +29,21 @@ init_object()
 
 ## Working directory setup
 
-  Please set the following parameters to strings that state the path to your data, annotations, etc.:
+  Please set the following parameters to strings that state the path to your expression data, meta data, etc. For more information on the different files and how to pass them to the function, please refer to the following section of the wiki: https://github.com/MarieOestreich/hCoCena/wiki/General-Backgroud-Information#count-files-annotation-files--reference-files
   
-  + dir_count_data: path of your count files folder
-  + dir_annotation: path of your annotation files folder
-  + dir_reference_files: path of your reference files folder
-  + dir_output: path to the location in which the save folder for this analyses should be created
+  + dir_count_data: path of your count files folder, set FALSE if you are NOT loading expression data from files but instead are using existing 
+  data frames in your environment.
+  + dir_annotation: path of your annotation files folder, set FALSE if you are NOT loading annotation data from files but instead are using existing 
+  data frames in your environment.
+  + dir_reference_files: path of your reference files folder (the folder with corresponding files can be downloaded from the github repo https://github.com/MarieOestreich/hCoCena, they are contained in the folder 'reference_files')
+  + dir_output: path to the location in which the save folder for this analyses should be created (e.g., "~/" for your home directory).
 
 ```{r}
 
-init_wd(dir_count_data = "D:/PhD_backups/PhD/hCoCena/test_case/data/",
-        dir_annotation = "D:/PhD_backups/PhD/hCoCena/test_case/annotation/",
-        dir_reference_files = "D:/PhD_backups/PhD/hCoCena/test_case/reference_files/",
-        dir_output = "D:/PhD_backups/PhD/hCoCena/test_case/")
+init_wd(dir_count_data = "PATH_TO_FOLDER_TAHT_HOLDS_YOUR_GENE_EXPRESSION_TABLES",
+        dir_annotation = "PATH_TO_FOLDER_TAHT_HOLDS_YOUR_ANNOTATION_TABLES",
+        dir_reference_files = "PATH_TO_REFERENCE_FILES_FOLDER",
+        dir_output = "PATH_TO_FOLDER_WHERE_HCOCENA_SHOULD_SAVE_ALL_ANALYSIS_OUTPUTS")
 
 ```
 
@@ -319,7 +321,7 @@ plot_integrated_network(layout = hcobject[["integrated_output"]][["cluster_calc"
 
 ## OPTIONAL: Replotting of heatmap with different variable of interest
 
-  In case you are uncertain if the "voi" you have initially chosen is the right choice for your analysis, you are given the opportunity to replot the final module heatmap based on a different annotation variable. To do so, please refer to the section "Replotting of heatmap with different variable of interest" in the satellite markdown.
+  In case you are uncertain if the "voi" you have initially chosen is the right choice for your analysis, you are given the opportunity to re-plot the final module heatmap based on a different annotation variable. To do so, please refer to the section "Replotting of heatmap with different variable of interest" in the satellite markdown.
 
 
 ## OPTIONAL: Plotting network coloured by GFC
@@ -330,7 +332,9 @@ plot_integrated_network(layout = hcobject[["integrated_output"]][["cluster_calc"
 ## Database enrichment
 
   Enrichment analysis of the found modules using the GO, KEGG, Hallmark and Reactome databases. For detailed information on parameter settings, please run ?hcocena::go_profiling, ?hcocena::kegg_profiling, ?hcocena::Hallmark_profiling and ?hcocena::reactome_profiling
-  The outputs all have a slot called "enrichment", that contains the clusterProfiler enrich-object for each cluster. This can be used as input for further clusterProfiler visualisations. Please refer to the clusterProfiler documentation.
+  The outputs all have a slot called "enrichment"(find the results at hcobject[["integrated_output"]][["enrichments"]]), that contains the clusterProfiler enrich-object for each cluster. This can be used as input for further clusterProfiler visualisations. Please refer to the clusterProfiler documentation.
+  
+  PLEASE NOTE: hCoCena is accessing databases in this step. The gene sets in the databases change over time as the biological insight progresses. Hence, results might change over time based on changes to the database. That is not a bug in the hCoCena tool.
   
 ```{r GO profiling, fig.width = 10, fig.height = 7, message = F, warning = F}
 

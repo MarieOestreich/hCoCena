@@ -53,9 +53,9 @@ visualize_gene_expression <- function(genes, name = NULL, width = 15, height = 1
     }) %>% base::unlist()
     
     # re-arrange columns according to heatmap order:
-    colorder = colnames(hcobject$integrated_output$GFC_all_layers)[-ncol(hcobject$integrated_output$GFC_all_layers)]
-    colorder <- colorder[ComplexHeatmap::column_order(hcobject$integrated_output$cluster_calc$heatmap_cluster)]
-    mexp <- mexp[,colorder]
+    #colorder = colnames(hcobject$integrated_output$GFC_all_layers)[-ncol(hcobject$integrated_output$GFC_all_layers)]
+    #colorder <- colorder[ComplexHeatmap::column_order(hcobject$integrated_output$cluster_calc$heatmap_cluster)]
+    #mexp <- mexp[,colorder]
     
     hm <- pheatmap::pheatmap(mexp, 
                               scale = "row", 

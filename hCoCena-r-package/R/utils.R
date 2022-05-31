@@ -2,14 +2,14 @@
 #' @noRd
 
 get_cluster_colours <- function(){
-
+  
   col_vec <- c("coral", "gold", "steelblue", "lightgreen", "turquoise", "plum", "maroon", "seagreen", "wheat", "slategray", "lightblue", 
-                     "orchid", "darkgreen",  "darkorange", "darkgrey", "indianred", "pink", "sandybrown",   "khaki",  "darkblue", "cadetblue",
-                     "greenyellow","cyan", "thistle", "darkmagenta",  "red", "blue", "green", "yellow", "brown", "black", "darkgoldenrod", 
-                     "cornsilk", "firebrick", "deeppink", "dodgerblue", "lightpink", "midnightblue", "slategray", "aquamarine", "chocolate", 
-                     "darkred", "navy", "olivedrab", "peachpuff", "tomato", "snow")
+               "orchid", "darkgreen",  "darkorange", "darkgrey", "indianred", "pink", "sandybrown",   "khaki",  "darkblue", "cadetblue",
+               "greenyellow","cyan", "thistle", "darkmagenta",  "red", "blue", "green", "yellow", "brown", "black", "darkgoldenrod", 
+               "cornsilk", "firebrick", "deeppink", "dodgerblue", "lightpink", "midnightblue", "slategray", "aquamarine", "chocolate", 
+               "darkred", "navy", "olivedrab", "peachpuff", "tomato", "snow")
   return(col_vec)
-
+  
 }
 
 
@@ -28,38 +28,38 @@ leiden_clustering <- function(g, num_it){
   
   # run Leiden algorithm ion network:
   partition <- leidenAlg::leiden.community(graph = g, n.iterations = num_it)
-
+  
   # extract found clusters and the genes belonging to them:
   clusters_df <- base::data.frame(cluster = base::as.numeric(partition$membership), gene = partition$names)
-
+  
   # the algo start enumeration at 0, increase to 1 for easier comaptibility with R fucntions:
   clusters_df$cluster <- clusters_df$cluster + 1
-
+  
   # get gene counts per cluster:
   cluster_frequencies <- base::table(clusters_df$cluster) %>% base::as.data.frame() 
-
+  
   # detect clusters large enough to be kept:
   clusters_to_keep <- dplyr::filter(cluster_frequencies, Freq >= hcobject[["global_settings"]][["min_nodes_number_for_cluster"]]) %>% 
     dplyr::pull(., "Var1")
   
   # define white clusters (those that are too small to be kept):
   clusters_df_white <- dplyr::filter(clusters_df, !cluster %in% clusters_to_keep)
-
+  
   # remove white clusters:
   clusters_df <- dplyr::filter(clusters_df, cluster %in% clusters_to_keep)
-
+  
   # inform how many clusters and accordingly how many genes were lost due to insufficient cluster size:
   print(base::paste0(base::length(base::unique(clusters_df_white$cluster)), 
-               " cluster/s was/were smaller than the set minimum cluster size and therefore discarded.",
-               " This removes ", base::nrow(clusters_df_white), " genes."))
-
-
+                     " cluster/s was/were smaller than the set minimum cluster size and therefore discarded.",
+                     " This removes ", base::nrow(clusters_df_white), " genes."))
+  
+  
   out <- base::lapply(base::unique(clusters_df$cluster), function(x){
-
+    
     # extract genes present in current cluster:
     genes <- dplyr::filter(clusters_df, cluster == x) %>% 
       dplyr::pull(., "gene")
-
+    
     # cluster name:
     col_clusters <- base::paste0("cluster ", x)
     # number of genes in cluster:
@@ -82,15 +82,15 @@ leiden_clustering <- function(g, num_it){
       base::paste0(., collapse = ",")
     # collect all information:
     out <- base::data.frame(clusters = col_clusters,
-                      gene_no = col_gene_no,
-                      gene_n = col_gene_n,
-                      cluster_included = col_cluster_included,
-                      color = col_color,
-                      conditions = col_conditions,
-                      grp_means = col_grp_means,
-                      vertexsize = 3)
+                            gene_no = col_gene_no,
+                            gene_n = col_gene_n,
+                            cluster_included = col_cluster_included,
+                            color = col_color,
+                            conditions = col_conditions,
+                            grp_means = col_grp_means,
+                            vertexsize = 3)
     return(out)
-    }) %>% rlist::list.rbind()
+  }) %>% rlist::list.rbind()
   return(out)
 }
 
@@ -250,7 +250,7 @@ read_anno <- function(file, rown = T, sep = "\t", sample_col){
 #'  Therefore, the Pearson correlation values can be weighted with Bayesian correlation values. To do so, set the “bayes”-parameter to TRUE. Default is FALSE, using only Pearson correlations.
 #' @param alpha A numeric value from [0,1]. Allows to adjust the strength of the Bayes weighting: For alpha = 0 the Pearson correlation values remain unaltered, for alpha = 1 the Pearson correlation value and the Bayesian correlation value contribute equally to the final correlation.
 #' @param prior An integer, either 2 or 3, using prior 2 or 3 for the Bayes weighting as described in "Bayesian correlation analysis for sequence count data" by Sánchez-Taltavull et al. (2016).
-#' @param corr_method Method for the correlation calculation if bayes is FALSE. Either 'pearson' or 'spearman'.
+#' @param corr_method Method for the correlation calculation if bayes is FALSE. Either 'pearson', 'spearman' or 'rho'(single-cell).
 #' @noRd
 
 
@@ -331,6 +331,20 @@ run_expression_analysis_1_body <- function(x,
 }
 
 
+#' Calculate p-value
+#' 
+#' Calculates the p-value ofd a given value based on a reference distribution.
+#' @param x Value for which to calculate the p-value
+#' @param mu The mean of the reference population
+#' @param sigma The standard deviation of the reference population
+#' @param n The size of the reference population
+#' @noRd
+
+calc_pval <- function(x, mu, sigma, n){
+  z <- (x-mu)/(sigma/base::sqrt(n))
+  p <- stats::pnorm(-base::abs(z))
+  return(p)
+}
 
 
 
@@ -381,7 +395,22 @@ pwcorr <- function(dd2,
       base::rownames(correlation_matrix[["r"]]) <- base::colnames(correlation_matrix[["r"]])
       base::rownames(correlation_matrix[["P"]]) <- base::colnames(correlation_matrix[["P"]])
     }else{
-      correlation_matrix <- Hmisc::rcorr(base::as.matrix(dd2), type=corr_method)
+      if(corr_method == 'rho'){
+        correlation_matrix <- list()
+        correlation_matrix[["r"]] <- propr::perb(counts = base::as.matrix(dd2), select = colnames(dd2))@matrix
+        pmat <- lapply(as.vector(correlation_matrix[["r"]]), 
+                       calc_pval, 
+                       mu = mean(correlation_matrix[["r"]]),
+                       sigma = sd(correlation_matrix[["r"]]), 
+                       n = ncol(correlation_matrix[["r"]])*nrow(correlation_matrix[["r"]])) %>% 
+          unlist() %>% 
+          matrix(., nrow = nrow(correlation_matrix[["r"]]), byrow = FALSE)
+        colnames(pmat) <- colnames(correlation_matrix[["r"]])
+        rownames(pmat) <- rownames(correlation_matrix[["r"]])
+        correlation_matrix[["P"]] <- pmat
+      }else{
+        correlation_matrix <- Hmisc::rcorr(base::as.matrix(dd2), type=corr_method)
+      }
     }
   }else if(base::length(import) == 1 & !base::is.null(import)){
     # import matrix
@@ -392,7 +421,22 @@ pwcorr <- function(dd2,
     base::rownames(correlation_matrix[["r"]]) <- base::colnames(correlation_matrix[["r"]])
     base::rownames(correlation_matrix[["P"]]) <- base::colnames(correlation_matrix[["P"]])
   }else{
-    correlation_matrix <- Hmisc::rcorr(as.matrix(dd2), type=corr_method)
+    if(corr_method == 'rho'){
+      correlation_matrix <- list()
+      correlation_matrix[["r"]] <- propr::perb(counts = base::as.matrix(dd2), select = colnames(dd2))@matrix
+      pmat <- lapply(as.vector(correlation_matrix[["r"]]), 
+                     calc_pval, 
+                     mu = mean(correlation_matrix[["r"]]),
+                     sigma = sd(correlation_matrix[["r"]]), 
+                     n = ncol(correlation_matrix[["r"]])*nrow(correlation_matrix[["r"]])) %>% 
+        unlist() %>% 
+        matrix(., nrow = nrow(correlation_matrix[["r"]]), byrow = FALSE)
+      colnames(pmat) <- colnames(correlation_matrix[["r"]])
+      rownames(pmat) <- rownames(correlation_matrix[["r"]])
+      correlation_matrix[["P"]] <- pmat
+    }else{
+      correlation_matrix <- Hmisc::rcorr(base::as.matrix(dd2), type=corr_method)
+    }
   }
   
   # export correlations and p-values for future re-runs to avoid the bottleneck:
@@ -736,7 +780,7 @@ reshape_cutoff_stats <- function(cutoff_stats){
 
 run_expression_analysis_2_body <- function(x, grouping_v, plot_HM, method, additional_anno){
   
-  print(base::paste0("Currently processed dataset: ", hcobject[["layers_names"]][x]))
+  message("...Currently processed dataset: ", hcobject[["layers_names"]][x], '...')
 
   hcobject[["layer_specific_outputs"]][[base::paste0("set",x)]][["part2"]][["heatmap_out"]] <<- heatmap_network_genes(x = x, 
                                                               plot_HM = plot_HM,
@@ -767,7 +811,7 @@ heatmap_network_genes <- function(x, plot_HM, method, additional_anno){
   # extract annotation data for current data layer:
   info_dataset <- hcobject[["data"]][[base::paste0("set",x,"_anno")]]
 
-  print(base::paste0("...creating heatmap of top variable entities..."))
+  message("...creating heatmap of network genes...")
 
   # collect function output:
   output <- list()
@@ -802,8 +846,8 @@ heatmap_network_genes <- function(x, plot_HM, method, additional_anno){
   output[["filt_cutoff_data"]] <- filt_cutoff_data
   
   
-  print(base::paste0("After using the optimal cutoff of ", hcobject[["cutoff_vec"]][x], " the number of edges = ", 
-              base::nrow(filt_cutoff_data), " and the number of nodes = ", base::nrow(filt_cutoff_counts)))
+  message("...After using the optimal cutoff of ", hcobject[["cutoff_vec"]][x], " the number of edges = ", 
+              base::nrow(filt_cutoff_data), " and the number of nodes = ", base::nrow(filt_cutoff_counts), '...')
  
   col_list <- list()
   for(i in all_conditions){
@@ -895,7 +939,7 @@ gfc_calc <- function(grp, trans_norm, group_means){
 
 GFC_calculation <- function(info_dataset, grouping_v, x) {
   
-  print(base::paste0("...calculate Group-Fold-Changes..."))
+  message("...calculate Group-Fold-Changes...")
   
   if(!base::is.null(grouping_v)){
     info_dataset[["grpvar"]] <- info_dataset[,base::c(grouping_v)]
@@ -903,15 +947,15 @@ GFC_calculation <- function(info_dataset, grouping_v, x) {
   }
   else if(base::intersect(hcobject[["global_settings"]][["voi"]], base::colnames(info_dataset)) %>% base::length() > 0){
     
-    print(base::paste0("Variable: '", hcobject[["global_settings"]][["voi"]],
-                "' will be used as grouping variables."))
+    message("...Variable: '", hcobject[["global_settings"]][["voi"]],
+                "' will be used as grouping variables...")
     
     info_dataset[["grpvar"]] <- purrr::pmap(info_dataset[base::intersect(hcobject[["global_settings"]][["voi"]], base::colnames(info_dataset))],
                                                         paste, sep = "-") %>% base::unlist()
   } else {
     
-    print(base::paste0("the first column in the metadata will be used as the grouping variable",
-                "since the voi_id is not present in the metadata"))
+    message("...The first column in the metadata will be used as the grouping variable",
+                "since the voi_id is not present in the metadata...")
 
     info_dataset[["grpvar"]] = info_dataset[,1]
     
@@ -920,7 +964,7 @@ GFC_calculation <- function(info_dataset, grouping_v, x) {
   
   if(hcobject[["global_settings"]][["control"]] == "none"){
 
-      print(base::paste0("GFC calculation with foldchange from mean"))
+      message("...GFC calculation with foldchange from mean...")
 
       # GFC calculation with foldchange from mean
       norm_data_anno <- base::merge(base::t(hcobject[["layer_specific_outputs"]][[base::paste0("set",x)]][["part1"]][["topvar"]]), base::subset(info_dataset, select = base::c("grpvar")), by = "row.names", all.x = T)
@@ -952,7 +996,7 @@ GFC_calculation <- function(info_dataset, grouping_v, x) {
       return(GFC_all_genes)
 
   }else{
-    print(base::paste0("GFC calculation with foldchange from control"))
+    message("...GFC calculation with foldchange from control...")
     # GFC calculation with foldchange from control
     norm_data_anno = base::merge(base::t(hcobject[["layer_specific_outputs"]][[base::paste0("set",x)]][["part1"]][["topvar"]]), base::subset(info_dataset, select = base::c("grpvar")), by = "row.names", all.x = T)
     
@@ -1133,6 +1177,9 @@ merge_GFCs <- function(GFC_when_missing = -hcobject[["global_settings"]][["range
 #' @noRd
 
 fix_dir <- function(directory){
+  if(directory == FALSE){
+    return(directory)
+  }
   # check existance of path:
   if(!base::dir.exists(directory)){
     stop( "The directory '", directory, "' does not exist.")

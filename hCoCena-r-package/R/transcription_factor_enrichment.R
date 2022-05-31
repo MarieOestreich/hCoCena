@@ -19,7 +19,7 @@ TF_overrep <- function(){
         base::strsplit(., split = ",") %>%
         base::unlist(.)
       
-      url = "https://amp.pharm.mssm.edu/chea3/api/enrich/"
+      url = "https://maayanlab.cloud/chea3/api/enrich/"  #"https://amp.pharm.mssm.edu/chea3/api/enrich/"
       encode = "json"
       payload = list(query_name = "myQuery", gene_set = genes)
       

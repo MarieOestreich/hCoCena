@@ -1,21 +1,37 @@
 ---
-title: "hCoCena_V2.0_main"
+title: "hCoCena showcase (main)"
 author: "Marie Oestreich"
-date: "26 2 2021"
+date: "22 5 2022"
 output:
   html_document: default
   pdf_document: default
 ---
 
+
+# Introduction
+  This markdown, in combination with the markdown 'hcocena_satellite_showcase.Rmd', illustrates how to use the hCoCena tool on a small example using two data sets.
+Both data sets measure the transcription profiles of Macrophages when treated with Interferon Gamma, Interleukin-4 or at Baseline (untreated). 
+However, one data set was generated using RNA-Sequencing, while the other was generated using a Microarray.
+
+The main-Markdown contains the base workflow of hCoCena. For a fully functional analysis, these steps are mandatory unless declared otherwise (flagged with OPTIONAL). Feel free to expand upon this base analysis with the provided satellite functions or your custom scripts. You will find detailed information on the satellite functions as well as intermediate outputs that you can use for your custom analyses in the repository's Wiki (https://github.com/MarieOestreich/hCoCena/wiki).
+
+
 # Pre-Integration Phase
+  This part includes all the steps that lead up to the actual integration procedure of the data sets.
 
 ## load hCoCena package
+
+  First, we are going to load the hCoCena R-package. For information on how to download and install the package, please refer to the 'install_hcocena.R' script that you can find in the Github repository.
+
 ```{r}
 library(hcocena)
 ```
 
 
 ## create hCoCena-Object
+
+  Now, we will create the 'hcobject'. This is an object structure specifically designed for the hCoCena analysis and it will store all intermediate results of the analysis in a unified structure. For more information on the structure, please refer to the Wiki: https://github.com/MarieOestreich/hCoCena/wiki/Structure-of-the-hcobject.
+  The object will automatically be instantiated by running the function below, no parameters need to be set. 
 
 ```{r}
 init_object()
@@ -24,45 +40,61 @@ init_object()
 
 ## Working directory setup
 
-  Please set the following parameters to strings that state the path to your scripts, data, etc.:
+  In this step, we will indicate to hCoCena where it can find everything we need for the analysis: Our gene expression data (a.k.a. count data), our meta data (a.k.a. annotation), and our reference files. These will be used for example for highlighting transcription factors or doing an enrichment analysis. For more information on the different files and how to pass them to the function, please refer to the following section of the wiki: https://github.com/MarieOestreich/hCoCena/wiki/General-Backgroud-Information#count-files-annotation-files--reference-files.
   
-  + dir_scripts: path of your script folder
-  + dir_count_data: path of your count files folder
-  + dir_annotation: path of your annotation files folder
-  + dir_reference_files: path of your reference files folder
-  + dir_output: path to the location in which the save folder for this analyses should be created
+  In this case, we will not read the expression data and the annotation from files, but instead use an R-environment that we have prepared for this showcase. You can find the environment in the repository's 'showcase' folder, it is named 'start_envo.RData'. After downloading, we can load the environment like this:
+  
+```{r}
+
+# You will have to adapt the path depending on where you saved the downloaded file:
+
+load("~/Work/Repos/hCoCena/showcase/start_envo.RData")
+
+```
+  
+
+  Because we are not reading our data from file, we will set the directory for the count data ('dir_count_data'), as well as for the annotation ('dir_annotation') to FALSE.
+My reference files are stored at "~/Work/hcocena/reference_files/", hence the parameter 'dir_reference_files' is set accordingly. The files can be downloaded from the Github repository folder named 'reference files', after downloading, the path must be adapted according to where it was downloaded to.
+
+  Lastly, we define a directory where we want to create our analysis folder. I have a folder ("~/Work/hcocena/analyses/") where I store the results for my different analyses. In this folder, hCoCena will create a new folder specifically for this analysis and store all plots and other outputs there.
+
 
 ```{r}
 
-init_wd(dir_count_data = "D:/PhD_backups/PhD/hCoCena/test_case/data/",
-        dir_annotation = "D:/PhD_backups/PhD/hCoCena/test_case/annotation/",
-        dir_reference_files = "D:/PhD_backups/PhD/hCoCena/test_case/reference_files/",
-        dir_output = "D:/PhD_backups/PhD/hCoCena/test_case/")
+init_wd(dir_count_data = FALSE,
+        dir_annotation = FALSE,
+        dir_reference_files = "~/Work/hcocena/reference_files/", #the folder that contains the reference files
+        dir_output = "~/Work/hcocena/analyses/")
 
 ```
 
-  Ensure that all directories exist with the following chunk:
+
+  The following function assures that all directories given above exist and fixes missing slashes at the end. It requires no parameters. If a directory does not exist (might just be a typo!) it will produce an error.
+
 
 ```{r check directories}
 check_dirs()
 ```
 
-  Please define a folder in which your results shall be saved using the 'name' variable. 
-  The folder is created automatically, if it does not yet exist in the set directory.
+
+  In this step we are going to choose a name for the folder that hCoCena creates for our analysis (in the directory that we set in init_wd: dir_output).
+Since this is a showcase of the tool, I'll call it 'showcase':
+  
   
 ```{r, warning = FALSE}
 
-init_save_folder(name = "outputs_test")
+init_save_folder(name = "showcase")
 
 ```
 
 
 ## Defining layers
 
-  For detailed information regarding file structures and different options for providing data, refer to the  chapter on "defining layers" in the information file.
+  Now, we provide the count and annotation data for the different datasets (a.k.a. 'layers'): The function 'define_layers()' accepts as input a named list. The names of the list elements should be descriptive of the respective dataset. Here, we name one list element 'Array' (it will hold the Microarray data and annotation) and the other 'RNA_seq' (RNA-seq data and annotation). Each of these elements is set to be a vector of 2 strings: the first being the name of the count data file/dataframe, the second for the annotation file/dataframe. Since we are loading the data from dataframe in the environment (not from files), the given strings (e.g., "data_array", "annotation_array") are the names of objects. For detailed information regarding the structures of the count and annotation data as well as different options for providing data, refer to the function documentation by entering ?hcocena::define_layers into the console.
+  
+  Secondly, we provide the names of supplementary files containing Transcription Factors (parameter 'Tf'), Hallmark enrichment terms (parameter 'Hall') and GO enrichment terms (parameter 'Go'). These files should be stored in the 'reference_files' folder that we set in 'init_wd()'. The files can be downloaded from the Github repository, you will find them in the folder named 'reference files'.
     
 ```{r defining Omics Layers}
-# NOTE: We are loading the data from existing R objects, that you will find in the stat_envo.RData, which you will have to load before running this cell.
 
 define_layers(list( Array = c("data_array", "annotation_array"),
                    RNA_Seq = c("data_seq", "annotation_seq") )
@@ -79,7 +111,7 @@ set_supp_files(Tf = "TFcat.txt",
 
 ## Define global settings
 
-  For detailed information regarding the different settings, refer to the  chapter on "defining global settings" in the information file.
+  In this chunk, we will define the so-called 'global settings'. Those are all the setting that are dataset INDEPENDENT. In our case, we will set the organism to be 'human' since we have human macrophage data for our showcase (so far, only human and mouse are supported). We will set the control keyword to 'none'. We do have controls in our dataset that we could use as a reference for the Group-Fold-Change analyses later on, but then we loose the control group since they serve as a reference. Here, we will leave them in to include them in our results, since it will allow us to compare baselines from the two datasets as well (this is a personal anlysis choice). As the variable of interest, we choose 'merged' since that is the name of the column in both our annotation dataframes that we want to use to group the samples. It contains information on the treatment of a sample as well as the dataset the sample originates from. We further define that we are only interested in networks and clusters that contain at least 25 genes, we set the range of the GFC values to be from -2 to 2, the layout algorithm to be 'cytoscape' (you can change this, if you don't have Cytoscape installed, however the networks always look more readable and high-quality with  Cytoscape) and data_in_log is TRUE, because our gene expression data has been logged to the base of 2 in the pre-processing. For more detailed information regarding the different settings and what other options are available, enter ?hcocena::set_global_settings into the console.
 
 ```{r global settings}
 
@@ -89,7 +121,7 @@ set_global_settings(organism = "human",
     								min_nodes_number_for_network = 25, 
     								min_nodes_number_for_cluster = 25,
     								range_GFC = 2.0,
-    								layout_algorithm = "layout_with_fr",
+    								layout_algorithm = "cytoscape",
     								data_in_log = T)
 
 ```
@@ -98,34 +130,36 @@ set_global_settings(organism = "human",
 
 ## Data import
 
-  For detailed information regarding the different parameters, refer to the  chapter on "data import" in the information file.
+  After telling hCoCena where to find all the data and supplementary data that we need for the analysis, they are now loaded and stored in the 'hcobject', where the tool can access them throughout the analysis without cluttering the environment. The 'read_data()' function offers a series of parameters, such as the separator of the count file etc. however, since we are loading our data from data frames in our environment, none of these parameters are necessary.
+  If you are reading your data from file and are looking for more detailed information regarding the different parameters, enter ?hcocena::read_data into the console.
 
 
 ```{r data import}
 
-read_data(sep_counts = "\t",
-           sep_anno = "\t", 
-           gene_symbol_col = "SYMBOL",
-           sample_col = "SampleID",
-           count_has_rn = F,
-           anno_has_rn = F)
+read_data()
 
 read_supplementary()
 
 ```
 
 
+## OPTIONAL: Data-Based Definition of Top Most Variant Genes
+
+  This chunk in the satellite markdown ('hcocena_satellite_showcase.Rmd') calculates the inflection points in the ranked variances to filter for the top most variant genes in a data-driven way. Running this function yields top 7700 for the array data and 7664 for the RNA-Seq data as the highest data-driven top-most-variant genes cutoff. 
+
 ## Define layer-specific settings
 
-  For detailed information regarding the different settings, refer to the  chapter on "defining layer-specific settings" in the information file.
+  After defining the global (i.e., dataset-independent) settings further up, we will now define those specific to each dataset. We start with selecting the top-most-variable genes to keep based on the chunk we just ran in the satellite markdown. You can also set this to 'all' if you don't want to pre-filter your genes! We further set that we are interested in all gene pairs with minimum correlation 0.9 and that we want to inspect 50 different cutoffs between 0.9 and 1. We don't want to see the node-degree distribution plot for all of those 50 cutoffs, so we set that parameter to FALSE.
+  For detailed information regarding the different settings, enter ?hcocena::set_layer_settings into the console.
   
 
 ```{r layer-specific settings}
 
+# 7700 and 7664 are selected based on suggestions by the suggest_topvar() function in the satellite markdown
 set_layer_settings(top_var = c(7700, 7664), 
-                                     min_corr = rep(0.9, length(hcobject[["layers"]])), 
-                                     range_cutoff_length = rep(50, length(hcobject[["layers"]])),
-                                     print_distribution_plots = rep(F, length(hcobject[["layers"]])))
+                                     min_corr = rep(0.9, 2), 
+                                     range_cutoff_length = rep(50, 2),
+                                     print_distribution_plots = rep(F, 2))
 
 
 ```
@@ -144,7 +178,8 @@ set_layer_settings(top_var = c(7700, 7664),
 
 ## Data processing part I
 
-  For detailed information on what happens in this step and what parameters can be set, please refer to the section "Data processing part I" in the information file.
+  This function executes the first part of the data processing procedure. It leads up to choosing the correlation cut-off for each layer. All datasets will be filtered for their most variant genes as defined in the layer-specific settings. After this filtering step, the pair-wise correlation for all pairs of genes is calculated. You can set the correlation metric that you would like to use with the 'corr_method' parameter. Options are: 'pearson', 'spearman' and 'rho' (Skinnider et al., https://doi.org/10.1038/s41592-019-0372-4). We will pick 'spearman'.
+  A set of statistics will be calculated for the set range of cut-off values that aim to facilitate the cut-off choice. This includes determining the number of graph components resulting from creating a network when cutting the data with the respective cut-off, as well as the number of nodes and edges this network comprises. The last parameter that is evaluated is the R²-value of the data to a linear regression through the logged degree distribution for the given network. These parameters will be visualised in the next step.
   
 
 ```{r expression analysis up to cutoff}
@@ -158,29 +193,30 @@ run_expression_analysis_1(corr_method = "spearman")
 
   Choosing the cut-offs:
 
-  Set a correlation cut-off for each of your data sets. To aid this choice, the following plot presents the different cut-off statistics per data set. For more details on cut-offs and the information in this plot as well as the parameters, refer to the information file, section "Choosing the cut-offs".
+  To aid the choice of a correlation cut-off for each of the datasets, the following plot presents the different cut-off statistics calculated in the previous step per data set.
+  Generally, we have the choice between a static and an interactive plot. The interactive plot (which we use here by setting interactive = TRUE) is a widget that allows you to slide through the different cutoffs and highlight the corresponding statistics. However, if R-Studio is having difficulties displaying widgets, use interactive = FALSE for a simple ggplot.
   
   
-```{r fig.height = 8, fig.width = 8}
+```{r fig.height = 8, fig.width = 10}
 
 plot_cutoffs(interactive = T)
 
 ```
   
   
-  The order in which the cutoffs are subsequently defined must correspond to the order in which the layers have previously been specified.
+  Given the drastic drop in R-squared value as well as the number of genes for cutoffs higher than 0.982 in both datasets, we will select 0.982 as our cutoff in both cases:
   
 
 ```{r choose cutoff}
 
-set_cutoff(cutoff_vector = c(0.982,0.982))
+set_cutoff(cutoff_vector = c(0.982, 0.982))
 
 ```
 
 
   Checking the scale-free topology
 
-  For each dataset, the logged degree distribution and the linear regression are plotted to visualise the preservation of the scale-free topology criterion.
+  To get an impression of the degree distribution in our cut networks, for each dataset the logged degree distribution and the linear regression are plotted. Linear behaviour would imply perfect scale-free topology. Although broader tails to the right of the plot are very often observed in gene-expression data.
 
 
 ```{r plot degree distribution for chosen cutoff, message = F, warning = F}
@@ -190,9 +226,7 @@ plot_deg_dist()
 ```
 
 
-  Heatmap of top most variant genes and GFC calculation
-
-  For detailed information on what happens in this step as well as on the parameter settings, please refer to the section on "Data processing part II" in the information file.
+  The following chunk plots a heatmap for each dataset that shows only the genes left in the network after applying the respective correlation-cutoff. it also calculates the Group-Fold-Changes (GFCs) for all the genes left in the networks.
 
 
 ```{r, fig.width = 10, fig.height = 7}
@@ -207,7 +241,9 @@ run_expression_analysis_2()
 
   Integrating the layer-specific networks
   
-  Here, the previously constructed layer-specific networks will be integrated into one network that combines the information. The integration can be based on the union or intersection of layer-specific networks and edges that are present in several networks at different length can be included based on different options. For detailed information, please refer to the information file, section "Layer integration".
+  Here, the previously constructed layer-specific networks will be integrated into one network that combines the information. The integration can be based on the union or intersection of layer-specific networks and edges that are present in several networks at different lengths can be included based on different options. For detailed information on available parameters, run ?hcocena::build_integrated_network in the console. 
+  
+  Here, we are integrating our datasets using the union of their 2 networks (mode = "u"), meaning we will also include nodes and edges that are only present in one dataset but not the other. This way, we get an idea not only of shared aspects across the datasets but also of those that are unique. If an edge (i.e., a cut-off exceeding correlation between two genes) exists in both networks, and the correlation value is not the same in both cases, we are using the minimum edge weight (correlation) in the integrated network (multi_edges = "min"). This way, we are being cautious about the true importance of their co-expression and we are making the network less dense (lower correlations = longer edges), making it easier to find true communities (i.e. clusters of densely connected genes across datasets) in the network.
   
 ```{r merge networks}
 
@@ -223,9 +259,11 @@ build_integrated_network(mode = "u", multi_edges = "min")
 
   Clustering the network
   
-  In this step, modules of strong co-expression will be detected in the network and their expression pattern across conditions will be represented in a GFC heatmap. For detailed information on module detection and different parameter settings, refer to the "Module detection" section in the information file.
+  In this step, modules of strong co-expression will be detected in the network and their expression pattern across conditions will be represented in a GFC heatmap. For more information on the available clustering algorithms, run ?hcocena::cluster_calculation and visit the repository's Wiki pages.
   NOTE: You can export your clustering for future use. To do so, please refer to the satellite script, section "Export clustering".
   NOTE 2: Instead of clustering your network here, you can alternatively import a clustering model. To do so, please use the import_clusters() function (see satellite markdown for infos).
+  
+  Here, we will cluster our integrated network using the default clustering algorithm (Leiden). We will run the clustering 50 times (no_of_iterations = 50), we will leave the maximum cluster count per gene at its default value (1), meaning we only keep genes that can be associated with the same cluster in all runs. Plot_cluster_heatmap() then plots the result.
   
 ```{r compute clusters and plot module heatmap}
 cluster_calculation(no_of_iterations = 50)
@@ -235,13 +273,12 @@ plot_cluster_heatmap()
 
 ## OPTIONAL: correlate numeric or categorical meta data with clusters
 
-  To see how numeric or categorical meta information correlates to the expression patterns of a cluster, refer to the satellite markdown, section "Correlate numeric meta data with clusters" and "Correlate categorical meta data with clusters", respectively.
+  (Not used in this showcase example) To see how numeric or categorical meta information correlates to the expression patterns of a cluster, refer to the satellite markdown, section "Correlate numeric meta data with clusters" and "Correlate categorical meta data with clusters", respectively.
 
 
 ## Plotting the network coloured by module
 
-NOTE: due to issues in the communication between R and Cytoscape, please refer to the satellite markdown, section "Cytoscape" if you chose Cytoscape as the option for the network layout in your global settings.
-
+  Since we picked Cytoscape as the layout option for our network, we will not plot the network with genes coloured according to cluster here. Instead, we move to the 'Cytoscape' section in the hcocena_satellite_showcase.Rmd. There, we export the network to Cytoscape, apply the layout there, and re-import the network into R. This is a bit of extra work, but the superiority of the layouts in Cytoscape is worth it. If you don't have Cytoscape installed or are happy with a visually less intuitive network (please note that the layout has no effect on the clusters themselves or on the subsequent analysis results! It is simply to generate a visual 2D representation of the network that shows the spatial arrangement of the clusters more or less well!), you can use this chunk instead of going to the satellite markdown. However, then you also have to  set the 'layout_algorithm' parameter in the 'set_global_settings()' function (quite at the top) to 'layout_with_fr'. 
 
 ```{r plot network coloured by cluster, fig.width=10, fig.height=7}
 # Cytoscape option used (see satellite markdown)
@@ -257,12 +294,12 @@ NOTE: due to issues in the communication between R and Cytoscape, please refer t
 
 ## OPTIONAL: Hub gene detection
 
-  Hub gene detection is available for clusters or the entire network. Please refer to the satellite markdown, section "Hub gene detection".
+  Hub gene detection is available for selected clusters or the entire network. Please refer to the satellite markdown, section "Hub gene detection".
   
 
 ## OPTIONAL: Colour single cluster
 
-  You can plot the network with a cluster of interest highlighted (colour and node size), using the chunk in the satellite markdown in section "Colour single cluster".
+  (Not used in this showcase example) You can plot the network with a cluster of interest highlighted (colour and node size), using the chunk in the satellite markdown in section "Colour single cluster".
   
 
 ## OPTIONAL: Visualize specific gene set
@@ -273,28 +310,27 @@ NOTE: due to issues in the communication between R and Cytoscape, please refer t
   
 ## OPTIONAL: Colour specific gene set
 
-  You further have the option of replotting the network and highlighting a particular gene set. To do so, please refer to the satellite markdown, section "Colour specific gene set".
+  (Not used in this showcase example) You further have the option of replotting the network and highlighting a particular gene set. To do so, please refer to the satellite markdown, section "Colour specific gene set".
 
 
 ## OPTIONAL: Evaluating the different community detection algorithms
 
-  If you want to compare the default louvain clustering to other algorithms, please refer to the section "Evaluating different community detection algorithms" in the satellite markdown.
+  (Not used in this showcase example) If you want to compare the default louvain clustering to other algorithms, please refer to the section "Evaluating different community detection algorithms" in the satellite markdown.
   
   
 ## OPTIONAL: Regrouping samples
 
-  If you noticed that the variable of interest ("voi") does not go well with the clustering of the heatmaps returned by "run_expression_analysis_2" or as seen in the PCA, when evaluating different clustering algorithms, you can assign new group labels to your samples based on the data structure rather than meta information. In this case, please refer to the section "Regrouping samples" in the satellite markdown.
+  (Not used in this showcase example) If you noticed that the variable of interest ("voi") does not go well with the clustering of the heatmaps returned by "run_expression_analysis_2" or as seen in the PCA, when evaluating different clustering algorithms, you can assign new group labels to your samples based on the data structure rather than meta information. In this case, please refer to the section "Regrouping samples" in the satellite markdown.
   
 
 ## OPTIONAL: Module analysis and meta-annotation
 
-  You have the option to analyse the genes present in the found modules with regard to shared functionality or enriched gene sets as well as to annotate the groups of samples with meta information from your annotation file. To do so, please refer to the satelite markdown, section "Module analysis and meta-annotation".
+  (Not used in this showcase example) You have the option to analyse the genes present in the found modules with regard to shared functionality or enriched gene sets as well as to annotate the groups of samples with meta information from your annotation file. To do so, please refer to the satelite markdown, section "Module analysis and meta-annotation".
   
 
 ## OPTIONAL: Final module heatmap and network
 
-  If you regrouped your samples AND/OR conducted any steps in the "Module analysis and meta-annotation"-section, the heatmap will be replotted updated with respect to the grouping and annotation information along with the network coloured by modules. Of You have neither regrouped your sample nor analysed your modules or samples groups, this chunk will provide the exact same output as the previous one and can be skipped. 
-  For detailed information on which parameters are available here and how to set them, please refer to the information file, section "Plotting the final heatmap".
+  (Not used in this showcase example) If you regrouped your samples AND/OR conducted any steps in the "Module analysis and meta-annotation"-section, the heatmap will be replotted updated with respect to the grouping and annotation information along with the network coloured by modules. If You have neither regrouped your sample nor analysed your modules or samples groups, this chunk will provide the exact same output as the previous one and can be skipped. 
   
 ```{r create cluster heatmap, fig.width = 10, fig.height = 7}
 
@@ -307,52 +343,58 @@ plot_integrated_network(layout = hcobject[["integrated_output"]][["cluster_calc"
 
 ## OPTIONAL: Replotting of heatmap with different variable of interest
 
-  In case you are uncertain if the "voi" you have initially chosen is the right choice for your analysis, you are given the opportunity to replot the final module heatmap based on a different annotation variable. To do so, please refer to the section "Replotting of heatmap with different variable of interest" in the satellite markdown.
+  (Not used in this showcase example) In case you are uncertain if the "voi" you have initially chosen is the right choice for your analysis, you are given the opportunity to replot the final module heatmap based on a different annotation variable. To do so, please refer to the section "Replotting of heatmap with different variable of interest" in the satellite markdown.
 
 
 ## OPTIONAL: Plotting network coloured by GFC
 
-  You can re-plot the network for each condition colouring the nodes according to their GFC in the different conditions. To do so, please refer to the section "Plotting network coloured by GFC" in the satellite markdown.
+  You can re-plot the network for each condition (variable of interest) colouring the nodes according to their GFC in the different conditions. To do so, please refer to the section "Plotting network coloured by GFC" in the satellite markdown. 
+  In our showcase example, this will show us, how the GFCs of each gene change across the different treatments of the Macrophages and between Array and RNA-Seq.
   
   
 ## Database enrichment
 
-  Enrichment analysis of the found modules using the GO, KEGG, Hallmark and Reactome databases. For detailed information on parameter settings, please refer to the information file, section "Database enrichment".
-  The outputs all have a slot called "enrichment", that contains the clusterProfiler enrich-object for each cluster. This can be used as input for further clusterProfiler visualisations. Please refer to the clsuterProfiler documentation.
+  Enrichment analysis of the found modules using the GO, KEGG, Hallmark and Reactome databases. For detailed information on parameter settings, please run ?hcocena::go_profiling, ?hcocena::kegg_profiling, ?hcocena::Hallmark_profiling and ?hcocena::reactome_profiling.
+  
+
+  
+  PLEASE NOTE: hCoCena is accessing databases in this step. The gene sets in the databases change over time as the biological insight progresses. Hence, results might change over time based on changes to the database. That is not a bug in the hCoCena tool.
+  
+  
+  
+  In out showcase, we are interested in getting the GO- and HALLMARK enrichment for select clusters of interest (we selected them because of their stimulus-specific activation patterns). In both cases, we want to retrieve the top 5 most enriched terms (may be less if less than 5 terms are enriched). We also filter the results for those with adjusted p-values not higher than 0.1. The GO-profiling has a few more additional parameters: The Gene Ontology is designed a a tree with 'levels'. To avoid enriching terms that are simply parent categories of other enriched terms, we have to define a level from which to use the terms. ?hcocena::go_profiling will provide more information on this.
+  We set 'fast' to FALSE because we wan to access the database at its current state (takes a little longer, but is the most comprehensive resource) rather than using the downloaded, static .gmt file from the reference files.
+  
   
 ```{r GO profiling, fig.width = 10, fig.height = 7, message = F, warning = F}
 
 go_profiling(level = 4, top = 5, ont = "BP", fast = F, 
              clusters = c("turquoise", "lightblue", "gold", "darkorange", "plum", "orchid", "wheat", "lightgreen"), qval = 0.1)
 
-# kegg_profiling(top = 5, 
-#              clusters = c("turquoise", "lightblue", "gold", "darkorange", "plum", "orchid", "wheat", "lightgreen", "sandybrown"), qval = 0.1)
 
 Hallmark_profiling(top = 5, 
              clusters = c("turquoise", "lightblue", "gold", "darkorange", "plum", "orchid", "wheat", "lightgreen"), qval = 0.1)
 
-# reactome_profiling(top = 5, 
-#              clusters = c("turquoise", "lightblue", "gold", "darkorange", "plum", "orchid", "wheat", "lightgreen", "sandybrown"), qval = 0.1)
 
 ```
 
 
 ## Transcription factor enrichment analyses with ChEA3
 
-  Transcription factor enrichment analysis for each module and for the entire network based on ChEA3 (Kennan AB, 2019). For more details, refer to the information file, section "Transcription factor enrichment analyses with ChEA3". The plots can be found in the save folder, descriptions on how to read them can also be found in the mentioned information file section.
+  Transcription factor enrichment analysis for each module and for the entire network based on ChEA3 (Kennan AB, 2019). For more details, refer to the function documentations with ?hcocena::TF_overrep and ?hcocena::TF_enrich_all. The plots can be found in the save folder, descriptions on how to read them can be found running ?hcocena::plot_TF_enrichment.
+  
+  PLEASE NOTE: hCoCena is accessing a database in this step. The contents of the database may change over time as the biological insight progresses. Hence, results might change over time based on changes to the database. That is not a bug in the hCoCena tool. It may also occur, that the database is momentarily unavailable due to maintanence or updates. Before running the chunk, you can check, if the server is running properly or currently under maintenance using this link: https://maayanlab.cloud/chea3/api/enrich/.
+  
   
 ```{r , fig.width = 10, fig.height = 7}
 
 TF_overrep()
-TF_enrich_all(topTF = 100, topTarget = 30)
 
 plot_TF_enrichment()
 
 ```
   
-## OPTIONAL: Transcription factor query
 
-  To query the output of the "TF_enrich_all()" function for a specific transcription factor, please refer to the satellite markdown, section "Transcription factor query". 
   
 
 

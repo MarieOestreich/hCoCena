@@ -22,7 +22,7 @@
 #' 	Therefore, the Pearson correlation values can be weighted with Bayesian correlation values. To do so, set the “bayes”-parameter to TRUE. Default is FALSE, using only Pearson correlations.
 #' @param alpha A numeric value from 0 to 1. Allows to adjust the strength of the Bayes weighting: For alpha = 0 the Pearson correlation values remain unaltered, for alpha = 1 the Pearson correlation value and the Bayesian correlation value contribute equally to the final correlation.
 #' @param prior An integer, either 2 or 3, using prior 2 or 3 for the Bayes weighting as described in "Bayesian correlation analysis for sequence count data" by Sánchez-Taltavull et al. (2016).
-#' @param corr_method Default is "pearson", but can alternatively be set to "spearman".
+#' @param corr_method Default is "pearson", but can alternatively be set to "spearman" or "rho" in case of single-cell data (according to Skinnider et al., https://www.nature.com/articles/s41592-019-0372-4).
 #' @export
 
 run_expression_analysis_1 <- function(padj = "none",
@@ -32,8 +32,8 @@ run_expression_analysis_1 <- function(padj = "none",
 										prior = 2, 
 										alpha = 0.5,
 										corr_method = "pearson"){
-	if(!corr_method %in% c("pearson","spearman")){
-		stop("Parameter 'corr_method' must be either 'pearson' or 'spearman'.")
+	if(!corr_method %in% c("pearson","spearman", "rho")){
+		stop("Parameter 'corr_method' must be either 'pearson', 'spearman' or 'rho'.")
 	}
 	# run first part of expression analysis for each data layer:
 	for(x in 1:base::length(hcobject[["layers"]])){
