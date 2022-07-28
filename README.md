@@ -23,7 +23,7 @@ hCoCena was written with user-friendliness and customizability in mind. We are d
 
 ## Showcase
 To rerun the showcase example from our paper you have two options:
-1) Use our docker image that comes with hcocena installed and includes all required data. When a container is launched, it starts a local RStudio Server session in your browser that let's you try out the tool on a small exmaple.
+1) Use our docker image that comes with hcocena installed and includes all required data. When a container is launched, it starts a local RStudio Server session in your browser that let's you try out the tool on a small exmaple. Pull the image using `docker pull mo126/hcocena:showcase`.
 2) To run it in an RStudio session on your local machine, install hcocena as described further up. Then, you can find the main- and satellite-markdowns in the `showcase` folder, including an `R` environment named `start_envo.RData`. This should be loaded at the very beginning, since it includes the pre-processed transcriptomics datasets and their annotation files. Note that the markdowns only contain the function showcased in the paper, which is only a small part of the available analysis options that you can find in `hcocena_satellite.Rmd`. It also need to be pointed out, that some of the analysis functions depend on other packages and data bases. Especially databases are frequently updated, thus, while they progress, the results may vary slightly from the originally reported ones. While hCoCena itself, including it's integration strategy, are reproducible, these 3rd party-services are something we simply cannot control.
 
 ## Wiki
