@@ -3,8 +3,8 @@
 hCoCena is an R-package that allows you to integrate and jointly analyse multiple transcriptomic datasets or simply analyse a single dataset if you don't want to do any data integration! hCoCena uses network representations of the data as the basis for integration. You can find more details of how that works in our paper (currently still in the submission process). Below, you will find some info on how to install the package and tips for using it. 
 
 ## Installation
-1) download the repo
-2) use the code snipped in the install_hcocena.R to install the package in R Studio
+To install hcocena from this repo, run the codeline provided in the `install_hcocena.R` script.
+To install versioned dependencies, use the script `install_versioned_dependecies.R`.
 
 ## Usage
 **hCoCena is divided into 2 parts:** 
