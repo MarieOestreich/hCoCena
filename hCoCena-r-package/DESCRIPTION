@@ -56,7 +56,6 @@ Imports:
     org.Hs.eg.db (>= 3.12.0),
     pheatmap (>= 1.0.12),
     plotly (>= 4.9.4.1),
-    propr (>= 4.2.6),
     purrr (>= 0.3.4),
     RColorBrewer (>= 1.1-2),
     RCy3 (>= 2.10.2),
