@@ -38,11 +38,16 @@ TF_overrep <- function(){
         if(i > base::length(results$TF)){
           next
         }else{
-          tf <- results$TF[i]
-          overlapping_genes <- results$Overlapping_Genes[i]%>%
-            base::strsplit(., split = ",")%>%
-            base::unlist(.)
-          resultlist[[tf]] <- list(TF = tf, targets = overlapping_genes[1:topTarget])
+          if(results$Overlapping_Genes[i] == ""){
+            next
+          }else{
+            tf <- results$TF[i]
+            overlapping_genes <- results$Overlapping_Genes[i]%>%
+              base::strsplit(., split = ",")%>%
+              base::unlist(.)
+            resultlist[[tf]] <- list(TF = tf, targets = overlapping_genes[1:topTarget])
+          }
+
         }
       }
       
@@ -129,6 +134,9 @@ plot_TF_enrichment <- function(){
   exp_plot_list <- list()
   TFs <- NULL
   for(c in base::names(hcobject[["integrated_output"]][["TF_overrep_results"]])){
+    if (length(hcobject[["integrated_output"]][["TF_overrep_results"]][[c]]) == 0){
+      next
+    }
     tmp <- NULL
     exp_plot_df <- base::names(hcobject[["integrated_output"]][["TF_overrep_results"]][[c]])
     for(t in base::names(hcobject[["integrated_output"]][["TF_overrep_results"]][[c]])){
@@ -140,16 +148,22 @@ plot_TF_enrichment <- function(){
                            ClusterTF = base::rep(clt, base::length(hcobject[["integrated_output"]][["TF_overrep_results"]][[c]][[t]][["targets"]])))
       
       base::colnames(tmp_df) <- base::c("TF", "Target", "ClusterTF")
+      
+      tmp_df <- tmp_df[stats::complete.cases(tmp_df), ]
+      
       tmp <- base::rbind(tmp, tmp_df)
       exp_plot_df <- base::c(exp_plot_df, hcobject[["integrated_output"]][["TF_overrep_results"]][[c]][[t]][["targets"]])
     }
     exp_plot_df <- base::as.data.frame(base::unique(exp_plot_df))
     base::colnames(exp_plot_df) <- c
+    
     dflist[[c]] <- tmp
     exp_plot_list[[c]] <- exp_plot_df
   }
   
-  
+  if(length(dflist) == 0){
+    stop("No transcription factors found to be enriched for any of the clusters.")
+  }
   TFs <- base::unique(base::as.character(TFs))
   edgelist <- hcobject[["integrated_output"]][["combined_edgelist"]]
   edgelist$merged <- base::paste0(base::as.character(edgelist$V1), base::as.character(edgelist$V2))
@@ -166,6 +180,7 @@ plot_TF_enrichment <- function(){
     graphics::layout(base::matrix(1:2, 1, 2)) 
     exp_p <- plot_TF(exp_plot_list[[n]])
     ComplexHeatmap::draw(exp_p)
+    
     # for(j in c(i1, i2)){
       # catching 'out-of-bounds':
       # if(j > length(dflist)){
@@ -183,6 +198,7 @@ plot_TF_enrichment <- function(){
       NodeToColor <- base::rbind(base::data.frame(gene = fromto$TF, color = fromto$ClusterTF),
                            base::data.frame(gene = fromto$Target, color = base::rep(base::names(dflist)[n], base::nrow(fromto)))) %>%
         base::unique()
+      
       
       # create plot factors:
       factors <- base::unique(base::as.character(NodeToColor$gene))
@@ -203,10 +219,11 @@ plot_TF_enrichment <- function(){
         }
         
       })
+      
       # add links
       for(i in 1:base::nrow(fromto)) {
         merged <- base::paste0(base::as.character(fromto[i,1]), base::as.character(fromto[i,2]))
-        if(merged %in% edgelist$merged | merged %in% edgelist $merged2){
+        if(merged %in% edgelist$merged | merged %in% edgelist$merged2){
           g <- circlize::circos.link(sector.index1 =  base::as.character(fromto[i,1]), c(0.45, 0.55),
                            sector.index2 =  base::as.character(fromto[i,2]), c(.92), 
                            col = base::as.character(fromto[i,3]),
