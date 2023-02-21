@@ -93,16 +93,20 @@ TF_enrich_all <- function(topTF = 100,
   # extract those from meanRank since meanRank scored as best method:
   resultlist <- list()
   for(i in 1:topTF){
-    
+    if(i > length(results$TF)){
+      break
+    }
     tf <- results$TF[i]
     overlapping_genes <- results$Overlapping_Genes[i]%>%
       base::strsplit(., split = ",")%>%
       base::unlist(.)
+    
     # genes to which this TF has an edge:
     edgelist <- dplyr::filter(hcobject[["integrated_output"]][["combined_edgelist"]], V1 == tf | V2 == tf)
     edgelist <- base::c(edgelist[,1] %>% base::as.character(), edgelist[,2] %>% base::as.character())
     edgelist <- edgelist[!edgelist == base::as.character(i)]
     
+    message('the transcription factor ', tf, ' has ', length(overlapping_genes), ' targets. It has a co-expression above the cutoff with ', length(overlapping_genes[overlapping_genes %in% edgelist]), ' of these targets. The others will be discarded.')
     overlapping_genes <- overlapping_genes[overlapping_genes %in% edgelist]
 
     if(base::length(overlapping_genes) > topTarget){
