@@ -20,6 +20,7 @@ hCoCena was written with user-friendliness and customizability in mind. We are d
 
 
 ![hCoCenaFig1](https://user-images.githubusercontent.com/50077786/158609782-2048c06e-0420-4c3f-8680-5d99f91d6905.jpg)
+*Marie Oestreich, Lisa Holsten, Shobhit Agrawal, Kilian Dahm, Philipp Koch, Han Jin, Matthias Becker, Thomas Ulas, hCoCena: horizontal integration and analysis of transcriptomics datasets, Bioinformatics, Volume 38, Issue 20, 15 October 2022, Pages 4727–4734, https://doi.org/10.1093/bioinformatics/btac589*
 
 ## Showcase
 To rerun the showcase example from our paper you have three options:
