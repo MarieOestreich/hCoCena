@@ -1,3 +1,4 @@
+install.packages('remotes')
 remotes::install_version(package = "BiocManager", version = "1.30.18", upgrade="never")
 remotes::install_version(package = "Cairo", version = "1.5-15", upgrade="never")
 remotes::install_version(package = "circlize", version = "0.4.15", upgrade="never")
