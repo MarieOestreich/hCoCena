@@ -11,12 +11,12 @@
 #' @param clusters Either "all" (default) or a vector of cluster colours for which the hub detection should be performed.
 #' @export
 
-find_hubs <- function(top = 10, 
+find_hubs <- function(clusters = c("all"),
+                      top = 10, 
                       save = F, 
                       tree_layout = F, 
                       TF_only = F, 
-                      Plot = F,
-                      clusters = c("all")){
+                      Plot = F){
   
   gtc <- GeneToCluster()
   if(clusters[1] == "all"){
@@ -48,37 +48,31 @@ find_hubs <- function(top = 10,
   for(col in base::colnames(hubs_df)){
     if(base::file.exists(base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]], "/hubgenes.xlsx"))){
       wb <- openxlsx::loadWorkbook(base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]], "/hubgenes.xlsx"))
+      if(col %in% wb$sheet_names) { openxlsx::removeWorksheet(wb, col) }
       openxlsx::addWorksheet(wb, col)
-      openxlsx::writeData(wb, sheet = col, dplyr::select(hubs_df, col), colNames = T)
+      openxlsx::writeData(wb, sheet = col, dplyr::select(hubs_df, tidyselect::all_of(col)), colNames = T)
       openxlsx::saveWorkbook(wb,base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]], "/hubgenes.xlsx"),overwrite = T)
     }else{
-      openxlsx::write.xlsx(dplyr::select(hubs_df, col), 
+      openxlsx::write.xlsx(dplyr::select(hubs_df, tidyselect::all_of(col)), 
                        file = base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]], "/hubgenes.xlsx"), 
                        sheetName = col, 
                        colNames = TRUE, rowNames = F, append = FALSE, overwrite = T)
     }
 
     if("hub_out" %in% base::names(hcobject[["satellite_outputs"]])){
-      hcobject[["satellite_outputs"]][["hub_out"]][[col]] <<- dplyr::select(hubs_df, col)
+      hcobject[["satellite_outputs"]][["hub_out"]][[col]] <<- dplyr::select(hubs_df, tidyselect::all_of(col))
     }else{
       hcobject[["satellite_outputs"]][["hub_out"]] <<- list()
-      hcobject[["satellite_outputs"]][["hub_out"]][[col]] <<- dplyr::select(hubs_df, col)
+      hcobject[["satellite_outputs"]][["hub_out"]][[col]] <<- dplyr::select(hubs_df, tidyselect::all_of(col))
     }
-    
   }
   
-  
-  
- 
   #plot_hub_exp(hubs_df = hubs_df)
   for(col in base::colnames(hubs_df)){
     if(!all(dplyr::pull(hubs_df, col)== " ")){
       visualize_gene_expression(genes = dplyr::pull(hubs_df, col), name = base::paste0(col, "_hubs"), width = 25)
     }
-    
   }
-  
-  
 }
 
 

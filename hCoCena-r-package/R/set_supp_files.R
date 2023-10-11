@@ -9,7 +9,7 @@
 #' @param Reactome A file name for a .gmt Reactomte database file. You can find one in the reference file folder in the repository.
 #' @export
 
-set_supp_files <- function (Tf = NULL, Hall = NULL, Go = NULL, Kegg = NULL, Reactome = NULL) 
+set_supp_files <- function (Tf = NULL, Hallmark = NULL, Go = NULL, Kegg = NULL, Reactome = NULL) 
 {
-  hcobject[["supplement"]] <<- base::c(Tf, Hall, Go, Kegg, Reactome)
+  hcobject[["supplement"]] <<- base::list(Tf = Tf, Hallmark = Hallmark, Go = Go, Kegg = Kegg, Reactome = Reactome)
 }

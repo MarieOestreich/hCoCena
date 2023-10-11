@@ -19,7 +19,7 @@ hcocena::suggest_topvar()
 
 # Checking data distribution
 
-  To get a better feeling for the datasets and to detect possible outliers or prominent differences within datasets, the distribution of count values across all samples per dataset can be visualized. Here we choose to visualize them as boxplots (alternative option is frequency distributions), we set log_2 = FALSE, because our data is already logged and we don't wish to log the scale again for plotting. And since we don't only want the plots to be saved as PDFs, but also have them printed hier into the markdown, we set plot = TRUE.
+  To get a better feeling for the datasets and to detect possible outliers or prominent differences within datasets, the distribution of count values across all samples per dataset can be visualized. Here we choose to visualize them as boxplots (alternative option is frequency distributions), we set log_2 = FALSE, because our data is already logged and we don't wish to log the scale again for plotting. And since we don't only want the plots to be saved as PDFs, but also have them printed here into the markdown, we set plot = TRUE.
 
 
 ```{r data distribution plots, warning = FALSE}
@@ -80,7 +80,7 @@ import_layout_from_cytoscape()
 
 ```{r Plot network}
 
-plot_integrated_network( layout = hcobject[["integrated_output"]][["cluster_calc"]][["layout"]] )
+plot_integrated_network(layout = hcobject[["integrated_output"]][["cluster_calc"]][["layout"]] )
 
 ```
 
@@ -99,9 +99,9 @@ get_cluster_scores()
 
 # Hub gene detection
 
-  Hub gene detection is available for selected clusters or the entire network. Hub genes are determined using a combined ranking based on weighted degree centrality, weighted closeness centrality and weighted betweenness centrality. A high quality version of the plots will be available in your save folder. 
+  Hub gene detection is available for selected clusters or the entire network. Hub genes are determined using a combined ranking based on weighted degree centrality, weighted closeness centrality and weighted betweenness centrality. A high quality version of the plots will be available in your save folder.
   
-  As an example, we will look for hub genes in the cluster 'lightblue'. We want the top 10 hub candidates (based on the centrality hub score), we don't want to save the network with the hub genes highlighted, the network should not be plotted using a tree layout, we are only interested in hubs that are also transcription factors (if there are less than 10 TFs in the cluster, we will get less than 10 hub candidates) and we set plot to TRUE so that the cluster network with hubs highlighted will be plotted (but not save since save = FALSE).
+  As an example, we will look for hub genes in the cluster 'lightblue'. We want the top 10 hub candidates (based on the centrality hub score), we don't want to save the network with the hub genes highlighted, the network should not be plotted using a tree layout, we are only interested in hubs that are also transcription factors (if there are less than 10 TFs in the cluster, we will get less than 10 hub candidates) and we set plot to TRUE so that the cluster network with hubs highlighted will be plotted (but not saved since save = FALSE).
         
   Mean expression values of found hubs will be plotted as a heatmap per cluster, rows are scaled. 
 A table of hubs per cluster will be exported as an Excel file. This table is also returned as output to the hcobject.
@@ -109,13 +109,14 @@ A table of hubs per cluster will be exported as an Excel file. This table is als
 
   
 ```{r Hub gene detection}
+# @Kilian: Currently, the network plot is also overprinted by the result of visualize_gene_expression. Hopefully the problem resolves once the visualize_gene_expression function works properly (below)
 
-
-find_hubs(top = 10, 
+find_hubs(clusters = c("lightblue"),
+          top = 10, 
           save = F, 
           tree_layout = F, 
           TF_only = "TF", 
-          Plot = T, clusters = c("lightblue"))
+          Plot = T)
 
 ```
   
@@ -127,11 +128,15 @@ find_hubs(top = 10,
   
   Here, we plot genes identified by Xue et al., 2014 (https://doi.org/10.1016/j.immuni.2014.01.006) as IL4-induced and IFNg-induced genes.
   
+
 ```{r visualize specific gene set}
+# @Kilian: Currently plotted on top of each other/not plotted
+visualize_gene_expression(genes = c("STAT6", "MAFG", "ETS2", "RUNX1", "TFE3", "HES6", "IRF4", "FOXQ1", 
+                                    "CREB5", "SPN", "SOX8", "SIP1", "FOXD2", "GTF3C3", "BATF3", "EGR3", "FOS"), 
+                          name = "IL4_genes")
 
-visualize_gene_expression(genes = c("STAT6", "MAFG", "ETS2", "RUNX1", "TFE3", "HES6", "IRF4", "FOXQ1", "CREB5", "SPN", "SOX8", "SIP1", "FOXD2", "GTF3C3", "BATF3", "EGR3", "FOS"), name = "IL4_genes")
-
-visualize_gene_expression(genes = c("MAFA", "IRF9", "IRF7", "STAT2", "STAT1", "NFIX", "ELF4", "ETV7"), name = "IFNg_genes")
+visualize_gene_expression(genes = c("MAFA", "IRF9", "IRF7", "STAT2", "STAT1", "NFIX", "ELF4", "ETV7"), 
+                          name = "IFNg_genes")
 
 ```
   

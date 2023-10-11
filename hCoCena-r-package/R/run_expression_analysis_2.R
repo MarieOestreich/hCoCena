@@ -16,7 +16,8 @@ run_expression_analysis_2 <- function(grouping_v = NULL, plot_HM = T, method = "
     							   grouping_v = grouping_v, 
 							       plot_HM = plot_HM, 
 							       method = method, 
-							       additional_anno = additional_anno[[x]])
+							       additional_anno = additional_anno[[x]], 
+    							   title = hcobject[["layers_names"]][x])
   }
 }
 

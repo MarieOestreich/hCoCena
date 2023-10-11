@@ -778,14 +778,15 @@ reshape_cutoff_stats <- function(cutoff_stats){
 #'  If for some of the data sets you don’t wish any further annotation, you can set the corresponding list slot to NULL. Default is NULL.
 #' @noRd
 
-run_expression_analysis_2_body <- function(x, grouping_v, plot_HM, method, additional_anno){
+run_expression_analysis_2_body <- function(x, grouping_v, plot_HM, method, additional_anno, title){
   
   message("...Currently processed dataset: ", hcobject[["layers_names"]][x], '...')
 
   hcobject[["layer_specific_outputs"]][[base::paste0("set",x)]][["part2"]][["heatmap_out"]] <<- heatmap_network_genes(x = x, 
                                                               plot_HM = plot_HM,
                                                               method = method, 
-                                                              additional_anno = additional_anno)
+                                                              additional_anno = additional_anno, 
+                                                              title = title)
 
   
   hcobject[["layer_specific_outputs"]][[base::paste0("set",x)]][["part2"]][["GFC_all_genes"]] <<- GFC_calculation(info_dataset = hcobject[["data"]][[base::paste0("set", x, "_anno")]],
@@ -805,7 +806,7 @@ run_expression_analysis_2_body <- function(x, grouping_v, plot_HM, method, addit
 #' @param additional_anno A vector of strings giving other columns from the annotation to be annotated in the heatmap in addition to the variable of interest.
 #' @noRd
 
-heatmap_network_genes <- function(x, plot_HM, method, additional_anno){
+heatmap_network_genes <- function(x, plot_HM, method, additional_anno, title){
 
 
   # extract annotation data for current data layer:
@@ -869,7 +870,7 @@ heatmap_network_genes <- function(x, plot_HM, method, additional_anno){
   if(plot_HM){
     heatmap_filtered_counts <- pheatmap::pheatmap(mat = filt_cutoff_counts ,
                                                   color = base::rev(RColorBrewer::brewer.pal(11, "RdBu")),
-                                                  scale = "row",
+                                                  scale = "row", 
                                                   cluster_rows = T,
                                                   cluster_cols = T,
                                                   annotation_colors = col_list,
@@ -877,6 +878,7 @@ heatmap_network_genes <- function(x, plot_HM, method, additional_anno){
                                                   fontsize = 8,
                                                   show_rownames = F, 
                                                   show_colnames = T, 
+                                                  main = title,
                                                   annotation_names_col = T, 
                                                   clustering_distance_cols = "euclidean", 
                                                   clustering_method = method)
@@ -893,6 +895,7 @@ heatmap_network_genes <- function(x, plot_HM, method, additional_anno){
                                                   fontsize = 8,
                                                   show_rownames = F, 
                                                   show_colnames = T, 
+                                                  main = title,
                                                   annotation_names_col = T, 
                                                   clustering_distance_cols = "euclidean", 
                                                   clustering_method = method)
@@ -1714,7 +1717,7 @@ sample_wise_cluster_expression <- function(set){
 #' @noRd
 
 
-hub_node_detection <- function(cluster, top = 10, save = T, tree_layout = F, TF_only = F, Plot){
+hub_node_detection <- function(cluster, top, save, tree_layout, TF_only, Plot){
   
   
   # extract chosen cluster as an isolated network:
@@ -1727,10 +1730,10 @@ hub_node_detection <- function(cluster, top = 10, save = T, tree_layout = F, TF_
     return(hub_out)
   }
 
-  # vertex size (10 for hub, 3 for non-hub):
+  # vertex size (5 for hub, 3 for non-hub):
   vertex_size <- base::lapply(igraph::V(g)$name, function(node){
     if(node %in% hub_out$hub_nodes){
-      6
+      5
     }else{
       3
     } 
@@ -1761,9 +1764,11 @@ hub_node_detection <- function(cluster, top = 10, save = T, tree_layout = F, TF_
   igraph::V(g)$label = NA
   igraph::V(g)$color = hub_out$colour_df$colour
   # plot network:
-  network_with_labels(network = g, gene_labels = hub_out$hub_nodes, 
+  network_with_labels(network = g, 
+                      gene_labels = hub_out$hub_nodes, 
                       gene_ranks = base::c(1:base::length(hub_out$hub_nodes)),
-                      l = l, label_offset = 10, 
+                      l = l, 
+                      label_offset = 10, 
                       title = base::c(cluster, top), save = save, Plot = Plot)
   
 
@@ -2031,7 +2036,9 @@ network_with_labels <- function(network, gene_labels, gene_ranks, l, label_offse
     
     if(x[2] %in% base::as.character(new_genes_df$name)){
       
-      "#2B8CBE"
+      # "#2B8CBE"
+      "black"
+      
     }else{
       "lightgrey"
     }
@@ -2051,7 +2058,9 @@ network_with_labels <- function(network, gene_labels, gene_ranks, l, label_offse
         dplyr::pull(., label)
       tfs <- hcobject[["supplementary_data"]][["TF"]][, base::grep(base::colnames(hcobject[["supplementary_data"]][["TF"]]), pattern = hcobject[["global_settings"]][["organism"]], ignore.case = T)]
       if(tmp_gene_n %in% tfs){
-        "goldenrod"
+        # "goldenrod"
+        "black"
+        
       }else{
         igraph::get.vertex.attribute(network2, name = "color", index = tmp_gene_n)
       }

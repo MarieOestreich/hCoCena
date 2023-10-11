@@ -40,8 +40,8 @@ init_object()
 
 ```{r}
 
-init_wd(dir_count_data = "PATH_TO_FOLDER_TAHT_HOLDS_YOUR_GENE_EXPRESSION_TABLES",
-        dir_annotation = "PATH_TO_FOLDER_TAHT_HOLDS_YOUR_ANNOTATION_TABLES",
+init_wd(dir_count_data = "PATH_TO_FOLDER_THAT_HOLDS_YOUR_GENE_EXPRESSION_TABLES",
+        dir_annotation = "PATH_TO_FOLDER_THAT_HOLDS_YOUR_ANNOTATION_TABLES",
         dir_reference_files = "PATH_TO_REFERENCE_FILES_FOLDER",
         dir_output = "PATH_TO_FOLDER_WHERE_HCOCENA_SHOULD_SAVE_ALL_ANALYSIS_OUTPUTS")
 
@@ -69,13 +69,12 @@ init_save_folder(name = "outputs")
     
 ```{r defining Omics Layers}
 
-define_layers(list( RNA_Seq = c("data_batch_donor.txt", "annotation_seq.txt") ,
-                    Array = c("data.txt", "annotation_array.txt"))
-              )
+define_layers(list(RNA_Seq = c("data_batch_donor.txt", "annotation_seq.txt") ,
+                   Array = c("data.txt", "annotation_array.txt")))
 
 set_supp_files(Tf = "TFcat.txt", 
-               Hall = "h.all.v6.1.symbols.gmt", 
-               Go = "c5.bp.v7.0.symbols.gmt")
+               Hall = "h.all.v2023.1.Hs.symbols.gmt", 
+               Go = "c5.go.bp.v2023.1.Hs.symbols.gmt")
 
 ```
 
