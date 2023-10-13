@@ -34,12 +34,15 @@ plot_sample_distributions(plot_type = "boxplot",
 # PCA 
 
   We will also plot a PCA of our data: One PCA will be created per dataset, we want to use all genes (other options would be 'topvar' (only top-most-variant genes) or 'network' (only genes present in the co-expression network)). For details on these options, see ?hcocena::PCA.
-  We want to colour the samples by our variable of interest (which in both cases was an annotation column called 'merged').
+  We want to colour the samples by our variable of interest (which in both cases was an annotation column called 'merged'). You may define a user-defined color vector (optional).
     
 
 ```{r PCA, warning = FALSE}
 
-PCA(which = "all", color_by = c("merged", "merged"))
+PCA(which = "all", 
+    color_by = c("merged", "merged"), 
+    cols = c("IL4_array" = "#00A1D5FF", "IFNg_array" = "#79AF97FF", "baseline_array" = "#374E55FF",
+             "IL4_seq" = "#00A1D5FF", "IFNg_seq" = "#79AF97FF", "baseline_seq" = "#374E55FF"))
 
 ```
 
@@ -47,7 +50,7 @@ PCA(which = "all", color_by = c("merged", "merged"))
 
 # Cytoscape
 
-  Model layout in Cytoscape (https://cytoscape.org/download.html). Cytoscape MUST BE OPEN for this to work. To shorten the time needed, please read the docs to the export_to_cytoscape function (?export_to_cytoscape). 
+  Model layout in Cytoscape (https://cytoscape.org/download.html). Cytoscape MUST BE OPEN for this to work. **To shorten the time needed, please read the docs to the export_to_cytoscape function (?export_to_cytoscape).** 
   
   NOTE: instead of re-running this yourself (might take some time to load), you can also open the Cytoscape session that we created throughout the run and inspect the network. That will be faster and will still allow you to import the network coordinates from Cytoscape back into R (you can then immediately jump to 'import_layout_from_cytoscape' and can skip the export). You can find the Cytescape file of the network in the repository's 'showcase' folder, it is called 'cytoscape_session.cys'.
   
@@ -78,9 +81,9 @@ import_layout_from_cytoscape()
   
   After importing the coordinates, they can be used to plot the network. Since the Cytoscape coordinates are saved under hcobject[["integrated_output"]][["cluster_calc"]][["layout"]], we will provide that to the layout parameter.
 
-```{r Plot network}
+```{r Plot network, fig.width=10, fig.height=7}
 
-plot_integrated_network(layout = hcobject[["integrated_output"]][["cluster_calc"]][["layout"]] )
+plot_integrated_network(layout = hcobject[["integrated_output"]][["cluster_calc"]][["layout"]])
 
 ```
 
@@ -109,14 +112,13 @@ A table of hubs per cluster will be exported as an Excel file. This table is als
 
   
 ```{r Hub gene detection}
-# @Kilian: Currently, the network plot is also overprinted by the result of visualize_gene_expression. Hopefully the problem resolves once the visualize_gene_expression function works properly (below)
 
 find_hubs(clusters = c("lightblue"),
           top = 10, 
-          save = F, 
           tree_layout = F, 
-          TF_only = "TF", 
-          Plot = T)
+          TF_only = "TF",
+          save = T, 
+          plot = T)
 
 ```
   
@@ -130,13 +132,13 @@ find_hubs(clusters = c("lightblue"),
   
 
 ```{r visualize specific gene set}
-# @Kilian: Currently plotted on top of each other/not plotted
+
 visualize_gene_expression(genes = c("STAT6", "MAFG", "ETS2", "RUNX1", "TFE3", "HES6", "IRF4", "FOXQ1", 
                                     "CREB5", "SPN", "SOX8", "SIP1", "FOXD2", "GTF3C3", "BATF3", "EGR3", "FOS"), 
-                          name = "IL4_genes")
+                          name = "Geneset_IL4")
 
 visualize_gene_expression(genes = c("MAFA", "IRF9", "IRF7", "STAT2", "STAT1", "NFIX", "ELF4", "ETV7"), 
-                          name = "IFNg_genes")
+                          name = "Geneset_IFNg")
 
 ```
   
@@ -154,17 +156,3 @@ visualize_gene_expression(genes = c("MAFA", "IRF9", "IRF7", "STAT2", "STAT1", "N
 plot_GFC_network()
 
 ```
-
-
-
-# Write session info
-
-  The parameters of the analysis session are written to a text file to enhance reproducibility without keeping and sharing a markdown for every analysis. It documents the name of the files and their location used as count and annotation files, the global settings set in the session, the layer settings set for each dataset as well as the cut-offs and the clustering algorithm used. 
-  The file can be found in the save-folder.
-  
-```{r write session info}
-
-write_session_info()
-
-```
-

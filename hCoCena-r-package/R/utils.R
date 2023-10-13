@@ -776,22 +776,24 @@ reshape_cutoff_stats <- function(cutoff_stats){
 #' @param method The method used for clustering the heatmap in the pheatmap function. Default is "complete".
 #' @param additional_anno A list, with one slot per data set. A slot contains a vector of column names from that data set’s annotation file that you wish to annotate with. 
 #'  If for some of the data sets you don’t wish any further annotation, you can set the corresponding list slot to NULL. Default is NULL.
+#' @param cols A named list of color vectors. The list names need to match the chosen annotation column names. Default is NULL which uses implemented colors.
 #' @noRd
 
-run_expression_analysis_2_body <- function(x, grouping_v, plot_HM, method, additional_anno, title){
+run_expression_analysis_2_body <- function(x, grouping_v, plot_HM, method, additional_anno, title, cols){
   
   message("...Currently processed dataset: ", hcobject[["layers_names"]][x], '...')
 
   hcobject[["layer_specific_outputs"]][[base::paste0("set",x)]][["part2"]][["heatmap_out"]] <<- heatmap_network_genes(x = x, 
-                                                              plot_HM = plot_HM,
-                                                              method = method, 
-                                                              additional_anno = additional_anno, 
-                                                              title = title)
+                                                                                                                      plot_HM = plot_HM,
+                                                                                                                      method = method, 
+                                                                                                                      additional_anno = additional_anno, 
+                                                                                                                      title = title,
+                                                                                                                      cols = cols)
 
   
   hcobject[["layer_specific_outputs"]][[base::paste0("set",x)]][["part2"]][["GFC_all_genes"]] <<- GFC_calculation(info_dataset = hcobject[["data"]][[base::paste0("set", x, "_anno")]],
-                                                                           grouping_v = grouping_v,
-                                                                           x = x)
+                                                                                                                  grouping_v = grouping_v,
+                                                                                                                  x = x)
   
 }
 
@@ -804,9 +806,10 @@ run_expression_analysis_2_body <- function(x, grouping_v, plot_HM, method, addit
 #' @param plot_HM A Boolean. Whether or not to plot the heatmap. 
 #' @param method The method used for clustering in the pheatmap function.
 #' @param additional_anno A vector of strings giving other columns from the annotation to be annotated in the heatmap in addition to the variable of interest.
+#' @param cols A named list of color vectors. The list names need to match the chosen annotation column names. Default is NULL which uses implemented colors.
 #' @noRd
 
-heatmap_network_genes <- function(x, plot_HM, method, additional_anno, title){
+heatmap_network_genes <- function(x, plot_HM, method, additional_anno, title, cols){
 
 
   # extract annotation data for current data layer:
@@ -840,7 +843,8 @@ heatmap_network_genes <- function(x, plot_HM, method, additional_anno, title){
   # remove edges from removed nodes from the cutoff data:
   filt_cutoff_data <- dplyr::filter(filt_cutoff_data, V1 %in% igraph::V(filt_cutoff_graph)$name & V2 %in% igraph::V(filt_cutoff_graph)$name)
   
-  filt_cutoff_counts <- hcobject[["layer_specific_outputs"]][[base::paste0("set",x)]][["part1"]][["ds"]][base::row.names(hcobject[["layer_specific_outputs"]][[base::paste0("set",x)]][["part1"]][["ds"]]) %in% base::names(igraph::V(filt_cutoff_graph)),]
+  filt_cutoff_counts <- hcobject[["layer_specific_outputs"]][[base::paste0("set",x)]][["part1"]][["ds"]][base::row.names(hcobject[["layer_specific_outputs"]][[base::paste0("set",x)]][["part1"]][["ds"]]) %in% 
+                                                                                                           base::names(igraph::V(filt_cutoff_graph)),]
   corresp_info = info_dataset[base::rownames(base::t(hcobject[["layer_specific_outputs"]][[base::paste0("set", x)]][["part1"]][["topvar"]])) %in% base::rownames(info_dataset),]
   
   output[["filt_cutoff_graph"]] <- filt_cutoff_graph
@@ -851,61 +855,53 @@ heatmap_network_genes <- function(x, plot_HM, method, additional_anno, title){
               base::nrow(filt_cutoff_data), " and the number of nodes = ", base::nrow(filt_cutoff_counts), '...')
  
   col_list <- list()
-  for(i in all_conditions){
-    tmp_col <- ggsci::pal_nejm(alpha = 1)(8)
-    # if there are more groups than colours, expand palette:
-    if(base::length(base::unique(hcobject[["data"]][[paste0("set", x, "_anno")]][,i])) > base::length(tmp_col)){
-      tmp_col <- grDevices::colorRampPalette(tmp_col)(base::length(base::unique(hcobject[["data"]][[base::paste0("set", x, "_anno")]][,i])))
-    }else{
-      tmp_col <- tmp_col[1:base::length(base::unique(hcobject[["data"]][[base::paste0("set", x, "_anno")]][,i]))]
-    }
-    base::names(tmp_col) <- base::unique(hcobject[["data"]][[base::paste0("set", x, "_anno")]][,i])
-    col_list[[i]] <- tmp_col
+  if(is.null(cols)) {
+    for(i in all_conditions){
+      tmp_col <- ggsci::pal_nejm(alpha = 1)(8)
+      # if there are more groups than colours, expand palette:
+      if(base::length(base::unique(hcobject[["data"]][[paste0("set", x, "_anno")]][,i])) > base::length(tmp_col)){
+        tmp_col <- grDevices::colorRampPalette(tmp_col)(base::length(base::unique(hcobject[["data"]][[base::paste0("set", x, "_anno")]][,i])))
+      }else{
+        tmp_col <- tmp_col[1:base::length(base::unique(hcobject[["data"]][[base::paste0("set", x, "_anno")]][,i]))]
+      }
+      base::names(tmp_col) <- base::unique(hcobject[["data"]][[base::paste0("set", x, "_anno")]][,i])
+      col_list[[i]] <- tmp_col
+    } 
+  } else {
+    col_list <- cols
   }
+  
 
   # filter annotation for pheatmap:
   anno_df <- dplyr::select(hcobject[["data"]][[base::paste0("set", x, "_anno")]], tidyselect::all_of(all_conditions))
   
+  heatmap_filtered_counts <- ComplexHeatmap::pheatmap(mat = base::as.matrix(filt_cutoff_counts) ,
+                                                      color = base::rev(RColorBrewer::brewer.pal(11, "RdBu")), 
+                                                      scale = "row", 
+                                                      cluster_rows = T,
+                                                      cluster_cols = T,
+                                                      annotation_colors = col_list,
+                                                      annotation_col = anno_df,
+                                                      fontsize = 8,
+                                                      show_rownames = F, 
+                                                      show_colnames = T, 
+                                                      main = title,
+                                                      annotation_names_col = T, 
+                                                      clustering_distance_cols = "euclidean", 
+                                                      clustering_method = method, 
+                                                      heatmap_legend_param = list(title = "scaled mean expr."))
   
   if(plot_HM){
-    heatmap_filtered_counts <- pheatmap::pheatmap(mat = filt_cutoff_counts ,
-                                                  color = base::rev(RColorBrewer::brewer.pal(11, "RdBu")),
-                                                  scale = "row", 
-                                                  cluster_rows = T,
-                                                  cluster_cols = T,
-                                                  annotation_colors = col_list,
-                                                  annotation_col = anno_df,
-                                                  fontsize = 8,
-                                                  show_rownames = F, 
-                                                  show_colnames = T, 
-                                                  main = title,
-                                                  annotation_names_col = T, 
-                                                  clustering_distance_cols = "euclidean", 
-                                                  clustering_method = method)
-  }else{
-    
-    grDevices::pdf(file = NULL)
-    heatmap_filtered_counts <- pheatmap::pheatmap(mat = filt_cutoff_counts ,
-                                                  color = base::rev(RColorBrewer::brewer.pal(11, "RdBu")),
-                                                  scale = "row",
-                                                  cluster_rows = T,
-                                                  cluster_cols = T,
-                                                  annotation_colors = col_list,
-                                                  annotation_col = anno_df,
-                                                  fontsize = 8,
-                                                  show_rownames = F, 
-                                                  show_colnames = T, 
-                                                  main = title,
-                                                  annotation_names_col = T, 
-                                                  clustering_distance_cols = "euclidean", 
-                                                  clustering_method = method)
-    grDevices::dev.off()
+    ComplexHeatmap::plot.Heatmap(heatmap_filtered_counts)
   }
   
   output[["heatmap"]] <- heatmap_filtered_counts
-  ggplot2::ggsave(filename = base::paste0("Heatmap_topvar_genes", x,".pdf"), plot = heatmap_filtered_counts, device = cairo_pdf,
-         path = base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]]), width = 7, height = 10, units = "in", limitsize = F)
-
+  
+  Cairo::CairoPDF(file = base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]], "/", "Heatmap_topvar_genes_", title,".pdf"),
+                  width = 7, height = 10)
+  ComplexHeatmap::plot.Heatmap(heatmap_filtered_counts)
+  grDevices::dev.off()
+  
   return(output)
 }
 
@@ -1450,8 +1446,8 @@ boxplot_from_df <- function(data, it = NULL, log_2, bool_plot){
       ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, hjust = 1, vjust = 0.5),
             text = ggplot2::element_text(size = 10))
     
-    ggplot2::ggsave(filename = base::paste0("sample_distribution_bp", it,".pdf"), plot = p, device = cairo_pdf,
-           path = base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]],"/","sample_distribution_plots/"), width = 17, height = 7.8,  units = "in")
+    ggplot2::ggsave(filename = base::paste0("Sample_distribution_bp_", it,".pdf"), plot = p, device = cairo_pdf,
+           path = base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]],"/"), width = 17, height = 7.8,  units = "in")
     
     return(p)
     
@@ -1491,8 +1487,8 @@ boxplot_from_df <- function(data, it = NULL, log_2, bool_plot){
         ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, hjust = 1, vjust = 0.5),
               text = ggplot2::element_text(size = 10))
       
-      ggplot2::ggsave(filename = base::paste0("sample_distribution_bp", it, "_", x,".pdf"), plot = p, device = cairo_pdf,
-             path = base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]],"/","sample_distribution_plots/"), width = 10, height = 8,  units = "in")
+      ggplot2::ggsave(filename = base::paste0("Sample_distribution_bp_", it, "_", x,".pdf"), plot = p, device = cairo_pdf,
+             path = base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]],"/"), width = 10, height = 8,  units = "in")
       
       plts[[x]] <- p
       
@@ -1569,8 +1565,8 @@ freqdist_plot_from_df <- function(data, log_2, bool_plot, it = NULL){
     
     p <- base::do.call(gridExtra::grid.arrange, plot_list)
     
-    ggplot2::ggsave(filename = base::paste0("sample_distribution_freq", it,".pdf"), plot = p, device = cairo_pdf,
-           path = base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]],"/","sample_distribution_plots/"), width = 10, height = 8, units = "in")
+    ggplot2::ggsave(filename = base::paste0("Sample_distribution_freq_", it,".pdf"), plot = p, device = cairo_pdf,
+           path = base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]],"/"), width = 10, height = 8, units = "in")
     
     return(p)
     
@@ -1616,8 +1612,8 @@ freqdist_plot_from_df <- function(data, log_2, bool_plot, it = NULL){
       
       p <- base::do.call(gridExtra::grid.arrange, plot_list)
       
-      ggplot2::ggsave(filename = base::paste0("sample_distribution_freq", it, "_", x, ".pdf"), plot = p, device = cairo_pdf,
-             path = base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]],"/","sample_distribution_plots/"), width = 17, height = 7.8,  units = "in")
+      ggplot2::ggsave(filename = base::paste0("Sample_distribution_freq_", it, "_", x, ".pdf"), plot = p, device = cairo_pdf,
+             path = base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]],"/"), width = 17, height = 7.8,  units = "in")
       
       plts[[x]] <- p
     }
@@ -1717,7 +1713,7 @@ sample_wise_cluster_expression <- function(set){
 #' @noRd
 
 
-hub_node_detection <- function(cluster, top, save, tree_layout, TF_only, Plot){
+hub_node_detection <- function(cluster, top, save, tree_layout, TF_only, plot){
   
   
   # extract chosen cluster as an isolated network:
@@ -1769,7 +1765,9 @@ hub_node_detection <- function(cluster, top, save, tree_layout, TF_only, Plot){
                       gene_ranks = base::c(1:base::length(hub_out$hub_nodes)),
                       l = l, 
                       label_offset = 10, 
-                      title = base::c(cluster, top), save = save, Plot = Plot)
+                      title = base::c(cluster, top), 
+                      save = save, 
+                      plot = plot)
   
 
   
@@ -1959,7 +1957,7 @@ centrality_colours <- function(rank_df, network){
 #' Subroutine to find_hubs().
 #' @noRd
 
-network_with_labels <- function(network, gene_labels, gene_ranks, l, label_offset, title, save, Plot){
+network_with_labels <- function(network, gene_labels, gene_ranks, l, label_offset, title, save, plot){
   
   
   plot_title <- base::paste0("cluster '", title[1], "' hub genes [top ",title[2], "]")
@@ -1970,18 +1968,12 @@ network_with_labels <- function(network, gene_labels, gene_ranks, l, label_offse
   new_indeces <- base::match(new_genes_df$label, igraph::get.vertex.attribute(network)$name)
   new_genes_df$coords_x <- l[new_indeces,1]
   new_genes_df$coords_y <- l[new_indeces,2]
-  left_up <- dplyr::filter(new_genes_df, coords_x <= mean_coord_x & coords_y >= mean_coord_y)%>%
-    dplyr::pull(., label)
-  left_down <- dplyr::filter(new_genes_df, coords_x <= mean_coord_x & coords_y < mean_coord_y)%>%
-    dplyr::pull(., label)
-  right_up <- dplyr::filter(new_genes_df, coords_x > mean_coord_x & coords_y >= mean_coord_y)%>%
-    dplyr::pull(., label)
-  right_down <- dplyr::filter(new_genes_df, coords_x > mean_coord_x & coords_y < mean_coord_y)%>%
-    dplyr::pull(., label)
+  left_up <- dplyr::filter(new_genes_df, coords_x <= mean_coord_x & coords_y >= mean_coord_y) %>% dplyr::pull(., label)
+  left_down <- dplyr::filter(new_genes_df, coords_x <= mean_coord_x & coords_y < mean_coord_y) %>% dplyr::pull(., label)
+  right_up <- dplyr::filter(new_genes_df, coords_x > mean_coord_x & coords_y >= mean_coord_y) %>% dplyr::pull(., label)
+  right_down <- dplyr::filter(new_genes_df, coords_x > mean_coord_x & coords_y < mean_coord_y) %>% dplyr::pull(., label)
   
-  
-  
-  new_position_l <- base::matrix(base::cbind(base::rep(base::ceiling(base::min(l[,1]))-label_offset, base::length(left_up)+ base::length(left_down)), 
+  new_position_l <- base::matrix(base::cbind(base::rep(base::ceiling(base::min(l[,1]))-label_offset, base::length(left_up) + base::length(left_down)), 
                                  base::seq(from=base::ceiling(base::max(l[,2])), to = base::ceiling(base::min(l[,2])), 
                                      length.out = base::length(left_up)+ base::length(left_down))), ncol = 2)
   new_position_r <- base::matrix(base::cbind(base::rep(base::ceiling(base::max(l[,1]))+label_offset, base::length(right_up)+ base::length(right_down)), 
@@ -1996,8 +1988,6 @@ network_with_labels <- function(network, gene_labels, gene_ranks, l, label_offse
   new_genes_df_r <- new_genes_df[new_genes_df$label %in% base::c(right_up, right_down),]
   new_genes_df_r <- new_genes_df_r[base::order(new_genes_df_r$coords_y, decreasing = T),]
   new_genes_df <- base::rbind(new_genes_df_l, new_genes_df_r)
-  
-  
   
   network2 <- igraph::add.vertices(network, nv = base::length(new_genes_df$name), 
                                    attr = list(name = new_genes_df$name))
@@ -2080,7 +2070,7 @@ network_with_labels <- function(network, gene_labels, gene_ranks, l, label_offse
     }
   }) %>% base::unlist()
   if(save == T){
-    Cairo::CairoPDF(file = base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]], "/", base::paste0("cluster ", title[1], " hub genes"), ".pdf"), 
+    Cairo::CairoPDF(file = base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]], "/Hub_genes_", title[1], "_module_network.pdf"), 
                     width = 20, height = 15)
     
     igraph::plot.igraph(network2, vertex.size = vertex_size, vertex.label = new_labels, vertex.label.cex = 1.5,
@@ -2090,7 +2080,7 @@ network_with_labels <- function(network, gene_labels, gene_ranks, l, label_offse
     
     grDevices::dev.off()
   }
-  if(Plot){
+  if(plot){
     igraph::plot.igraph(network2, vertex.size = vertex_size, vertex.label = new_labels, vertex.label.cex = 0.75,
                         layout = l2, main = plot_title, vertex.label.dist = 1, vertex.shape = vertex_shape,
                         edge.color = new_edge_color, vertex.label.color = new_label_color)
@@ -2100,88 +2090,6 @@ network_with_labels <- function(network, gene_labels, gene_ranks, l, label_offse
 }
 
 
-
-
-#' Plots Th Expression Of Hub Genes As Heatmaps
-#' 
-#' Subroutine to find_hubs().
-#' @noRd
-
-plot_hub_exp <- function(hubs_df = hcobject[["integrated_output"]][["hub_out"]]){
-  
-  # create save folder:
-  if(!"hub_expression_plots" %in% base::list.dirs(base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]],"/"))){
-    
-    base::dir.create(base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]],"/","hub_expression_plots"))
-    
-  }
-  
-  
-  #get column order from module heatmap:
-  co <- ComplexHeatmap::column_order(hcobject[["integrated_output"]][["cluster_calc"]][["heatmap_cluster"]]) %>% base::unlist() %>% base::as.numeric()
-  co <- base::colnames(hcobject[["integrated_output"]][["GFC_all_layers"]][,-base::ncol(hcobject[["integrated_output"]][["GFC_all_layers"]])])[co]
-  hub_exp <- base::apply(hubs_df, 2, function(x){
-
-    genes <- x[!x == " "]
- 
-    if(base::length(genes) != 0){
-      out <- base::lapply(1:base::length(hcobject[["layers"]]), function(l){
-        exp <- hcobject[["data"]][[base::paste0("set", l, "_counts")]][genes,]
-        mean_exp <- base::lapply(base::unique(hcobject[["data"]][[base::paste0("set", l, "_anno")]][[hcobject[["global_settings"]][["voi"]]]]), function(c){
-          samples <- base::rownames( hcobject[["data"]][[base::paste0("set", l, "_anno")]][hcobject[["data"]][[base::paste0("set", l, "_anno")]][[hcobject[["global_settings"]][["voi"]]]]==c,] )
-          tmp <- dplyr::select(exp, samples) %>% base::rowMeans()
-        }) %>% rlist::list.cbind() %>% base::as.data.frame()
-        
-        base::colnames(mean_exp) <- base::unique(hcobject[["data"]][[base::paste0("set", l, "_anno")]][[hcobject[["global_settings"]][["voi"]]]]) %>% base::as.character()
-
-        # l_co <- co[co %in% base::colnames(mean_exp)]
-        # mean_exp <- dplyr::select(mean_exp, tidyselect::all_of(l_co))
-
-        return(mean_exp)
-      }) #%>% rlist::list.cbind()
-      
-      return(out)
-    }else{
-      return(NULL)
-    }
-    
-    
-  })
-  pl <- base::lapply(1:base::length(hub_exp), function(x){
-    if(!base::is.null(hub_exp[[x]])){
-      pl2 <- base::lapply(1:base::length(hub_exp[[x]]), function(y){
-        
-        if(!base::is.null(hub_exp[[x]][[y]])){
-          p <- pheatmap::pheatmap(hub_exp[[x]][[y]], 
-                                  cluster_cols = F, 
-                                  cluster_rows = F, 
-                                  border_color = "black", 
-                                  cellwidth = 20, 
-                                  cellheight = 20, 
-                                  main = base::paste0(base::colnames(hubs_df)[x], " dataset ", y),
-                                  fontsize_col = 14, 
-                                  color = grDevices::colorRampPalette(base::rev(RColorBrewer::brewer.pal(n = 7, name = "BrBG")))(50),
-                                  scale = "row")
-          return(p$gtable)
-        }
-      })
-      cp1 <- cowplot::plot_grid(plotlist = pl2, nrow = 1, align = "h")
-      
-      grDevices::png(filename = base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]],"/hub_expression_plots", 
-                                             "/Hub_TF_expr_", base::colnames(hubs_df)[x], ".png"), 
-                     res = 300, width = 3500, height = 2500)
-      
-      graphics::plot(cp1)
-      
-      grDevices::dev.off()
-      
-    }
-    
-  })
-  
-
-  
-}
 
 
 #' Run All Clustering Algorithms

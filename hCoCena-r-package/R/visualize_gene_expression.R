@@ -2,12 +2,13 @@
 #' 
 #' Plots the mean expression values per condition for the given genes for each dataset as a heatmap. Values are scaled across rows.
 #' @param genes A vector of strings giving the genes to be plotted.
+#' @param save Bolean to determine whether the plot should be saved as PDF. TRUE by default.
 #' @param name A string giving the plot title and the name for the save file (WITHOUT file ending).
 #' @param width Width of the PDF, default ist 15, only change if plots overlap in PDF.
 #' @param height Height of the PDF, default ist 10, only change if plots overlap in PDF.
 #' @export
 
-visualize_gene_expression <- function(genes, name = NULL, width = 15, height = 10){
+visualize_gene_expression <- function(genes, name = NULL, width = 15, height = 10, save=T){
   # Filter for genes present in the network
   
   gtc <- GeneToCluster() %>% dplyr::filter(., gene %in% genes) %>% dplyr::filter(., !color == "white")
@@ -65,20 +66,20 @@ visualize_gene_expression <- function(genes, name = NULL, width = 15, height = 1
     plotls <- plotls + hm
   }
   
-  # ComplexHeatmap::plot.HeatmapList(plotls, column_title = name, column_title_gp = grid::gpar(fontsize = 14, fontface = "bold"))
+  heatmap_title <- stringr::str_replace_all(string = name, pattern = "_", replacement = " ")
   
-  if(base::is.null(name)){
-    message("Cannot save the file since no unique file name was provided (See function parameter 'name').")
-  }else{
-    Cairo::CairoPDF(file = base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]], "/", name, ".pdf"),
-                    width = width, height = height)
-    ComplexHeatmap::plot.HeatmapList(plotls, column_title = name, column_title_gp = grid::gpar(fontsize = 14, fontface = "bold"))
-    grDevices::dev.off()
-    
+  if(save){
+    if(base::is.null(name)){
+      message("Cannot save the file since no unique file name was provided (See function parameter 'name').")
+    }else{
+      Cairo::CairoPDF(file = base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]], "/", name, ".pdf"),
+                      width = width, height = height)
+      ComplexHeatmap::plot.HeatmapList(plotls, column_title = heatmap_title, column_title_gp = grid::gpar(fontsize = 14, fontface = "bold"))
+      grDevices::dev.off()
+    }
   }
   
-  grDevices::dev.new()
-  ht <- ComplexHeatmap::plot.HeatmapList(plotls, column_title = name, column_title_gp = grid::gpar(fontsize = 14, fontface = "bold"))
-  base::print(ht)
-
+  graphics::plot.new()
+  ComplexHeatmap::plot.HeatmapList(plotls, column_title = heatmap_title, column_title_gp = grid::gpar(fontsize = 14, fontface = "bold"))
+  
 }

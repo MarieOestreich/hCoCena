@@ -111,12 +111,12 @@ functional_enrichment <- function(gene_sets = c("Go", "Kegg", "Hallmark", "React
     ## Combine the plots and format the output
     
     cp <- egg::ggarrange(p, p2, ncol = 1, heights = c(3, 1))
-    Cairo::CairoPDF(file = base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]], "/DJplot_", i, "_top_", top, ".pdf"), 
+    Cairo::CairoPDF(file = base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]], "/Enrichment_", i, "_top_", top, ".pdf"), 
                     width = 8, height = 8)
     print(cp)
     grDevices::dev.off()
     openxlsx::write.xlsx(x = res, 
-                         file = base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]], "/", i, "_enrichment.xlsx"), 
+                         file = base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]], "/Enrichment_", i, ".xlsx"), 
                          overwrite = T)
     output <- list()
     output[["p"]] <- cp

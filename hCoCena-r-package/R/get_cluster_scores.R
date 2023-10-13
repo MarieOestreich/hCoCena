@@ -45,12 +45,13 @@ get_cluster_scores <- function(save = T){
     ggplot2::scale_color_manual(values = base::sort(base::unique(gtc$color))) +
     ggplot2::scale_fill_manual(values = grDevices::adjustcolor(base::sort(base::unique(gtc$color)), alpha.f = 0.5)) +
     ggplot2::xlab("cluster")+
-    ggplot2::theme_bw()+ggplot2::coord_flip()
+    ggplot2::theme_bw()+ggplot2::coord_flip() + 
+    ggplot2::ggtitle("Cluster scores")
 
   graphics::plot(p)
 
   if(save){
-    Cairo::CairoPDF(file = base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]], "/cluster_scores.pdf"), 
+    Cairo::CairoPDF(file = base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]], "/Cluster_scores.pdf"), 
                     width = 8)
     
     graphics::plot(p)

@@ -27,7 +27,7 @@ plot_cluster_heatmap <- function(col_order = NULL,
                                        k = 0, 
                                        return_HM = T, 
                                        cat_as_bp = NULL, 
-                                       file_name = "module_heatmap.pdf"){
+                                       file_name = "Heatmap_modules.pdf"){
 
   # set user specific enrichments if they exist:
   if("enriched_per_cluster" %in% base::names(hcobject[["satellite_outputs"]])){

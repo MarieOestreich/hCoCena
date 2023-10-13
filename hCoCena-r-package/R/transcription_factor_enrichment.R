@@ -112,22 +112,14 @@ TF_overrep <- function(clusters = "all", topTF = 5, topTarget = 5){
   edgelist$merged2 <- base::paste0(base::as.character(edgelist$V2), base::as.character(edgelist$V1))
   
   Cairo::CairoPDF(file = paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]], "/TF_overrep.pdf"), 
-                  width = 12, height = 7, onefile = T)
+                  width = 15, height = 8, onefile = T)
   
   # loop in pairs of two to create double plots: 
   for(n in 1:base::length(tt_list)){
-    # i1 <- n*2-1
-    # i2 <- n*2
-    # set layout to plot two plots each in horizontal arrangement
-    graphics::layout(base::matrix(1:2, 1, 2)) 
-    exp_p <- plot_TF(exp_plot_list[[n]])
-    ComplexHeatmap::draw(exp_p)
     
-    # for(j in c(i1, i2)){
-    # catching 'out-of-bounds':
-    # if(j > length(tt_list)){
-    #   break 
-    # }
+    # set layout to plot two plots each in horizontal arrangement
+    # graphics::layout(mat = base::matrix(1:2, 1, 2), widths = c(1,1), heights = c(1,1)) 
+    
     # create link data frame:
     fromto <- tt_list[[n]]
     # only consider no TF targets:
@@ -146,18 +138,24 @@ TF_overrep <- function(clusters = "all", topTF = 5, topTarget = 5){
     factors <- base::unique(base::as.character(NodeToColor$gene))
     circlize::circos.par(points.overflow.warning=FALSE)
     circlize::circos.initialize(factors, xlim = c(0, 1)) 
-    circlize::circos.trackPlotRegion(ylim = c(0, 1), track.height = 0.05, bg.col = base::as.character(NodeToColor$color),
-                                     bg.border = NA ) 
+    circlize::circos.trackPlotRegion(sectors = factors,
+                                     ylim = c(0, 1), 
+                                     track.height = 0.05, 
+                                     bg.col = base::ifelse(factors %in% TFs, yes = "grey", no = "white")) 
+    circlize::circos.trackPlotRegion(sectors = factors,
+                                     ylim = c(0, 1), 
+                                     track.height = 0.05, 
+                                     bg.col = base::as.character(NodeToColor$color))
+    
     # add sector labels:
     g <- circlize::circos.trackPlotRegion(track.index = 1, panel.fun = function(x,y){
       xlim = circlize::get.cell.meta.data("xlim")
       ylim = circlize::get.cell.meta.data("ylim")
       sector.name = circlize::get.cell.meta.data("sector.index")
       if(sector.name %in% TFs){
-        circlize::circos.text(base::mean(xlim), base::mean(ylim)+2.5, sector.name, facing = "inside", niceFacing = T, cex = .9, 
-                              col = "turquoise3", font = 2)
+        circlize::circos.text(base::mean(xlim), base::mean(ylim)+2.5, sector.name, facing = "inside", niceFacing = T, cex = .9, font = 2)
       }else{
-        circlize::circos.text(base::mean(xlim), base::mean(ylim)+2.5, sector.name, facing = "inside", niceFacing = T, cex = .9)
+        circlize::circos.text(base::mean(xlim), base::mean(ylim)+2.5, sector.name, facing = "inside", niceFacing = T, cex = .9, )
       }
       
     })
@@ -166,27 +164,32 @@ TF_overrep <- function(clusters = "all", topTF = 5, topTarget = 5){
     for(i in 1:base::nrow(fromto)) {
       merged <- base::paste0(base::as.character(fromto[i,1]), base::as.character(fromto[i,2]))
       if(merged %in% edgelist$merged | merged %in% edgelist$merged2){
-        g <- circlize::circos.link(sector.index1 =  base::as.character(fromto[i,1]), c(0.45, 0.55),
-                                   sector.index2 =  base::as.character(fromto[i,2]), c(.92), 
+        g <- circlize::circos.link(sector.index1 =  base::as.character(fromto[i,1]), c(0.5),
+                                   sector.index2 =  base::as.character(fromto[i,2]), c(0.5), 
                                    col = base::as.character(fromto[i,3]),
+                                   lwd = 2, lty = 1,
                                    directional = 1,
-                                   arr.width = .1,
-                                   arr.length = .1)
+                                   arr.width = .25,
+                                   arr.length = .25)
       }else{
-        g <- circlize::circos.link(sector.index1 =  base::as.character(fromto[i,1]), c(0.45, 0.55),
-                                   sector.index2 =  base::as.character(fromto[i,2]), c(.92), 
-                                   col = makeTransparent(base::as.character(fromto[i,3]), alpha = 30),
+        g <- circlize::circos.link(sector.index1 =  base::as.character(fromto[i,1]), c(0.5),
+                                   sector.index2 =  base::as.character(fromto[i,2]), c(0.5), 
+                                   # col = makeTransparent(base::as.character(fromto[i,3]), alpha = 90),
+                                   col = base::as.character(fromto[i,3]),
+                                   lwd = 1, lty = 5,
                                    directional = 1,
-                                   arr.width = .1,
-                                   arr.length = .1)
+                                   arr.width = .15,
+                                   arr.length = .15)
       }
       
       
     }
     graphics::title(base::names(tt_list)[n])
     circlize::circos.clear()
-    # }
     
+    visualize_gene_expression(genes = exp_plot_list[[n]] %>% base::unlist(use.names = F), 
+                              name = base::names(exp_plot_list)[n], 
+                              save = F)
   }
   grDevices::dev.off()
 }
