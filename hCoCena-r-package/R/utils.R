@@ -855,7 +855,7 @@ heatmap_network_genes <- function(x, plot_HM, method, additional_anno, title, co
               base::nrow(filt_cutoff_data), " and the number of nodes = ", base::nrow(filt_cutoff_counts), '...')
  
   col_list <- list()
-  if(is.null(cols)) {
+  if(base::is.null(cols)) {
     for(i in all_conditions){
       tmp_col <- ggsci::pal_nejm(alpha = 1)(8)
       # if there are more groups than colours, expand palette:
@@ -931,8 +931,8 @@ gfc_calc <- function(grp, trans_norm, group_means){
 #' 
 #' Function that computes fold changes for the define sample groups either with reference to a control group or to the mean of all groups.
 #' @param info_dataset The annotation dataframe for the dataset that contains the group labels.
-#' @param grouping_v A string giving a column name present in all annotation files, if this variable shall be used for grouping the samles isntead of the variable of interest.
-#' @param x An integer giving the number of the curently processed dataset.
+#' @param grouping_v A string giving a column name present in all annotation files, if this variable shall be used for grouping the samples instead of the variable of interest.
+#' @param x An integer giving the number of the currently processed dataset.
 #' @noRd
 
 
@@ -965,7 +965,7 @@ GFC_calculation <- function(info_dataset, grouping_v, x) {
 
       message("...GFC calculation with foldchange from mean...")
 
-      # GFC calculation with foldchange from mean
+      # GFC calculation with fold-change from mean
       norm_data_anno <- base::merge(base::t(hcobject[["layer_specific_outputs"]][[base::paste0("set",x)]][["part1"]][["topvar"]]), base::subset(info_dataset, select = base::c("grpvar")), by = "row.names", all.x = T)
 
       norm_data_anno <- norm_data_anno[,-1]
@@ -980,7 +980,7 @@ GFC_calculation <- function(info_dataset, grouping_v, x) {
       
      
       
-      trans_norm <- base::t(base::apply(trans_norm , 1 , function(x) base::tapply(x , base::colnames(trans_norm) , base::mean)))
+      trans_norm <- base::t(base::apply(trans_norm , 1 , function(i) base::tapply(i , base::colnames(trans_norm) , base::mean)))
       trans_norm <- base::cbind(trans_norm , base::rowMeans(trans_norm))
       
       base::colnames(trans_norm)[base::ncol(trans_norm)] <- "group_mean"
@@ -1013,7 +1013,7 @@ GFC_calculation <- function(info_dataset, grouping_v, x) {
       trans_norm <- antilog(trans_norm , 2)
     }
     
-    trans_norm <- base::t(base::apply(trans_norm , 1 , function(x) base::tapply(x , base::colnames(trans_norm) , base::mean)))
+    trans_norm <- base::t(base::apply(trans_norm , 1 , function(i) base::tapply(i , base::colnames(trans_norm) , base::mean)))
     
     
     
@@ -1516,7 +1516,7 @@ freqdist_plot_from_list <- function(data, log_2, bool_plot){
       
     }
     
-    plts[[x]] <- freqdist_plot_from_df(data[[x]], log_2 = log_2, it =  hcobject[["layers_names"]][x], bool_plot = bool_plot)
+    plts[[x]] <- freqdist_plot_from_df(data = data[[x]], log_2 = log_2, it = hcobject[["layers_names"]][x], bool_plot = bool_plot)
     
   }
   
@@ -1559,11 +1559,12 @@ freqdist_plot_from_df <- function(data, log_2, bool_plot, it = NULL){
         ggplot2::xlab(base::colnames(data)[x])+
         ggplot2::xlim(base::c(0, base::max(data[,x])))+
         ggplot2::theme_bw() + 
-        ggplot2::theme(text = ggplot2::element_text(size = 10))
+        ggplot2::theme(text = ggplot2::element_text(size = 10)) +
+        ggplot2::ggtitle(base::ifelse(x==1, it, ""))
       
     }
     
-    p <- base::do.call(gridExtra::grid.arrange, plot_list)
+    p <- base::do.call(gridExtra::grid.arrange, plot_list) 
     
     ggplot2::ggsave(filename = base::paste0("Sample_distribution_freq_", it,".pdf"), plot = p, device = cairo_pdf,
            path = base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]],"/"), width = 10, height = 8, units = "in")
@@ -1606,11 +1607,12 @@ freqdist_plot_from_df <- function(data, log_2, bool_plot, it = NULL){
           ggplot2::xlab(base::colnames(data)[y])+
           ggplot2::xlim(base::c(0, base::max(data[,y])))+
           ggplot2::theme_bw() + 
-          ggplot2::theme(text = ggplot2::element_text(size = 10))
+          ggplot2::theme(text = ggplot2::element_text(size = 10))+
+          ggplot2::ggtitle(base::ifelse(x==1, it, ""))
         
       }
       
-      p <- base::do.call(gridExtra::grid.arrange, plot_list)
+      p <- base::do.call(gridExtra::grid.arrange, plot_list) + ggplot2::ggtitle(it)
       
       ggplot2::ggsave(filename = base::paste0("Sample_distribution_freq_", it, "_", x, ".pdf"), plot = p, device = cairo_pdf,
              path = base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]],"/"), width = 17, height = 7.8,  units = "in")
@@ -1734,14 +1736,7 @@ hub_node_detection <- function(cluster, top, save, tree_layout, TF_only, plot){
       3
     } 
   }) %>% base::unlist()
-  # labels (for hubs, none for non-hubs):
-  label <- base::lapply(igraph::V(g)$name, function(node){
-    if(node %in% hub_out$hub_nodes){
-      node
-    }else{
-      NA
-    } 
-  }) %>% base::unlist()
+
   # layout:
   if(cluster == "all"){
     l <- hcobject[["integrated_output"]][["cluster_calc"]][["layout"]]
@@ -2023,12 +2018,8 @@ network_with_labels <- function(network, gene_labels, gene_ranks, l, label_offse
   network2 <- igraph::add.edges(network2, new_edges)
   
   new_edge_color <- base::apply(igraph::get.edgelist(network2),1, function(x){
-    
     if(x[2] %in% base::as.character(new_genes_df$name)){
-      
-      # "#2B8CBE"
       "black"
-      
     }else{
       "lightgrey"
     }
@@ -2048,7 +2039,6 @@ network_with_labels <- function(network, gene_labels, gene_ranks, l, label_offse
         dplyr::pull(., label)
       tfs <- hcobject[["supplementary_data"]][["TF"]][, base::grep(base::colnames(hcobject[["supplementary_data"]][["TF"]]), pattern = hcobject[["global_settings"]][["organism"]], ignore.case = T)]
       if(tmp_gene_n %in% tfs){
-        # "goldenrod"
         "black"
         
       }else{
@@ -2169,7 +2159,7 @@ run_all_cluster_algos <- function(){
 #' Subroutine to PCA_algo_compare().
 #' @noRd
 
-plot_PCA_topvar <- function(PCA_save_folder){
+plot_PCA_topvar <- function(PCA_save_folder, cols = cols){
 
   plotlist <- list()
   pca_list <- list()
@@ -2185,11 +2175,17 @@ plot_PCA_topvar <- function(PCA_save_folder){
 
     num_colours <- base::length(base::unique(dplyr::pull(hcobject[["data"]][[base::paste0("set",i,"_anno")]], hcobject[["global_settings"]][["voi"]])))
     my_palette <- ggsci::pal_d3("category20")(20)
-    if(base::length(num_colours) > base::length(my_palette)){
-      my_colours <- grDevices::colorRampPalette(my_palette)(num_colours)
-    }else{
-      my_colours <- my_palette[1:num_colours]
+    
+    if(base::is.null(cols)){
+      if(base::length(num_colours) > base::length(my_palette)){
+        my_colours <- grDevices::colorRampPalette(my_palette)(num_colours)
+      }else{
+        my_colours <- my_palette[1:num_colours]
+      }
+    } else {
+      my_colours <- cols
     }
+    
     
 
     p <- ggplot2::ggplot(pca.data, ggplot2::aes(x = X, y = Y, col = Group, label = Sample))+
@@ -2230,7 +2226,7 @@ plot_PCA_topvar <- function(PCA_save_folder){
 #' Subroutine to PCA_algo_compare().
 #' @noRd
 
-plot_PCA_cluster <- function(gtc = NULL, algo = NULL, PCA_save_folder){
+plot_PCA_cluster <- function(gtc = NULL, algo = NULL, PCA_save_folder, cols = cols){
 
   plotlist <- list()
   pca_list <- list()
@@ -2260,11 +2256,17 @@ plot_PCA_cluster <- function(gtc = NULL, algo = NULL, PCA_save_folder){
     }
     num_colours <- base::length(base::unique(dplyr::pull(hcobject[["data"]][[base::paste0("set",l,"_anno")]], hcobject[["global_settings"]][["voi"]])))
     my_palette <- ggsci::pal_d3("category20")(20)
-    if(base::length(num_colours) > base::length(my_palette)){
-      my_colours <- grDevices::colorRampPalette(my_palette)(num_colours)
+    
+    if(base::is.null(cols)){
+      if(base::length(num_colours) > base::length(my_palette)){
+        my_colours <- grDevices::colorRampPalette(my_palette)(num_colours)
+      }else{
+        my_colours <- my_palette[1:num_colours]
+      }
     }else{
-      my_colours <- my_palette[1:num_colours]
+      my_colours <- cols
     }
+    
 
     p <- ggplot2::ggplot(pca.data, ggplot2::aes(x = X, y = Y,  label= Sample, color = Group))+
       ggplot2::geom_point(size = 4)+
@@ -2460,16 +2462,16 @@ unify_mats <- function(mat_list){
 #' @noRd
 
 replot_cluster_heatmap <- function(col_order = NULL, 
-                                       row_order = NULL, 
-                                       cluster_columns = T,
-                                       cluster_rows = T, 
-                                       k = 0, 
-                                       return_HM = T, 
-                                       cat_as_bp = NULL, 
-                                       file_name = "module_heatmap.pdf",
-                                       GFCs,
-                                       group,
-                                       data){
+                                   row_order = NULL, 
+                                   cluster_columns = T,
+                                   cluster_rows = T, 
+                                   k = 0, 
+                                   return_HM = T, 
+                                   cat_as_bp = NULL, 
+                                   file_name = "module_heatmap.pdf",
+                                   GFCs,
+                                   group,
+                                   data){
 
 
   # set user specific enrichments if they exist:
@@ -2633,8 +2635,6 @@ replot_cluster_heatmap <- function(col_order = NULL,
                                                                    simple_anno_size = grid::unit(0.5, "cm"), gp = grid::gpar(col = "black")),
                                             genes = ComplexHeatmap::anno_barplot(c_df$gene_no, width = grid::unit(2.5, "cm")),
                                             gene_nums = ComplexHeatmap::anno_text(c_df$gene_no, width = grid::unit(1.5, "cm"), gp = grid::gpar(fontsize = 10)),
-
-
                                             which = "row",
                                             width = grid::unit(4.5, "cm"),
                                             annotation_name_side = "top",
@@ -2645,8 +2645,7 @@ replot_cluster_heatmap <- function(col_order = NULL,
     lgd_list <- list(
 
     )
-  }
-  else if(base::length(enrich_mat1) > 0 & base::length(enrich_mat2) == 0){
+  } else if(base::length(enrich_mat1) > 0 & base::length(enrich_mat2) == 0){
     ha <- ComplexHeatmap::HeatmapAnnotation(modules = ComplexHeatmap::anno_simple(row_order, col = cluster_colors,
                                                                    simple_anno_size = grid::unit(0.5, "cm"), gp = grid::gpar(col = "black")),
                                             genes = ComplexHeatmap::anno_barplot(c_df$gene_no, width = grid::unit(2.5, "cm")),
@@ -2669,8 +2668,7 @@ replot_cluster_heatmap <- function(col_order = NULL,
                              legend_gp = grid::gpar(col = RColorBrewer::brewer.pal(n = 12, name = "Paired")),
                              type = "points", pch = 15)
     )
-  }
-  else if(base::length(enrich_mat1) == 0 & base::length(enrich_mat2) > 0){
+  } else if(base::length(enrich_mat1) == 0 & base::length(enrich_mat2) > 0){
     ha <- ComplexHeatmap::HeatmapAnnotation(modules = ComplexHeatmap::anno_simple(row_order, col = cluster_colors,
                                                                    simple_anno_size = grid::unit(0.5, "cm"), gp = grid::gpar(col = "black")),
                                             genes = ComplexHeatmap::anno_barplot(c_df$gene_no, width = grid::unit(1.5, "cm")),
@@ -2737,7 +2735,7 @@ replot_cluster_heatmap <- function(col_order = NULL,
   }
 
 
-  anno_list <- NULL
+   anno_list <- NULL
 
 
   if(!base::length(column_anno_categorical) == 0){
@@ -2873,9 +2871,10 @@ replot_cluster_heatmap <- function(col_order = NULL,
         type = "pdf",
         units = "in")
 
-  hm <- ComplexHeatmap::Heatmap(mat_heatmap,
+  hm <- ComplexHeatmap::Heatmap(matrix = mat_heatmap,
                                 right_annotation = ha,
-                                col = grDevices::colorRampPalette(base::rev(RColorBrewer::brewer.pal(n = 11, name = "RdBu")))(base::length(base::seq(-2, 2, by = .1))),
+                                # col = grDevices::colorRampPalette(base::rev(RColorBrewer::brewer.pal(n = 11, name = "RdBu")))(base::length(base::seq(-2, 2, by = .1))),
+                                col = grDevices::colorRampPalette(base::rev(RColorBrewer::brewer.pal(n = 11, name = "RdBu")))(51),
                                 clustering_distance_rows = "euclidean",
                                 clustering_distance_columns = "euclidean",
                                 clustering_method_rows = "complete",
@@ -2893,10 +2892,12 @@ replot_cluster_heatmap <- function(col_order = NULL,
     anno_list <- hm
 
   }else{
-    anno_list <- ComplexHeatmap::add_heatmap(hm, anno_list)
+    anno_list <- ComplexHeatmap::add_heatmap(hm, anno_list, direction = c("vertical"))
   }
 
-  hm_w_lgd <- ComplexHeatmap::draw(anno_list, annotation_legend_list = lgd_list, merge_legends = T,
+  hm_w_lgd <- ComplexHeatmap::draw(object = anno_list, 
+                                   annotation_legend_list = lgd_list, 
+                                   merge_legends = T,
                                    padding = grid::unit(c(2, 2, 2, 30), "mm"))
 
   grDevices::dev.off()

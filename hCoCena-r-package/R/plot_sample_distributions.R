@@ -29,9 +29,7 @@ plot_sample_distributions <- function(plot_type = "boxplot",
       plot_list_of_plots(plt)
       
     }
-    
-  }
-  else if(plot_type == "freqdist"){
+  } else if(plot_type == "freqdist"){
     
     plt <- freqdist_plot_from_list(data = data, log_2 = log_2, bool_plot = plot)
     

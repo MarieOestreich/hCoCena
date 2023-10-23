@@ -36,7 +36,7 @@ change_grouping_parameter <- function(group_by){
     # mark controls:
     old_control <- hcobject[["global_settings"]][["control"]]
     if(!hcobject[["global_settings"]][["control"]] == "none"){
-      # temporarily change control to none, since contorls in new grouping variable is not known:
+      # temporarily change control to none, since controls in new grouping variable is not known:
       hcobject[["global_settings"]][["control"]] <<- "none"
       print("Regrouped GFCs will be calculated without reference to controls.")
     }
@@ -60,10 +60,13 @@ change_grouping_parameter <- function(group_by){
   
     # to be added
 
-  hm <- replot_cluster_heatmap(GFCs = sep_GFCs, cluster_columns = T, cluster_rows = T, return_HM = T,
-                             group = "regrouped",
-                             file_name = paste0("module_heatmap_regrouped_", group_by, ".pdf"),
-                             data = tmp_data)
+  hm <- replot_cluster_heatmap(GFCs = sep_GFCs, 
+                               cluster_columns = T, 
+                               cluster_rows = T, 
+                               return_HM = T,
+                               group = "regrouped",
+                               file_name = paste0("Heatmap_modules_regrouped_", group_by, ".pdf"),
+                               data = tmp_data)
   # reset to old control:
   hcobject[["global_settings"]][["control"]] <<- old_control
   

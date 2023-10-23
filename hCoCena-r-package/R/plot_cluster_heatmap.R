@@ -243,6 +243,7 @@ plot_cluster_heatmap <- function(col_order = NULL,
 
                                             enriched_count = ComplexHeatmap::anno_text(base::paste0(enrich_count2, "/", c_df$gene_no), width = grid::unit(1.5, "cm"),
                                                                        gp = grid::gpar(fontsize = 8)),
+                                            
                                             enriched = ComplexHeatmap::anno_barplot(enrich_mat2,
                                                                       width = grid::unit(5, "cm"),
                                                                       gp = grid::gpar(fill = ggsci::pal_d3(palette = "category20")(base::ncol(enrich_mat2)),
@@ -310,6 +311,7 @@ plot_cluster_heatmap <- function(col_order = NULL,
     for(a in 1:base::length(column_anno_categorical)){
       base::set.seed(a)
       tmp_colour <- grDevices::colorRampPalette(ggsci::pal_d3("category20")(20))(base::ncol(column_anno_categorical[[a]]))
+      
       if(cat_as_bp[a] == T){
         column_anno_categorical[[a]][base::is.na(column_anno_categorical[[a]])] <- 0
         if(base::is.null(anno_list)){
@@ -372,7 +374,8 @@ plot_cluster_heatmap <- function(col_order = NULL,
       
       
 
-      lgd_list <- rlist::list.append(lgd_list, ComplexHeatmap::Legend(labels = base::colnames(column_anno_categorical[[a]]%>%base::as.matrix()), title = base::names(column_anno_categorical)[a],
+      lgd_list <- rlist::list.append(lgd_list, ComplexHeatmap::Legend(labels = base::colnames(column_anno_categorical[[a]]%>%base::as.matrix()), 
+                                                                      title = base::names(column_anno_categorical)[a],
                                                                       legend_gp = grid::gpar(col = tmp_colour),
                                                                       type = "points", pch = 15))
     }

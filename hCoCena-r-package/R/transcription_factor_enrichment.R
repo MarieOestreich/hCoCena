@@ -4,17 +4,15 @@
 #' 	It filters the ranked enriched TFs for the top highest ranking ones and their top highest ranking targets.
 #' 	MeanRank was chosen as a ranking method.
 #' Results are visualized as circular plots, one for each module. 
-#' 	The names of the TFs are highlighted in turquoise, those of target genes are written in black. 
-#' 	The colour of the cell symbolises in which module the respective gene can be found in. 
-#' 	If a gene is a target of one of the enriched transcription factors, a link is connecting their cells. 
-#' 	If there is an edge in the constructed co-expression network connecting those two genes, that link is non-transparent. 
-#' 	If the TF/target-pair was found by ChEA3 but is not represented by an edge in the network, the link is depicted as slightly transparent.
+#'  The outer circle highlights TFs (grey) and their targets (white). Within the inner circle, the colour of the cell is colored according to the module the respective gene can be found in. 
+#' 	If a gene is a target of one of the enriched transcription factors, a dashed link is connecting their cells. 
+#' 	If there is an edge in the constructed co-expression network connecting those two genes, that link is solid. 
 #' @param topTF Integer. The number of top ranking TFs to return per cluster. Default is 5.
 #' @param topTarget Integer. The number of top ranking targets to return per TF. Default is 5.
 #' @param clusters Either "all" (default) or a vector of clusters as strings. Defines for which clusters to perform the analysis.
 #' @export
 
-TF_overrep <- function(clusters = "all", topTF = 5, topTarget = 5){
+TF_overrep_module <- function(clusters = "all", topTF = 5, topTarget = 5){
 
   output <- list()
   gtc <- GeneToCluster() 
@@ -203,7 +201,7 @@ TF_overrep <- function(clusters = "all", topTF = 5, topTarget = 5){
 #' @export
 
 
-TF_enrich_all <- function(topTF = 100, topTarget = 30){
+TF_overrep_network <- function(topTF = 100, topTarget = 30){
 
   gtc <- GeneToCluster() 
   base::colnames(gtc) <- base::c("gene", "cluster")
