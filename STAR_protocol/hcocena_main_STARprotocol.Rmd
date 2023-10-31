@@ -114,7 +114,21 @@ set_supp_files(Tf = "TFcat.txt",
 ```
 
 
-## 1.5 Define global settings
+## 1.5 Data import
+
+  After telling hCoCena where to find all the data and supplementary data that we need for the analysis, they are now loaded and stored in the 'hcobject', where the tool can access them throughout the analysis without cluttering the environment. The 'read_data()' function offers a series of parameters, such as the separator of the count file etc. However, since we are loading our data from data frames in our environment, none of these parameters are necessary.
+  If you are reading your data from file and are looking for more detailed information regarding the different parameters, enter ?hcocena::read_data into the console.
+
+```{r data import}
+
+read_data()
+
+read_supplementary()
+
+```
+
+
+## 1.6 Define global settings
 
   In this chunk, we will define the so-called 'global settings'. Those are all the settings that are **dataset independent**. In our case, we will set the organism to be 'human' since we have human macrophage data for our showcase (so far, only human and mouse are supported). We will set the control keyword to 'none'. We do have controls in our dataset that we could use as a reference for the Group-Fold-Change analyses later on, but then we loose the control group since they serve as a reference. Here, we will keep them as a separate group to include them in our results, which will allow us to compare the baselines from the two datasets as well (this is a personal analysis choice). As the variable of interest (voi), we choose 'merged' since that is the name of the column in both our annotation dataframes that we want to use to group the samples. It contains information on the treatment of a sample as well as the dataset the sample originates from. We further define that we are only interested in networks and modules that contain at least 25 genes, we set the range of the GFC values to be from -2 to 2, the layout algorithm to be 'cytoscape' (you can change this, if you don't have Cytoscape installed, however the networks always look more readable and high-quality with Cytoscape) and data_in_log is TRUE, because our gene expression data has been logged to the base of 2 in the pre-processing. For more detailed information regarding the different settings and what other options are available, enter ?hcocena::set_global_settings into the console.
 
@@ -133,20 +147,6 @@ set_global_settings(organism = "human",
 
 
 
-## 1.6 Data import
-
-  After telling hCoCena where to find all the data and supplementary data that we need for the analysis, they are now loaded and stored in the 'hcobject', where the tool can access them throughout the analysis without cluttering the environment. The 'read_data()' function offers a series of parameters, such as the separator of the count file etc. However, since we are loading our data from data frames in our environment, none of these parameters are necessary.
-  If you are reading your data from file and are looking for more detailed information regarding the different parameters, enter ?hcocena::read_data into the console.
-
-```{r data import}
-
-read_data()
-
-read_supplementary()
-
-```
-
-
 ## OPTIONAL: Data-based definition of top most variant genes
 
   This chunk in the satellite markdown ('hcocena_satellite_STAR_protocol.Rmd') calculates the inflection points in the ranked variances to filter for the top most variant genes in a data-driven way. Running this function yields top 7700 for the array data and 7664 for the RNA-Seq data as the highest data-driven top-most-variant genes cutoff. 
@@ -154,7 +154,7 @@ read_supplementary()
 
 ## 1.7 Define layer-specific settings
 
-  After defining the global (dataset-independent) settings in section 1.5, we will now define those **specific for each dataset**. We start with selecting the top most-variable genes to keep based on the chunk we just ran in the satellite markdown. You can also set this to 'all' if you don't want to pre-filter your genes. We further define that we are interested in all gene pairs with minimum correlation 0.9 and that we want to inspect 50 different cutoffs between 0.9 and 1. We don't want to see the node-degree distribution plot for all of those 50 cutoffs, so we set that parameter to FALSE.
+  After defining the global (dataset-independent) settings in section 1.6, we will now define those **specific for each dataset**. We start with selecting the top most-variable genes to keep based on the chunk we just ran in the satellite markdown. You can also set this to 'all' if you don't want to pre-filter your genes. We further define that we are interested in all gene pairs with minimum correlation 0.9 and that we want to inspect 50 different cutoffs between 0.9 and 1. We don't want to see the node-degree distribution plot for all of those 50 cutoffs, so we set that parameter to FALSE.
   For detailed information regarding the different settings, enter ?hcocena::set_layer_settings into the console.
   
 
