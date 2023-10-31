@@ -889,7 +889,7 @@ heatmap_network_genes <- function(x, plot_HM, method, additional_anno, title, co
                                                       annotation_names_col = T, 
                                                       clustering_distance_cols = "euclidean", 
                                                       clustering_method = method, 
-                                                      heatmap_legend_param = list(title = "scaled mean expr."))
+                                                      heatmap_legend_param = list(title = "scaled expr."))
   
   if(plot_HM){
     ComplexHeatmap::plot.Heatmap(heatmap_filtered_counts)
