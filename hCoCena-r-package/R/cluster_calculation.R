@@ -7,7 +7,7 @@
 #' @param no_of_iterations Some of the algorithms are iterative (e.g. Leiden Algorithm). Set here, how many iterations should be performed. 
 #'  For information on which other algorithms are iterative, please refer to their documentation in the igraph package. Default is 1.
 #' @param resolution The cluster resolution if the cluster algorithm is set to "cluster_leiden". Default is 1. Higher values result in more clusters and vice versa.
-#' @param max_cluster_count_per_gene The maximum number of different clsuters a gene is allowed to be associated with during the different iterations before it is marked as indecisive and removed.
+#' @param max_cluster_count_per_gene The maximum number of different clusters a gene is allowed to be associated with during the different iterations before it is marked as indecisive and removed.
 #'  Default is 1.
 #' @export 
 

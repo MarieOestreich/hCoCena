@@ -1,6 +1,6 @@
 ---
 title: "hCoCena - STAR protocol (main)"
-author: "Marie Oestreich, Lisa Holsten"
+author: "Marie Oestreich, Lisa Holsten, Kilian Dahm"
 date: "19 10 2023"
 output:
   html_document: default
@@ -272,7 +272,7 @@ build_integrated_network(mode = "u", multi_edges = "min")
   Here, we will cluster our integrated network using the default clustering algorithm (Leiden). We will run the clustering 50 times (no_of_iterations = 50), we will leave the maximum cluster count per gene at its default value (1), meaning we only keep genes that can be associated with the same cluster in all runs. Plot_cluster_heatmap() then plots the result.
   
 ```{r compute clusters}
-cluster_calculation(no_of_iterations = 50)
+cluster_calculation(no_of_iterations = 50, cluster_algo = "cluster_leiden", resolution = 1)
 ```
 
 
@@ -318,8 +318,8 @@ plot_cluster_heatmap()
   
 ```{r GO profiling, fig.width = 8, fig.height = 7, message = F, warning = F}
 
-functional_enrichment(gene_sets = c("Go", "Kegg", "Hallmark"), 
-                      clusters = c("seagreen", "steelblue", "turquoise", "slategray", "orchid", "plum", "maroon", "lightblue", "gold", "darkorange", "wheat"),
+functional_enrichment(gene_sets = c("Hallmark"), 
+                      clusters = c("seagreen", "steelblue", "turquoise", "plum", "maroon", "lightblue", "gold"),
                       top = 5, 
                       padj = "BH", 
                       qval = 0.1)
@@ -338,7 +338,7 @@ functional_enrichment(gene_sets = c("Go", "Kegg", "Hallmark"),
   
 ```{r , fig.width = 10, fig.height = 7}
 
-TF_overrep_module(clusters = c("steelblue", "gold", "maroon", "plum"),
+TF_overrep_module(clusters = c("lightblue"),
                   topTF = 5, 
                   topTarget = 5)
 

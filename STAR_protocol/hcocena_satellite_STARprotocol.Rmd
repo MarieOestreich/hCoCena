@@ -1,6 +1,6 @@
 ---
 title: "hCoCena - STAR protocol (satellite)"
-author: "Marie Oestreich, Lisa Holsten"
+author: "Marie Oestreich, Lisa Holsten, Kilian Dahm"
 date: "19 10 2023"
 output: html_document
 ---
@@ -279,7 +279,7 @@ A table of hubs per cluster will be exported as an Excel file. This table is als
   
 ```{r Hub gene detection}
 
-find_hubs(clusters = c("steelblue", "gold", "maroon", "plum"),
+find_hubs(clusters = c("lightblue"),
           top = 10, 
           tree_layout = F, 
           TF_only = "TF",
@@ -351,7 +351,7 @@ colour_single_cluster(cluster = "lightblue")
 
 user_specific_cluster_profiling(from_file =  T, path = paste0(hcobject$working_directory$dir_reference_files, "immune_sig_m.csv"))
 
-user_specific_cluster_profiling(from_file = F, enrichment_keys = c("interferon-gamma", "interleukin-4"), db = "GO", qval = 0.5)
+user_specific_cluster_profiling(from_file = F, enrichment_keys = c("type_II_interferon", "interleukin_4"), db = "Go", qval = 0.5)
 
 plot_cluster_heatmap()
 
