@@ -327,7 +327,7 @@ highlight_geneset(gene_set = c("STAT6", "MAFG", "ETS2", "RUNX1", "TFE3", "HES6",
   
 ```{r colour single cluster, fig.width=10, fig.height=7}
 
-colour_single_cluster(cluster = "gold")
+colour_single_cluster(cluster = "lightblue")
 
 ```
 

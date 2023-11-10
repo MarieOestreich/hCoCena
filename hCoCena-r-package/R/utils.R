@@ -16,18 +16,19 @@ get_cluster_colours <- function(){
 #' Leiden Clustering
 #' 
 #' Applies the Leiden community detection to the network.
-#' @param g Then network, an igraph object.
+#' @param g The network, an igraph object.
 #' @param num_it The number of iteration the algorithm is supposed to run.
+#' @param resolution The resolution of the leiden clustering, higher values result in more clusters and vice versa.
 #' @noRd
 
-leiden_clustering <- function(g, num_it){
+leiden_clustering <- function(g, num_it, resolution){
   
   color.cluster <- get_cluster_colours()
   
   set.seed(168575)
   
   # run Leiden algorithm ion network:
-  partition <- leidenAlg::leiden.community(graph = g, n.iterations = num_it)
+  partition <- leidenAlg::leiden.community(graph = g, n.iterations = num_it, resolution = resolution)
   
   # extract found clusters and the genes belonging to them:
   clusters_df <- base::data.frame(cluster = base::as.numeric(partition$membership), gene = partition$names)
@@ -100,13 +101,14 @@ leiden_clustering <- function(g, num_it){
 
 cluster_calculation_internal <- function(graph_obj, 
                                           algo, 
-                                          case, 
+                                          case,
+                                          resolution,
                                           it = 1) {
 
     library(igraph)
 
     if(algo == "cluster_leiden"){
-      cfg <- leiden_clustering(g = graph_obj, num_it = no_of_iterations)
+      cfg <- leiden_clustering(g = graph_obj, num_it = no_of_iterations, resolution =resolution)
     }
     cfg <- base::get(algo)(graph_obj)
 
