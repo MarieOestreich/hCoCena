@@ -87,6 +87,12 @@ user_specific_cluster_profiling <- function(from_file = F,
     
         tmp$hits <- base::rep(hits, base::nrow(tmp))
         
+        if(hits == 0){
+          tmp$count <- 0
+        }else{
+          tmp$count <- (tmp$count/tmp$hits)*100
+        }
+        
         categories_per_cluster <- base::rbind(categories_per_cluster, tmp)
       }
       output[["enrichlist"]] <- enriched_list
@@ -94,7 +100,7 @@ user_specific_cluster_profiling <- function(from_file = F,
     }else{
       
       if(base::is.null(path)){
-        stop("File path mus be specified using the 'path' variable.")
+        stop("File path must be specified using the 'path' variable.")
       }
       f <- utils::read.csv(path)
       enrichment_keys <- base::colnames(f)
