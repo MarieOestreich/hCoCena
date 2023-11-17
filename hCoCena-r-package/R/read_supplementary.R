@@ -4,7 +4,7 @@
 #' @export
 
 read_supplementary <- function (){
-  sapply(names(hcobject[["supplement"]]), function(x))  
+  sapply(names(hcobject[["supplement"]]), function(x){  
     if(x == "Tf" & !is.null(hcobject[["supplement"]][["Tf"]])) 
       hcobject[["supplementary_data"]][["TF"]] <<- utils::read.delim(base::paste0(hcobject[["working_directory"]][["dir_reference_files"]], 
                                                                                   hcobject[["supplement"]][["Tf"]]), header = TRUE, check.names = F)
@@ -27,7 +27,8 @@ read_supplementary <- function (){
         hcobject[["supplementary_data"]][[stringr::str_to_title(x)]] <<- utils::read.csv(base::paste0(hcobject[["working_directory"]][["dir_reference_files"]], 
                                                                                                       hcobject[["supplement"]][[x]]), header = T, stringAsFactors = F, quote ="")
       else if(grepl(".gmt", hcobject[["supplement"]][[x]]))
-        hcobject[["supplementary_data"]][["Reactome"]] <<- clusterProfiler::read.gmt(base::paste0(hcobject[["working_directory"]][["dir_reference_files"]], 
+        hcobject[["supplementary_data"]][[stringr::str_to_title(x)]] <<- clusterProfiler::read.gmt(base::paste0(hcobject[["working_directory"]][["dir_reference_files"]], 
                                                                                                   hcobject[["supplement"]][[x]]))
       else print(paste0("invalid input format of database: ", x, ". Valid inputs are: .csv and .gmt files!"))
+  }) %>% base::invisible()
 }

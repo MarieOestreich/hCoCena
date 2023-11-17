@@ -28,7 +28,7 @@ functional_enrichment <- function(gene_sets = c("Go", "Kegg", "Hallmark", "React
 
   # Perform the analysis for each of the selected gene sets
   for (i in gene_sets){
-    if(i %in% names(hcobject[["supplementary_data"]]){
+    if(i %in% names(hcobject[["supplementary_data"]])){
       
       top_enr <- list()
       res <- list()

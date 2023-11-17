@@ -26,7 +26,7 @@ The main Markdown contains the base workflow of hCoCena. For a fully functional 
 # library(hcocena)
 
 # Until package is updated:
-file.sources <- list.files(path = "C:/Users/holsten.l/sciebo2/PhD Project - Lisa/2023_hCoCena_STARprotocol/hCoCena_GitHub_clone/hCoCena/hCoCena-r-package/R/",
+file.sources <- list.files(path = "C:/Users/dahmk/Projects/hCoCena/hCoCena/hCoCena-r-package/R/",
                            pattern = "*.R", full.names = T)
 sapply(file.sources, source, .GlobalEnv)
 rm(file.sources)
@@ -99,7 +99,10 @@ init_save_folder(name = "STAR_protocol")
 
   Now, we provide the count and annotation data for the different data sets ('layers'): The function 'define_layers()' accepts as input a named list. The names of the list elements should be descriptive of the respective data set. Here, we name one list element 'Array' (it will hold the microarray data and annotation) and the other 'RNA_seq' (RNA-seq data and annotation). Each of these elements is set to be a vector of 2 strings: the first being the name of the count data file/dataframe, the second for the annotation file/dataframe. Since we are loading the data from dataframes in the environment (not from files), the given strings (e.g., "data_array", "annotation_array") are the names of objects. For detailed information regarding the structures of the count and annotation data as well as different options for providing data, refer to the function documentation by entering ?hcocena::define_layers into the console.
   
-  Secondly, we provide the names of supplementary files containing Transcription Factors ('Tf'), Hallmark enrichment terms ('Hallmark'), Kegg enrichment terms ('Kegg') and GO BP enrichment terms ('Go'). These files should be stored in the 'reference_files' folder that we set in 'init_wd()'. The files can be downloaded from the Github repository, you will find them in the folder named 'reference files'. You can check the MSidDB website for the most current versions of the pathway to gene files.
+  Secondly, we provide the names of supplementary files containing Transcription Factors ('Tf'), Hallmark enrichment terms ('Hallmark'), Kegg enrichment terms ('Kegg') and GO BP enrichment terms ('Go'). These files should be stored in the 'reference_files' folder that we set in 'init_wd()'. The files can be downloaded from the Github repository, you will find them in the folder named 'reference files'. You can check the MSidDB website for the most current versions of the pathway to gene files. Further, custom pathway to gene files saved in the 'reference_files' folder in a '.gmt' or '.csv' file format can read. Files should be in the following format:
+  1. column (named 'term'): name of the pathway
+  2. column (named 'gene'): gene symbol of the respective pathway defined in the first column
+Note: Only one gene symbol per row is allowed, thus, in cases where multiple genes are associated with a pathway generate one row per gene symbol!
     
 ```{r defining Omics Layers}
 
@@ -273,10 +276,7 @@ build_integrated_network(mode = "u", multi_edges = "min")
   
 ```{r compute clusters}
 cluster_calculation(no_of_iterations = 50, cluster_algo = "cluster_leiden", resolution = 1)
-```
 
-
-```{r plot module heatmap}
 plot_cluster_heatmap()
 ```
 
@@ -299,7 +299,7 @@ plot_cluster_heatmap()
 ```{r plot network coloured by module, fig.width=10, fig.height=7}
 # Cytoscape option used (see satellite markdown)
 
-#plot_integrated_network() 
+plot_integrated_network() 
 
 ```
 
