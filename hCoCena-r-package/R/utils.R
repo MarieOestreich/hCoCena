@@ -1538,7 +1538,7 @@ freqdist_plot_from_df <- function(data, log_2, bool_plot, it = NULL){
     print("To avoid over-crowded plots, several plots will be created with up to 42 samples each.")
     
   }
-  
+
   if(log_2 == T){
     
     data[data < 1] <- NA
@@ -1553,21 +1553,21 @@ freqdist_plot_from_df <- function(data, log_2, bool_plot, it = NULL){
     
     for(x in base::c(1:base::ncol(data))){
       
-      plot_list[[base::paste0("plot_", x)]] <- ggplot2::ggplot(data, ggplot2::aes(x = data[, x])) + 
+      plot_list[[base::paste0("plot_", x)]] <- ggplot2::ggplot(data[,x,drop =F], ggplot2::aes(x = data[[x]])) + 
         ggplot2::geom_density(ggplot2::aes(y = ..count..), fill = "lightgray") +
-        ggplot2::geom_vline(ggplot2::aes(xintercept = base::mean(data[,x][stats::complete.cases(data[, x])])), 
+        ggplot2::geom_vline(ggplot2::aes(xintercept = base::mean(data[[x]][stats::complete.cases(data[[x]])])), 
                    linetype = "dashed", size = 0.6,
                    color = "#FC4E07")+
         ggplot2::xlab(base::colnames(data)[x])+
-        ggplot2::xlim(base::c(0, base::max(data[,x])))+
+        ggplot2::xlim(base::c(0, base::max(data[[x]])))+
         ggplot2::theme_bw() + 
         ggplot2::theme(text = ggplot2::element_text(size = 10)) +
         ggplot2::ggtitle(base::ifelse(x==1, it, ""))
       
     }
-    
+
     p <- base::do.call(gridExtra::grid.arrange, plot_list) 
-    
+
     ggplot2::ggsave(filename = base::paste0("Sample_distribution_freq_", it,".pdf"), plot = p, device = cairo_pdf,
            path = base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]],"/"), width = 10, height = 8, units = "in")
     
@@ -1632,22 +1632,19 @@ freqdist_plot_from_df <- function(data, log_2, bool_plot, it = NULL){
 #' @noRd
 
 plot_list_of_plots <- function(plts){
-  
+
   for (j in 1:base::length(plts)){
     
     tmp <- plts[[j]]
     
     if(ggplot2::is.ggplot(tmp)){
-      
+
       graphics::plot(tmp)
       
     }else{
       
-      for(p in tmp){
-        
-        graphics::plot(p)
-        
-      }
+      patchwork::wrap_plots(tmp)
+      
     }
   }
 }

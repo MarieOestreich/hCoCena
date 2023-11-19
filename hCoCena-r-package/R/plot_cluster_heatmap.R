@@ -310,7 +310,8 @@ plot_cluster_heatmap <- function(col_order = NULL,
   if(!base::length(column_anno_categorical) == 0){
     for(a in 1:base::length(column_anno_categorical)){
       base::set.seed(a)
-      tmp_colour <- grDevices::colorRampPalette(ggsci::pal_d3("category20")(20))(base::ncol(column_anno_categorical[[a]]))
+      tmp_colour <- grDevices::colorRampPalette(c(RColorBrewer::brewer.pal(n=9, "Set1"), 
+                                                  RColorBrewer::brewer.pal(n=8, "Set2")))(base::ncol(column_anno_categorical[[a]]))
       
       if(cat_as_bp[a] == T){
         column_anno_categorical[[a]][base::is.na(column_anno_categorical[[a]])] <- 0
@@ -325,7 +326,7 @@ plot_cluster_heatmap <- function(col_order = NULL,
                                                                      gap = grid::unit(2, "mm"),
                                                                      annotation_name_rot = 0,
                                                                      annotation_name_gp = grid::gpar(fontsize = 8),
-                                                                     annotation_label = base::names(column_anno_categorical)[a])
+                                                                     annotation_label = base::names(column_anno_categorical)[a], direction = c("vertical"))
         }else{
           anno_list <-  ComplexHeatmap::add_heatmap(anno_list, ComplexHeatmap::HeatmapAnnotation(col_anno = ComplexHeatmap::anno_barplot(column_anno_categorical[[a]]%>%base::as.matrix(),
                                                                                              width = grid::unit(2, "cm"),

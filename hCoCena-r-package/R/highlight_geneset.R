@@ -10,7 +10,6 @@
 
 highlight_geneset <- function(gene_set, name = NULL, col = "black", label_offset = 3, plot = T, save = T){
   
-  label_offset = label_offset
   g <- hcobject[["integrated_output"]][["merged_net"]]
   gtc <- GeneToCluster()
   colnames(gtc) <- c("name", "color")
@@ -56,6 +55,7 @@ highlight_geneset <- function(gene_set, name = NULL, col = "black", label_offset
   }) %>% base::unlist()
   
   # Get original layout
+  base::set.seed(123)
   if(is.null(hcobject[["integrated_output"]][["cluster_calc"]][["layout"]])){
     if(hcobject[["global_settings"]][["layout_algorithm"]] == "cytoscape")
       stop("Please create a Cytoscape-based network layout first. To do so, refer to the satellite markdown, section 'Cytoscape'")
@@ -66,7 +66,9 @@ highlight_geneset <- function(gene_set, name = NULL, col = "black", label_offset
     hcobject[["integrated_output"]][["cluster_calc"]][["layout"]] <<- l
     l <- l[base::rownames(l) %in% igraph::V(g)$name,]
     l <- l[igraph::V(g)$name, ]
-  } else l <- hcobject[["integrated_output"]][["cluster_calc"]][["layout"]]
+  } else{
+    l <- hcobject[["integrated_output"]][["cluster_calc"]][["layout"]][base::match(igraph::V(g)$name, base::rownames(hcobject[["integrated_output"]][["cluster_calc"]][["layout"]])), ]
+  } 
 
 
   # Add genes to be highlighted (add vertices to the label and arrange plotting order)

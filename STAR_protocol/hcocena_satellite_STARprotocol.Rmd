@@ -316,7 +316,7 @@ visualize_gene_expression(genes = c("MAFA", "IRF9", "IRF7", "STAT2", "STAT1", "N
 
 highlight_geneset(gene_set = c("STAT6", "MAFG", "ETS2", "RUNX1", "TFE3", "HES6", "IRF4", "FOXQ1",
                                "CREB5", "SPN", "SOX8", "SIP1", "FOXD2", "GTF3C3", "BATF3", "EGR3", "FOS"), 
-                   name = "Geneset_IL4")
+                   name = "Geneset_IL4", label_offset = 50)
 
 ```
 
@@ -381,14 +381,14 @@ The annotations will be shown in the heatmap when calling plot_cluster_heatmap()
 ```{r create column annotation matrices, fig.height=6, fig.width=12}
 
 # some categorical annotations
-col_anno_categorical(variables = c("stimuli", "Phenotype"), variable_label = "Stimulation") 
-col_anno_categorical(variables = c("Donor", "Donor"), variable_label = "Donor")
+col_anno_categorical(variables = c("stimuli", "Phenotype"), variable_label = "Stimulation", type = "percent") 
+col_anno_categorical(variables = c("Donor", "Donor"), variable_label = "Donor", type = "abs")
 
 # adding numerical annotations would be possible as well (not applicable for this showcase)
 # col_anno_numerical()
 
 
-plot_cluster_heatmap()
+plot_cluster_heatmap(cat_as_bp = c(F,T))
 
 ```
 

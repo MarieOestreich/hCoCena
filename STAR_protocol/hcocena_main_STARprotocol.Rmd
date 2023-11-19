@@ -112,7 +112,8 @@ define_layers(list(Array = c("data_array", "annotation_array"),
 set_supp_files(Tf = "TFcat.txt", 
                Hallmark = "h.all.v2023.1.Hs.symbols.gmt", 
                Go = "c5.go.bp.v2023.1.Hs.symbols.gmt",
-               Kegg = "c2.cp.kegg.v2023.1.Hs.symbols.gmt")
+               Kegg = "c2.cp.kegg.v2023.1.Hs.symbols.gmt",
+               CustomGoCC = "c5.go.cc.v2023.1.Hs.symbols.gmt")
 
 ```
 

@@ -20,6 +20,7 @@ rank_variance <- function(expr){
 #' @noRd
 
 find_span <- function(var.df){
+
   for(i in base::rev(base::seq(0.5, 1, 0.01))){
     lo <- stats::loess(base::log(var.df$variance)~var.df$rank, span = i)
     xl <- base::seq(base::min(var.df$rank),base::max(var.df$rank), (base::max(var.df$rank) - base::min(var.df$rank))/1000)
@@ -58,6 +59,10 @@ plot_inflections <- function(var.df, i, setname = "my data"){
 suggest_topvar <- function(){
   for(l in 1:base::length(hcobject[["layers"]])){
     var.df <- rank_variance(hcobject[["data"]][[base::paste0("set", l, "_counts")]])
+    if(any(var.df$variance == 0)){
+      message(paste0("Data of set ", l," contains genes with a variance of 0. Remove these genes in order to continue!"))
+      stop()
+    } 
     i <- find_span(var.df = var.df)
     plot_inflections(var.df = var.df, i = i, setname = hcobject[["layers_names"]][[l]])
   }

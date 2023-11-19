@@ -6,10 +6,11 @@
 #' @param set An integer. The number of the datset for which to perform the calculation.
 #' @param meta A vector of strings. The names of the numeric annotation column(s) which to correlate to the cluster expression patterns.
 #' @param p_val The maximum p-value to determine a correlation as significant. Default is 0.05. Non-significant correlations are shown in grey.
+#' @param padj Method to use for multiple testing correction. Can be one of "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none".  Default is "BH" (Benjamini-Hochberg).
 #' @export
 
 
-meta_correlation_num <- function(set, meta, p_val = 0.05){
+meta_correlation_num <- function(set, meta, p_val = 0.05, padj = "BH"){
   
   meta_data <- dplyr::select(hcobject[["data"]][[base::paste0("set", set, "_anno")]], dplyr::all_of(meta))
   counts <- sample_wise_cluster_expression(set = set)
@@ -24,9 +25,10 @@ meta_correlation_num <- function(set, meta, p_val = 0.05){
     return(correlation)
   }) %>% rlist::list.rbind()
 
+  cors$p_adj <- stats::p.adjust(cors$p, method = padj)
   
   cors$pearson_corr <- base::apply(cors, 1, function(x){
-    if(as.double(x["p"]) > p_val){
+    if(as.double(x["p_adj"]) > p_val){
       return(NA)
     }else{
       return(as.double(x["r"]))
@@ -70,9 +72,10 @@ meta_correlation_num <- function(set, meta, p_val = 0.05){
 #' @param set An integer. The number of the datset for which to perform the calculation.
 #' @param meta A single string. The name of the categorical annotation column which to correlate to the cluster expression patterns.
 #' @param p_val The maximum p-value to determine a correlation as significant. Default is 0.05. Non-significant correlations are shown in grey.
+#' @param padj Method to use for multiple testing correction. Can be one of "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none".  Default is "BH" (Benjamini-Hochberg).
 #' @export
 
-meta_correlation_cat <- function(meta, set, p_val = 0.05){
+meta_correlation_cat <- function(meta, set, p_val = 0.05, padj = "BH"){
   
   # Correlation of the pattern the metainfo has across groups with the pattern of the modules across groups; can only be calculated when there are at least 2 groups
   if(base::ncol(hcobject[["layer_specific_outputs"]][[base::paste0("set", set)]][["part2"]][["GFC_all_genes"]]) == 2){
@@ -111,7 +114,7 @@ meta_correlation_cat <- function(meta, set, p_val = 0.05){
   
   base::names(voi_list) <- base::unique(df$voi)
   
-  # For each value that the meta information can take (e.g., recovered = YES or NO) count its occurances per sample group:
+  # For each value that the meta information can take (e.g., recovered = YES or NO) count its occurences per sample group:
   out <- base::lapply(base::unique(df$meta), function(x){
     counts <- base::lapply(voi_list, function(y){
       vec <- y[,1]
@@ -127,7 +130,7 @@ meta_correlation_cat <- function(meta, set, p_val = 0.05){
   out <- dplyr::select(out, dplyr::all_of(base::colnames(cluster_X_sample_mean_counts)))
 
   
-  # Transform absolute occurrance counts to percentages:
+  # Transform absolute occurrence counts to percentages:
   out <- base::apply(out, 1, function(x){
     if(base::sum(x) == 0){
       base::rep(0, base::length(x))
@@ -158,8 +161,10 @@ meta_correlation_cat <- function(meta, set, p_val = 0.05){
     return(tmp)
   }) %>% rlist::list.rbind()
   
+  vals$p_adj <- stats::p.adjust(vals$p, method = padj)
+  
   vals$pearson_corr <- base::apply(vals, 1, function(x){
-    if(x["p"] > p_val){
+    if(x["p_adj"] > p_val){
       return(NA)
     }else{
       return(x["r"])
