@@ -7,6 +7,10 @@
 #' @param Go A file name for a .gmt gene ontology file. You can find one in the reference file folder in the repository.
 #' @param Kegg A file name for a .gmt KEGG database file. You can find one in the reference file folder in the repository.
 #' @param Reactome A file name for a .gmt Reactomte database file. You can find one in the reference file folder in the repository.
+#' @details Custom database files can be used in a .csv or .gmt file format. .csv files have the following format:
+#'  1. column (named 'term'): name of the pathway
+#'  2. column (named 'gene'): gene symbol of the respective pathway defined in the first column
+#'  Note: Only one gene symbol per row is allowed, thus, in cases where multiple genes are associated with a pathway generate one row per gene symbol!
 #' @export
 
 set_supp_files <- function (Tf = NULL, Hallmark = NULL, Go = NULL, Kegg = NULL, Reactome = NULL, ...) 
