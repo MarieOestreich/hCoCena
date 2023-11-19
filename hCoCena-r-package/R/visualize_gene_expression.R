@@ -81,5 +81,5 @@ visualize_gene_expression <- function(genes, name = NULL, width = 15, height = 1
   
   graphics::plot.new()
   ComplexHeatmap::plot.HeatmapList(plotls, column_title = heatmap_title, column_title_gp = grid::gpar(fontsize = 14, fontface = "bold"))
-  
+   
 }
