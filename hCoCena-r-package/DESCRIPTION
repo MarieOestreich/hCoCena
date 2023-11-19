@@ -2,17 +2,17 @@ Package: hcocena
 Title: Horizontal Integration And Analysis Of Multiple Transcriptomics Datasets
 Version: 1.2.0
 Authors@R: c(
-    person(given = "Marie",
-           family = "Oestreich",
-           role = c("aut", "cre"),
-           email = "mrstrch126@gmail.com",
-           comment = c(ORCID = "0000-0002-4754-1301")),
-    person(given = "Shobhit",
-           family = "Agrawal",
-           role = c("ctb")),
     person(given = "Lisa",
            family = "Holsten",
-           role = c("ctb")),
+           role = c("aut", "cre")),
+	person(given = "Kilian",
+           family = "Dahm",
+           role = c("aut", "cre")),
+    person(given = "Marie",
+           family = "Oestreich",
+           role = c("aut"),
+           email = "mrstrch126@gmail.com",
+           comment = c(ORCID = "0000-0002-4754-1301")),
     person(given = "Thomas",
            family = "Ulas",
            role = c("aut")))

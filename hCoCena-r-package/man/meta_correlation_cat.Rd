@@ -4,7 +4,7 @@
 \alias{meta_correlation_cat}
 \title{Categorical Metadata Correaltion}
 \usage{
-meta_correlation_cat(meta, set, p_val = 0.05)
+meta_correlation_cat(meta, set, p_val = 0.05, padj = "BH")
 }
 \arguments{
 \item{meta}{A single string. The name of the categorical annotation column which to correlate to the cluster expression patterns.}
@@ -12,9 +12,11 @@ meta_correlation_cat(meta, set, p_val = 0.05)
 \item{set}{An integer. The number of the datset for which to perform the calculation.}
 
 \item{p_val}{The maximum p-value to determine a correlation as significant. Default is 0.05. Non-significant correlations are shown in grey.}
+
+\item{padj}{Method to use for multiple testing correction. Can be one of "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none".  Default is "BH" (Benjamini-Hochberg).}
 }
 \description{
-Calculates as matrix where columns are the different values of the meta category (e.g. if meta = survival and "survival can have values "yes" or "no", then "yes" and "no" will be the columns) and rows are clusters.
+Calculates as matrix where columns are the different values of the meta category (e.g. if meta = survival and "survival can have values "yes" or "no", then "yes" and "no" will be the columns) and rows are modues.
 Cells contain the Pearson correlation value between
 a) the mean expressions of cluster genes in each voi group with
 b) the counts of the meta value (e.g., "yes" or "no") across voi groups.

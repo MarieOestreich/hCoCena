@@ -4,7 +4,7 @@
 \alias{PCA}
 \title{Run And Plot PCA}
 \usage{
-PCA(which = "all", color_by = "none", ellipses = F)
+PCA(which = "all", color_by = "none", ellipses = F, cols = NULL)
 }
 \arguments{
 \item{which}{One of "all" (uses all genes), "topvar" (uses top most variant genes, cannot be used before running "Data processing part I" in the main markdown),

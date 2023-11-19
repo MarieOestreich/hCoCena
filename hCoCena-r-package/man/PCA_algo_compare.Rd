@@ -4,13 +4,15 @@
 \alias{PCA_algo_compare}
 \title{Compare PCAs For Different Clustering Algorithms}
 \usage{
-PCA_algo_compare(gtc = NULL, algo = NULL)
+PCA_algo_compare(gtc = NULL, algo = NULL, cols = NULL)
 }
 \arguments{
 \item{gtc}{A user defined clsutering can be provided as long as it has the same format as the output of GeneToCluster(): A data frame with two columns, the first containing gene names as strings, the second containing cluster colours as strings.}
 
 \item{algo}{If NULL (default), PCAs for all available algorithms are plotted.
 Otherwise, one of "cluster_louvain", "cluster_fast_greedy", "cluster_infomap", "cluster_walktrap", "cluster_label_prop", "cluster_leiden", then only the PCA for that algorithm is shown.}
+
+\item{cols}{A user-defined color vector.}
 }
 \description{
 A series of principle component analyses (PCAs) are performed and plotted. The first one to be shown is based on the top most variant genes (or all depending on the topvar setting) for each data set.

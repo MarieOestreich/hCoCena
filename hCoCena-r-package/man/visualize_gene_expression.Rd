@@ -4,16 +4,24 @@
 \alias{visualize_gene_expression}
 \title{Visualize Gene Expression}
 \usage{
-visualize_gene_expression(genes, name = NULL, width = 15, height = 10)
+visualize_gene_expression(
+  genes,
+  name = NULL,
+  width = 15,
+  height = 10,
+  save = T
+)
 }
 \arguments{
 \item{genes}{A vector of strings giving the genes to be plotted.}
 
-\item{name}{A string giving the name for the save file WITHOUT file ending.}
+\item{name}{A string giving the plot title and the name for the save file (WITHOUT file ending).}
 
 \item{width}{Width of the PDF, default ist 15, only change if plots overlap in PDF.}
 
 \item{height}{Height of the PDF, default ist 10, only change if plots overlap in PDF.}
+
+\item{save}{Bolean to determine whether the plot should be saved as PDF. TRUE by default.}
 }
 \description{
 Plots the mean expression values per condition for the given genes for each dataset as a heatmap. Values are scaled across rows.

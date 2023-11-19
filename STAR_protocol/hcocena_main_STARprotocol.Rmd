@@ -23,15 +23,15 @@ The main Markdown contains the base workflow of hCoCena. For a fully functional 
   First, we are going to load the hCoCena R-package. For information on how to download and install the package, please refer to the 'install_hcocena.R' script that you can find in the Github repository.
 
 ```{r}
-# library(hcocena)
+ library(hcocena)
 
 # Until package is updated:
-file.sources <- list.files(path = "C:/Users/dahmk/Projects/hCoCena/hCoCena/hCoCena-r-package/R/",
-                           pattern = "*.R", full.names = T)
-sapply(file.sources, source, .GlobalEnv)
-rm(file.sources)
-
-library(magrittr)
+# file.sources <- list.files(path = "C:/Users/dahmk/Projects/hCoCena/hCoCena/hCoCena-r-package/R/",
+#                            pattern = "*.R", full.names = T)
+# sapply(file.sources, source, .GlobalEnv)
+# rm(file.sources)
+# 
+# library(magrittr)
 ```
 
 

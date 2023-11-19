@@ -4,16 +4,18 @@
 \alias{meta_plot}
 \title{Meta Data Plot}
 \usage{
-meta_plot(setnum, group_col = NULL, meta_col = NULL, type = "cat")
+meta_plot(set, group_col = NULL, meta_col = NULL, type = "cat", cols = NULL)
 }
 \arguments{
-\item{setnum}{An integer. The number of the dataset for which the plot should be  created.}
+\item{set}{An integer. The number of the dataset for which the plot should be  created.}
 
-\item{group_col}{A string. The name of the column in the annotation of datset 'setnum' that contains your groups (e.g. conditions) that are to be plotted along the x-axis.}
+\item{group_col}{A string. The name of the column in the annotation of datset 'set' that contains your groups (e.g. conditions) that are to be plotted along the x-axis.}
 
-\item{meta_col}{A string. The name of the column in the annotation of datset 'setnum' that contains the information that is to be inspected (e.g. outcome or age).}
+\item{meta_col}{A string. The name of the column in the annotation of datset 'set' that contains the information that is to be inspected (e.g. outcome or age).}
 
 \item{type}{Either "cat", if "meta_col" is categorical, or "num", if "meta_col" is numerical.}
+
+\item{cols}{User-defined color vector.}
 }
 \description{
 Visualize the meta data with respect to a grouping of choice, e.g., how outcome or age are distributed across the groups of your variable of interest.

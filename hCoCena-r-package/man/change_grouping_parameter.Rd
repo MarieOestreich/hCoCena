@@ -4,10 +4,26 @@
 \alias{change_grouping_parameter}
 \title{Change Grouping Parameter}
 \usage{
-change_grouping_parameter(group_by)
+change_grouping_parameter(
+  group_by,
+  col_order = NULL,
+  cluster_columns = T,
+  row_order = NULL,
+  cluster_rows = T
+)
 }
 \arguments{
 \item{group_by}{A string giving the new grouping variable. This must be a name of a column present in all annotation files.}
+
+\item{col_order}{Defines the order in which the sample groups (conditions) appear in the heatmap.
+Accepts a vector of strings giving the conditions in their desired order, default is NULL (automatic order, determined by clustering).
+If the parameter cluster_columns is not set to FALSE, this order will be overwritten.}
+
+\item{cluster_columns}{A Boolean, whether or not to cluster the columns of the heatmap. Default is TRUE, overwrites col_order.}
+
+\item{row_order}{Like col_order but with cluster names.}
+
+\item{cluster_rows}{Like cluster_columns but for rows.}
 }
 \description{
 The variable by which the samples are grouped and based on which the GFCs are calculated can be changed and the cluster heatmap will be replotted.
