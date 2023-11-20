@@ -4,18 +4,21 @@ Version: 1.2.0
 Authors@R: c(
     person(given = "Lisa",
            family = "Holsten",
-           role = c("aut", "cre")),
+           role = c("aut"),
+		   comment = c(ORCID = "0000-0001-6238-1273")),
 	person(given = "Kilian",
            family = "Dahm",
-           role = c("aut", "cre")),
+           role = c("aut", "cre"),
+		   email = "kilian.dahm@dzne.de",
+		   comment = c(ORCID = "0000-0002-6819-2622")),
     person(given = "Marie",
            family = "Oestreich",
            role = c("aut"),
-           email = "mrstrch126@gmail.com",
            comment = c(ORCID = "0000-0002-4754-1301")),
     person(given = "Thomas",
            family = "Ulas",
-           role = c("aut")))
+           role = c("aut"),
+		   comment = c(ORCID = "0000-0002-9785-4197")))
 Description: The package allows the joint analysis of multile transcriptomics datasets, using a network-based approach for data integration.
 License: GPL (>= 3)
 Encoding: UTF-8

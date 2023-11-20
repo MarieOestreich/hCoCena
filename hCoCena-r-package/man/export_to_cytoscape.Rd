@@ -11,6 +11,5 @@ export_to_cytoscape(name = "my igraph")
 }
 \description{
 Attention: Cytoscape Software must be open.
-Due to poor communication between R and Cytoscape, the exports are usually quite slow. To fasten things up, after running the function, wait until the "create view" button appears in Cytoscape.
-Press it and wait for the network to render. Then INTERRUPT the function in R (by pressing the little stop sign above the console).
+Due to difficulties in the communication between R/RCy3 and Cytoscape, you need to manually stop the function in R as soon as the table of nodes and edges appears in Cytoscape.(by pressing the little stop sign above the console).
 }
