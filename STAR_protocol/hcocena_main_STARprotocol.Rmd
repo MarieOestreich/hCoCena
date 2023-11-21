@@ -23,15 +23,9 @@ The main Markdown contains the base workflow of hCoCena. For a fully functional 
   First, we are going to load the hCoCena R-package. For information on how to download and install the package, please refer to the 'install_hcocena.R' script that you can find in the Github repository.
 
 ```{r}
+
  library(hcocena)
 
-# Until package is updated:
-# file.sources <- list.files(path = "C:/Users/dahmk/Projects/hCoCena/hCoCena/hCoCena-r-package/R/",
-#                            pattern = "*.R", full.names = T)
-# sapply(file.sources, source, .GlobalEnv)
-# rm(file.sources)
-# 
-# library(magrittr)
 ```
 
 
@@ -69,7 +63,7 @@ dir <- getwd() %>% stringr::str_remove(pattern = "/STAR_protocol")
 
 init_wd(dir_count_data = FALSE,
         dir_annotation = FALSE,
-        dir_reference_files = paste0(dir, "/reference files/"), #the folder that contains the reference files
+        dir_reference_files = paste0(dir, "/reference_files/"), #the folder that contains the reference files
         dir_output = paste0(dir, "/analyses/"))
 
 rm(dir)
