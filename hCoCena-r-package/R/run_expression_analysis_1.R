@@ -35,14 +35,7 @@ run_expression_analysis_1 <- function(padj = "none",
 	if(!corr_method %in% c("pearson","spearman", "rho")){
 		stop("Parameter 'corr_method' must be either 'pearson', 'spearman' or 'rho'.")
 	}
-  # check for zero-variance genes
-  for(x in 1:base::length(hcobject[["layers"]])){
-    var.df <- rank_variance(hcobject[["data"]][[base::paste0("set", x, "_counts")]])
-    if(any(var.df$variance == 0)){
-      message(paste0("Data of set ", x," contains genes with a variance of 0. Remove these genes in order to continue!"))
-      stop()
-    } 
-  }
+  
 	# run first part of expression analysis for each data layer:
 	for(x in 1:base::length(hcobject[["layers"]])){
 		hcobject[["layer_specific_outputs"]][[base::paste0("set",x)]][["part1"]] <<- run_expression_analysis_1_body(x, 

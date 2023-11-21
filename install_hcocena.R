@@ -1,6 +1,7 @@
 install.packages('remotes')
-
+library(remotes)
 remotes::install_version(package = "BiocManager", version = "1.30.22", upgrade="never")
+library(BiocManager)
 remotes::install_version(package = "Cairo", version = "1.6-1", upgrade="never")
 remotes::install_version(package = "circlize", version = "0.4.15", upgrade="never")
 BiocManager::install(package = "clusterProfiler")  # , version = "4.4.1", upgrade="never")
@@ -38,8 +39,6 @@ remotes::install_version(package = "stringi", version = "1.8.1", upgrade="never"
 remotes::install_version(package = "stringr", version = "1.5.1", upgrade="never")
 remotes::install_version(package = "tibble", version = "3.2.1", upgrade="never")
 remotes::install_version(package = "tidyselect", version = "1.2.0", upgrade="never")
-
 remotes::install_github("tpq/propr")
 remotes::install_url(url = "https://cran.r-project.org/src/contrib/Archive/MCDA/MCDA_0.0.24.tar.gz")
-
 remotes::install_url(url="https://github.com/MarieOestreich/hCoCena/archive/refs/heads/version_1.2.zip", subdir="hCoCena-r-package", dependencies=TRUE, upgrade="never")
