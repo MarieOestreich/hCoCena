@@ -1,11 +1,11 @@
 ---
 title: "hCoCena - STAR protocol (satellite)"
 author: "Marie Oestreich, Lisa Holsten, Kilian Dahm"
-date: "19 10 2023"
+date: "21 11 2023"
 output: html_document
 ---
 
-This markdown contains optional functions which can be used to expand the mandatory hcocena workflow functions displayed in the hcocena_main markdown script.
+This markdown contains optional functions which can be used to expand the base hCoCena workflow functions displayed in the hcocena_main markdown script.
 
 # Pre-integration phase
 
@@ -76,12 +76,16 @@ For details on the settable parameters, refer to the function documentation with
 
 ```{r meta data plots}
 # For the array data
-meta_plot(set = 1, group_col = "merged", meta_col = "stimuli", type = "cat", cols = c("IL4" = "#00A1D5FF", "IFNg" = "#79AF97FF", "baseline" = "#374E55FF"))
-meta_plot(set = 1, group_col = "merged", meta_col = "Donor", type = "cat", cols = c("BC9" = "#FBB4AE", "BC11" = "#B3CDE3", "BC13" = "#CCEBC5", "BC78" = "#DECBE4"))
+meta_plot(set = 1, group_col = "merged", meta_col = "stimuli", type = "cat", 
+          cols = c("IL4" = "#00A1D5FF", "IFNg" = "#79AF97FF", "baseline" = "#374E55FF"))
+meta_plot(set = 1, group_col = "merged", meta_col = "Donor", type = "cat", 
+          cols = c("BC9" = "#FBB4AE", "BC11" = "#B3CDE3", "BC13" = "#CCEBC5", "BC78" = "#DECBE4"))
 
 # For the RNA-seq data
-meta_plot(set = 2, group_col = "merged", meta_col = "Phenotype", type = "cat", cols = c("IL4" = "#00A1D5FF", "IFNg" = "#79AF97FF", "baseline" = "#374E55FF"))
-meta_plot(set = 2, group_col = "merged", meta_col = "Donor", type = "cat", cols = c("BC9" = "#FBB4AE", "BC11" = "#B3CDE3", "BC13" = "#CCEBC5", "BC78" = "#DECBE4"))
+meta_plot(set = 2, group_col = "merged", meta_col = "Phenotype", type = "cat", 
+          cols = c("IL4" = "#00A1D5FF", "IFNg" = "#79AF97FF", "baseline" = "#374E55FF"))
+meta_plot(set = 2, group_col = "merged", meta_col = "Donor", type = "cat", 
+          cols = c("BC9" = "#FBB4AE", "BC11" = "#B3CDE3", "BC13" = "#CCEBC5", "BC78" = "#DECBE4"))
 
 ```
 
@@ -143,7 +147,7 @@ algo_alluvial()
 
 ### PCA for clustering algorithm comparison
 
-  For a more detailed inspection, a series of PCAs are performed and plotted. The first one to be shown is based on the top most variant genes for each data set. The following PCAs demonstrate for each clustering algorithm the spatial arrangement of the samples in the space of the first two principle components based on their expression behaviour among the modules. Samples that show similar behaviour among the defined modules are located closer together than samples that show very different expressions across moudles. A suitable clustering algorithm will identify moudles such that samples that have similar underlying data (first PCA) will also be closely situated in the PCA based on similar cluster expressions.  
+  For a more detailed inspection, a series of PCAs are performed and plotted. The first one to be shown is based on the top most variant genes for each data set. The following PCAs demonstrate for each clustering algorithm the spatial arrangement of the samples in the space of the first two principle components based on their expression behaviour among the modules. Samples that show similar behaviour among the defined modules are located closer together than samples that show very different expressions across modules. A suitable clustering algorithm will identify modules such that samples that have similar underlying data (first PCA) will also be closely situated in the PCA based on similar cluster expressions.  
   
 ```{r PCAs before regrouping, fig.width=10, fig.height=4}
 
@@ -347,11 +351,11 @@ colour_single_cluster(cluster = "lightblue")
 	The enrichment results will be visualized as stacked bar plot annotations on the module heatmap when rerunning plot_cluster_heatmap().
   For parameter details, please refer to the function documentation using ?hcocena::user_specific_cluster_profiling.
 
-```{r enriched signatures, echo = F, fig.height=6, fig.width=12}
+```{r enriched signatures, echo = F, fig.height=6, fig.width=10}
 
 user_specific_cluster_profiling(from_file =  T, path = paste0(hcobject$working_directory$dir_reference_files, "immune_sig_m.csv"))
 
-user_specific_cluster_profiling(from_file = F, enrichment_keys = c("type_II_interferon", "interleukin_4"), db = "Go", qval = 0.5)
+# user_specific_cluster_profiling(from_file = F, enrichment_keys = c("[term_1]", "[term_2]"), db = "Go", qval = 0.5)
 
 plot_cluster_heatmap()
 
@@ -378,7 +382,7 @@ The annotations will be shown in the heatmap when calling plot_cluster_heatmap()
   Use the function col_anno_categorical() for categorical metadata and col_anno_numerical() for numerical metadata.
   For information on the available parameters, refer to the function documentations with ?hcocena::col_anno_categorical or ?hcocena::col_anno_numerical.
   
-```{r create column annotation matrices, fig.height=6, fig.width=12}
+```{r create column annotation matrices, fig.height=6, fig.width=10}
 
 # some categorical annotations
 col_anno_categorical(variables = c("stimuli", "Phenotype"), variable_label = "Stimulation", type = "percent") 
@@ -423,8 +427,8 @@ Our annotation does not contain any numeric data variable to use for correlation
   
 ```{r Correlate categorical meta data with modules}
 
-meta_correlation_cat(set = 1, meta = "stimuli", p_val = 0.1)
-meta_correlation_cat(set = 2, meta = "Phenotype", p_val = 0.1)
+meta_correlation_cat(set = 1, meta = "stimuli", p_val = 0.1, padj = "none")
+meta_correlation_cat(set = 2, meta = "Phenotype", p_val = 0.1, padj = "none")
 
 ```
 

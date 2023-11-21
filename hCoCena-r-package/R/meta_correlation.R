@@ -71,7 +71,7 @@ meta_correlation_num <- function(set, meta, p_val = 0.05, padj = "BH"){
 #' 		b) the counts of the meta value (e.g., "yes" or "no") across voi groups.
 #' @param set An integer. The number of the datset for which to perform the calculation.
 #' @param meta A single string. The name of the categorical annotation column which to correlate to the cluster expression patterns.
-#' @param p_val The maximum p-value to determine a correlation as significant. Default is 0.05. Non-significant correlations are shown in grey.
+#' @param p_val The maximum adjusted p-value to determine a correlation as significant. Default is 0.05. Non-significant correlations are shown in grey.
 #' @param padj Method to use for multiple testing correction. Can be one of "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none".  Default is "BH" (Benjamini-Hochberg).
 #' @export
 
