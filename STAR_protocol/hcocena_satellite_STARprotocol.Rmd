@@ -315,9 +315,8 @@ visualize_gene_expression(genes = c("MAFA", "IRF9", "IRF7", "STAT2", "STAT1", "N
   
 ```{r highlight specific gene set, fig.width=10, fig.height=7}
 
-highlight_geneset(gene_set = c("STAT6", "MAFG", "ETS2", "RUNX1", "TFE3", "HES6", "IRF4", "FOXQ1",
-                               "CREB5", "SPN", "SOX8", "SIP1", "FOXD2", "GTF3C3", "BATF3", "EGR3", "FOS"), 
-                   name = "Geneset_IL4", label_offset = 50)
+highlight_geneset(gene_set = c("MAFA", "IRF9", "IRF7", "STAT2", "STAT1", "NFIX", "ELF4", "ETV7"),
+                  name = "Geneset_IFNg")
 
 ```
 
