@@ -310,8 +310,7 @@ plot_cluster_heatmap <- function(col_order = NULL,
   if(!base::length(column_anno_categorical) == 0){
     for(a in 1:base::length(column_anno_categorical)){
       base::set.seed(a)
-      tmp_colour <- grDevices::colorRampPalette(c(RColorBrewer::brewer.pal(n=9, "Set1"), 
-                                                  RColorBrewer::brewer.pal(n=8, "Set2")))(base::ncol(column_anno_categorical[[a]]))
+      tmp_colour <- grDevices::colorRampPalette(c("#332288", "#117733", "#44aa99", "#88ccee", "#cc6677", "#aa4499", "#882255"))(base::ncol(column_anno_categorical[[a]]))
       
       if(cat_as_bp[a] == T){
         column_anno_categorical[[a]][base::is.na(column_anno_categorical[[a]])] <- 0
