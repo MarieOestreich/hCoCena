@@ -11,7 +11,7 @@ meta_correlation_cat(meta, set, p_val = 0.05, padj = "BH")
 
 \item{set}{An integer. The number of the datset for which to perform the calculation.}
 
-\item{p_val}{The maximum p-value to determine a correlation as significant. Default is 0.05. Non-significant correlations are shown in grey.}
+\item{p_val}{The maximum adjusted p-value to determine a correlation as significant. Default is 0.05. Non-significant correlations are shown in grey.}
 
 \item{padj}{Method to use for multiple testing correction. Can be one of "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none".  Default is "BH" (Benjamini-Hochberg).}
 }

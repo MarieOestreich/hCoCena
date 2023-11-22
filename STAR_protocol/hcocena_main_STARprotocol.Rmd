@@ -20,7 +20,7 @@ The main Markdown contains the base workflow of hCoCena. For a fully functional 
 
 ## 1.1 Load hCoCena package
 
-  First, we are going to load the hCoCena R-package. If you are not working within the provided hCoCena Docker image, please refer to the 'install_hcocena.R' script that you can find in the Github repository for information on how to download and install the package, .
+  First, we are going to load the hCoCena R-package. If you are not working within the provided hCoCena Docker image, please refer to the 'install_hcocena.R' script that you can find in the Github repository for information on how to download and install the package.
 
 ```{r}
 
@@ -52,9 +52,9 @@ load(paste0(getwd(), "/start_envo.RData"))
 ```
   
 
-  Since we are not reading our data from files, we will set the directory for the count data ('dir_count_data'), as well as for the annotation ('dir_annotation') to FALSE. My reference files are stored within the "hcocena" folder, which also holds the folder STAR_protocol from where I am running this markdown. Hence the parameter 'dir_reference_files' is set accordingly. The files can be downloaded from the Github repository folder named 'reference files', after downloading, the path must be adapted according to where it was downloaded to.
+  Since we are not reading our data from files, we will set the directory for the count data ('dir_count_data'), as well as for the annotation ('dir_annotation') to FALSE. The reference files are stored within the "hcocena" folder, which also holds the folder STAR_protocol from where we are running this markdown. Hence the parameter 'dir_reference_files' is set accordingly. The files can be downloaded from the Github repository folder named 'reference files', after downloading, the path must be adapted according to where it was downloaded to.
 
-  Lastly, we define a directory where we want to create our analysis folder. Within my "hcocena" folder, which contains the "STAR_protocol" folder with my scripts and the R environment, I also have a folder "analyses" where I store the results for my different analyses. In this folder, hCoCena will create a new folder specifically for this analysis and store all plots and other outputs there.
+  Lastly, we define a directory where we want to create our analysis folder. Within my "hcocena" folder, which contains the "STAR_protocol" folder with the scripts and the R environment, we also have a folder "analyses" where we store the results for my different analyses. In this folder, hCoCena will create a new folder specifically for this analysis and store all plots and other outputs there.
 
 ```{r}
 
@@ -79,7 +79,7 @@ check_dirs()
 ```
 
 
-  In the next step we are going to choose a name for the folder that hCoCena creates for our analysis (in the directory that we set in init_wd: dir_output).Since this is the script to the STAR protocol, I'll call it 'STAR_protocol':
+  In the next step we are going to choose a name for the folder that hCoCena creates for our analysis (in the directory that we set in init_wd: dir_output). Since this is the script to the STAR protocol, it will be called 'STAR_protocol':
   
 ```{r, warning = FALSE}
 
@@ -92,7 +92,7 @@ init_save_folder(name = "STAR_protocol")
 
   Now, we provide the count and annotation data for the different data sets ('layers'): The function 'define_layers()' accepts as input a named list. The names of the list elements should be descriptive of the respective data set. Here, we name one list element 'Array' (it will hold the microarray data and annotation) and the other 'RNA_seq' (RNA-seq data and annotation). Each of these elements is set to be a vector of 2 strings: the first being the name of the count data file/dataframe, the second for the annotation file/dataframe. Since we are loading the data from dataframes in the environment (not from files), the given strings (e.g., "data_array", "annotation_array") are the names of objects. For detailed information regarding the structures of the count and annotation data as well as different options for providing data, refer to the function documentation by entering ?hcocena::define_layers into the console.
   
-  Secondly, we provide the names of supplementary files containing Transcription Factors ('Tf'), Hallmark enrichment terms ('Hallmark'), Kegg enrichment terms ('Kegg') and GO BP enrichment terms ('Go'). These files should be stored in the 'reference_files' folder that we set in 'init_wd()'. The files can be downloaded from the Github repository, you will find them in the folder named 'reference files'. You can check the MSidDB website for the most current versions of the pathway to gene files. Further, custom pathway to gene files saved in the 'reference_files' folder in a '.gmt' or '.csv' file format can imported ".csv" files should be in the following format:
+  Secondly, we provide the names of supplementary files containing Transcription Factors ('Tf'), Hallmark enrichment terms ('Hallmark'), Kegg enrichment terms ('Kegg') and GO BP enrichment terms ('Go'). These files should be stored in the 'reference_files' folder that we set in 'init_wd()'. The files can be downloaded from the Github repository, you will find them in the folder named 'reference files'. You can check the MSidDB website for the most current versions of the pathway to gene files. Further, custom pathway to gene files saved in the 'reference_files' folder in a '.gmt' or '.csv' file format can imported '.csv' files should be in the following format:
   1. column (named 'term'): name of the pathway
   2. column (named 'gene'): gene symbol of the respective pathway defined in the first column
 Note: Only one gene symbol per row is allowed, thus, in cases where multiple genes are associated with the same pathway generate one row per gene symbol!
@@ -201,7 +201,7 @@ run_expression_analysis_1(corr_method = "spearman")
 
   **Choosing the cut-offs**
   
-  Set a correlation cut-off for each of your data sets. To aid the choice of a correlation cut-off for each of the datasets, the following plot presents the different cut-off statistics calculated in the previous step per data set.
+  Set a correlation cut-off for each of your data sets. To aid the choice of a correlation cut-off for each of the datasets, the following plot presents the different cut-off statistics calculated in the previous step per dataset.
   Generally, we have the choice between a static and an interactive plot. The interactive plot (which we use here by setting interactive = TRUE) is a widget that allows you to slide through the different cutoffs and highlight the corresponding statistics. However, if R-Studio is having difficulties displaying widgets, use interactive = FALSE for a simple ggplot.
   
 ```{r fig.height = 8, fig.width = 10}
@@ -211,7 +211,7 @@ plot_cutoffs(interactive = T)
 ```
   
   
-  Given the drastic drop in R-squared value as well as the number of genes for cutoffs higher than 0.982 in both datasets, we will select 0.982 as our cutoff in both cases. The order in which the cutoffs are subsequently defined must correspond to the order in which the layers have previously been specified.
+  Given the drastic drop in R²-value as well as the number of genes for cutoffs higher than 0.982 in both datasets, we will select 0.982 as our cutoff in both cases. The order in which the cutoffs are subsequently defined must correspond to the order in which the layers have previously been specified.
 
 ```{r choose cutoff}
 
@@ -223,7 +223,7 @@ set_cutoff(cutoff_vector = c(0.982, 0.982))
   **Checking the scale-free topology**
 
   For each data set, the logged degree distribution and the linear regression are plotted to visualize the preservation of the scale-free topology criterion.
-  NOTE: Even though biological networks are generally believed to follow a scale-free topology, experience has shown that a lot of transcriptomics data does not follow this principle perfectly. A deviation from the regression line is often observed at higher x-axis values. 
+  NOTE: Even though biological networks are generally believed to follow a scale-free topology, experience has shown that a lot of transcriptomics data do not follow this principle perfectly. A deviation from the regression line is often observed at higher x-axis values. 
 
 ```{r plot degree distribution for chosen cutoff, message = F, warning = F}
 
@@ -282,12 +282,12 @@ plot_cluster_heatmap()
 
 ## OPTIONAL: Evaluating the different community detection algorithms
 
-  If you want to compare the default Louvain clustering to other algorithms, please refer to the section "Evaluating different community detection algorithms" in the satellite markdown.
+  If you want to compare the default Leiden clustering to other algorithms, please refer to the section "Evaluating different community detection algorithms" in the satellite markdown.
 
 
 ## 3.2 Plotting the network coloured by module
 
-  Since we picked Cytoscape as the layout option for our network, we will not plot the network with genes coloured according to modules here. Instead, we move to the 'Cytoscape' section in the hcocena_satellite_STARprotocol.Rmd. There, we export the network to Cytoscape, apply the layout within cytoscape, and re-import the network into R. This is a bit of extra work, but the superiority of the layouts in Cytoscape is worth it. If you don't have Cytoscape installed or are happy with a visually less intuitive network, you can use this chunk instead of going to the satellite markdown. However, then you also have to  set the 'layout_algorithm' parameter in the 'set_global_settings()' function (quite at the top) to 'layout_with_fr'. 
+  Since we picked Cytoscape as the layout option for our network, we will not plot the network with genes coloured according to modules here. Instead, we move to the 'Cytoscape' section in the hcocena_satellite_STARprotocol.Rmd. There, we export the network to Cytoscape, apply the layout within Cytoscape, and re-import the network into R. This is a bit of extra work, but the superiority of the layouts in Cytoscape is worth it. If you don't have Cytoscape installed or are happy with a visually less intuitive network, you can use this chunk instead of going to the satellite markdown. However, then you also have to  set the 'layout_algorithm' parameter in the 'set_global_settings()' function (quite at the top) to 'layout_with_fr'. 
   Please note that the layout has no effect on the modules themselves or on the subsequent analysis results! It is simply to generate a visual 2D representation of the network that shows the spatial arrangement of the modules. 
 
 ```{r plot network coloured by module, fig.width=10, fig.height=7}
@@ -325,7 +325,7 @@ functional_enrichment(gene_sets = c("Hallmark"),
 
   Transcription factor (TF) enrichment analysis can be performed separately for each module ('TF_overrep_module') based on ChEA3 (Kennan AB, 2019). For more details, refer to the function documentations with ?hcocena::TF_overrep_module. The plots can be found in the save folder, descriptions on how to read them can be found within the documentation.
   
-  NOTE: hCoCena is accessing a database in this step. The contents of the database may change over time as the biological insight progresses. Hence, results might change over time based on changes to the database. That is not a bug in the hCoCena tool. It may also occur, that the database is momentarily unavailable due to maintanence or updates. Before running the chunk, you can check, if the server is running properly or currently under maintenance using this link: https://maayanlab.cloud/chea3/api/enrich/.
+  NOTE: hCoCena is accessing a database in this step. The contents of the database may change over time as the biological insight progresses. Hence, results might change over time based on changes to the database. That is not a bug in the hCoCena tool. It may also occur, that the database is momentarily unavailable due to maintenance or updates. Before running the chunk, you can check, if the server is running properly or currently under maintenance using this link: https://maayanlab.cloud/chea3/api/enrich/.
   
   NOTE 2: The results of this function are directly printed to a PDF file in your output folder.
   
@@ -357,7 +357,7 @@ TF_overrep_module(clusters = c("lightblue"),
   
 ## OPTIONAL: Colour specific gene set within the network
 
-  You further have the option of replotting the network and highlighting a particular gene set. To do so, please refer to the satellite markdown, section "Colour specific gene set".
+  You further have the option of re-plotting the network and highlighting a particular gene set. To do so, please refer to the satellite markdown, section "Colour specific gene set".
   
   
 ## OPTIONAL: Colour single module within the network
@@ -372,7 +372,7 @@ TF_overrep_module(clusters = c("lightblue"),
 
 ## OPTIONAL: Module analysis and meta-annotation
 
-  You have the option to analyse the genes present in the found modules with regard to shared functionality or enriched gene sets as well as to annotate the groups of samples with meta information from your annotation file. To do so, please refer to the satelite markdown, section "Module analysis and meta-annotation".
+  You have the option to analyse the genes present in the found modules with regard to shared functionality or enriched gene sets as well as to annotate the groups of samples with meta information from your annotation file. To do so, please refer to the satellite markdown, section "Module analysis and meta-annotation".
 
 
 ## OPTIONAL: Replotting of heatmap with different variable of interest
@@ -387,7 +387,7 @@ TF_overrep_module(clusters = c("lightblue"),
 
 ## OPTIONAL: Final module heatmap and network
 
-  If you regrouped your samples AND/OR conducted any steps in the "Module analysis and meta-annotation"-section, the heatmap will be replotted updated with respect to the grouping and annotation information along with the network coloured by modules. If You have neither regrouped your sample nor analysed your modules or samples groups, this chunk will provide the exact same output as the previous one and can be skipped. 
+  If you regrouped your samples AND/OR conducted any steps in the "Module analysis and meta-annotation"-section, the heatmap will be re-plotted updated with respect to the grouping and annotation information along with the network coloured by modules. If You have neither regrouped your sample nor analysed your modules or samples groups, this chunk will provide the exact same output as the previous one and can be skipped. 
   
 ```{r create module heatmap, fig.width = 10, fig.height = 7}
 

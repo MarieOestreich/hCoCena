@@ -34,15 +34,7 @@ highlight_geneset <- function(gene_set, name = NULL, col = "black", label_offset
     if(x %in% gene_set){
       dplyr::filter(gtc, name == x) %>% dplyr::pull(., color)
     }else{
-      NA
-    }
-  }) %>% base::unlist()
-  
-  igraph::V(g)$size <- base::lapply(igraph::V(g)$name, function(x){
-    if(x %in% gene_set){
-      5
-    }else{
-      3
+      "white"
     }
   }) %>% base::unlist()
   
@@ -50,7 +42,7 @@ highlight_geneset <- function(gene_set, name = NULL, col = "black", label_offset
     if(x %in% gene_set){
       col
     }else{
-      "lightgrey"
+      "black"
     }
   }) %>% base::unlist()
   
@@ -69,7 +61,6 @@ highlight_geneset <- function(gene_set, name = NULL, col = "black", label_offset
   } else{
     l <- hcobject[["integrated_output"]][["cluster_calc"]][["layout"]][base::match(igraph::V(g)$name, base::rownames(hcobject[["integrated_output"]][["cluster_calc"]][["layout"]])), ]
   } 
-
 
   # Add genes to be highlighted (add vertices to the label and arrange plotting order)
   new_genes_df <- base::data.frame(name = base::paste0("label_", base::c(1:base::length(gene_set))), 
@@ -113,6 +104,14 @@ highlight_geneset <- function(gene_set, name = NULL, col = "black", label_offset
   new_genes_df <- base::rbind(new_genes_df_l, new_genes_df_r)
   
   network2 <- igraph::add.vertices(g, nv = base::length(new_genes_df$name), attr = list(name = new_genes_df$name))
+  
+  igraph::V(network2)$size <- base::lapply(igraph::V(network2)$name, function(x){
+    if(x %in% gene_set){
+      max(l2) + abs(min(l2))*2
+    }else{
+      max(l2) + abs(min(l2))*0.8
+    }
+  }) %>% base::unlist()
 
   new_label_color <- base::lapply(igraph::get.vertex.attribute(network2)$name, function(x){
     if(x %in% new_genes_df$name){
@@ -169,7 +168,8 @@ highlight_geneset <- function(gene_set, name = NULL, col = "black", label_offset
     
     igraph::plot.igraph(network2, vertex.size = vertex_size,
                         vertex.label = NA,
-                        layout = l2, 
+                        layout = l2,
+                        vertex.label.color = "black",
                         edge.color = "lightgray",rescale = F, 
                         xlim = c(min(l2[,1]), max(l2[,1])), 
                         ylim = c(min(l2[,2]), max(l2[,2])))
@@ -190,7 +190,7 @@ highlight_geneset <- function(gene_set, name = NULL, col = "black", label_offset
   if(plot){
     igraph::plot.igraph(network2, vertex.size = vertex_size,
                         vertex.label = NA,
-                        layout = l2, 
+                        layout = l2,
                         edge.color = "lightgray",rescale = F, 
                         xlim = c(min(l2[,1]), max(l2[,1])), 
                         ylim = c(min(l2[,2]), max(l2[,2])))
