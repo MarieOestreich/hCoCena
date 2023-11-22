@@ -263,7 +263,8 @@ visualize_gene_expression(genes = c("STAT6", "MAFG", "ETS2", "RUNX1", "TFE3", "H
   
 ```{r highlight specific gene set, fig.width=10, fig.height=7}
 
-highlight_geneset(gene_set = c("HLA-B", "HLA-E", "SELL", "LCP1", "HLA-C", "FCGR3B"))
+highlight_geneset(gene_set = c("MAFA", "IRF9", "IRF7", "STAT2", "STAT1", "NFIX", "ELF4", "ETV7"),
+                  name = "Geneset_IFNg")
 
 ```
 
