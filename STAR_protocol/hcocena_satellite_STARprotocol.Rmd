@@ -242,7 +242,7 @@ For details on parameters, please refer to the function documentation with ?hcoc
 
   This function accepts two networks and a set of genes. It then calculates the degree-distribution of each gene in both networks and also the Jaccard-Index of each gene's neighbourhoods in the two networks. The results are visualized in a 2D dot plot.
 This allows the comparison of the two networks with respect to the connectivity of selected genes.
-For details on parameters, please refer to the fucntion documentation with ?hcocena::network_comparison_2.
+For details on parameters, please refer to the function documentation with ?hcocena::network_comparison_2.
 
 ```{r}
 # network_comparison_2(net1 = igprah_object, 
@@ -254,7 +254,7 @@ For details on parameters, please refer to the fucntion documentation with ?hcoc
 
 ## Transcription factor analysis for the entire network
 
-  To perform a transcription factor enrichment analysis based on the entire network you can run the following function.You can specify the number of TFs and their targets outputed to hcobject[["integrated_output"]][["enrichall"]].
+  To perform a transcription factor enrichment analysis based on the entire network you can run the following function. You can specify the number of TFs and their targets stored in hcobject[["integrated_output"]][["enrichall"]].
 
 ```{r}
 TF_overrep_network()
@@ -279,8 +279,6 @@ check_tf("IRF7")
   Mean expression values of found hubs will be plotted as a heatmap per cluster, rows are scaled. 
 A table of hubs per cluster will be exported as an Excel file. This table is also returned as output to the hcobject.
   
-
-  
 ```{r Hub gene detection}
 
 find_hubs(clusters = c("lightblue"),
@@ -299,7 +297,6 @@ find_hubs(clusters = c("lightblue"),
   
   Here, we plot genes identified by Xue et al., 2014 (https://doi.org/10.1016/j.immuni.2014.01.006) as IL4-induced and IFNg-induced genes.
   
-
 ```{r visualize specific gene set}
 
 visualize_gene_expression(genes = c("STAT6", "MAFG", "ETS2", "RUNX1", "TFE3", "HES6", "IRF4", "FOXQ1", 
@@ -346,7 +343,7 @@ colour_single_cluster(cluster = "lightblue")
 	1) The user provides their own enrichment file. 
 		This file should be provided in .csv format where the column names represent the categories ("keys", e.g. cell types), and the columns contain genes representative of that key. The genes do not have to be exclusive with regard to the key they belong to and the columns are not required to be of the same length. If such a file is provided, the "from_file" parameter needs to be set to TRUE and the path parameter needs to be set to the path at which to find the file. 
 	
-	2) Instead of providing an enrichment file, the user can also choose a database - so far Gene Ontology and KEGG are supported – and define a vector of keys as strings. The function then conducts an enrichment analysis using clusterProfiler functions (Guangchuang Yu, 2012) and filters the enrichment results for terms including the defined keys. In this case, the "from_file" parameter needs to be set to FALSE and the "enrichment_keys" parameter must be set to the vector of keys, the modules should be screened for. By setting the parameter 'db = "GO"' or 'db = "KEGG"', the GO or KEGG database is chosen accordingly. Up to 2 user-defined enrichments are possible so far and they are saved as "enriched_per_cluster" and "enriched_per_cluster2" in hcobject[["satellite_outputs"]]. 
+	2) Instead of providing an enrichment file, the user can also choose any of the databases stored in the hcobject (by setting the parameter 'db') and define a vector of keys as strings. The function then conducts an enrichment analysis using clusterProfiler functions (Guangchuang Yu, 2012) and filters the enrichment results for terms including the defined keys. In this case, the "from_file" parameter needs to be set to FALSE and the "enrichment_keys" parameter must be set to the vector of keys, the modules should be screened for. Up to 2 user-defined enrichments are possible so far and they are saved as "enriched_per_cluster" and "enriched_per_cluster2" in hcobject[["satellite_outputs"]]. 
 		
 	The enrichment results will be visualized as stacked bar plot annotations on the module heatmap when rerunning plot_cluster_heatmap().
   For parameter details, please refer to the function documentation using ?hcocena::user_specific_cluster_profiling.
