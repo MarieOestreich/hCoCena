@@ -14,7 +14,7 @@ remotes::install_version(package = "factoextra", version = "1.0.7", upgrade="nev
 remotes::install_version(package = "ggplot2", version = "3.4.4", upgrade="never")
 remotes::install_version(package = "ggsci", version = "3.0.0", upgrade="never")
 remotes::install_version(package = "gridExtra", version = "2.3", upgrade="never")
-remotes::install_version(package = "gtools", version = "3.9.5", upgrade="never")
+remotes::install_version(package = "gtools", version = "3.9.4", upgrade="never")
 remotes::install_version(package = "Hmisc", version = "5.1-1", upgrade="never")
 remotes::install_version(package = "httr", version = "1.4.7", upgrade="never")
 remotes::install_version(package = "igraph", version = "1.5.1", upgrade="never")
