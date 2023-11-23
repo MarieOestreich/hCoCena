@@ -10,7 +10,7 @@ check_tf(TF)
 \item{TF}{A string giving the name of the transcription factor to be queried.}
 }
 \description{
-This function leverages the information collected with TF_enrich_all()
+This function leverages the information collected with TF_enrich_network()
 to allow the user to query specific transcription factors of interest and see how their top targets are spread across modules.
 The goal is to uncover potential co-regulations between clusters.
 }

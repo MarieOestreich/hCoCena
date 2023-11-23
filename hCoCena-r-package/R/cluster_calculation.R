@@ -6,19 +6,21 @@
 #'  "cluster_infomap", "cluster_walktrap" and "auto" (in which case all are tested and the one with the highest modularity is chosen).
 #' @param no_of_iterations Some of the algorithms are iterative (e.g. Leiden Algorithm). Set here, how many iterations should be performed. 
 #'  For information on which other algorithms are iterative, please refer to their documentation in the igraph package. Default is 1.
-#' @param max_cluster_count_per_gene The maximum number of different clsuters a gene is allowed to be associated with during the different iterations before it is marked as indecisive and removed.
+#' @param resolution The cluster resolution if the cluster algorithm is set to "cluster_leiden". Default is 1. Higher values result in more clusters and vice versa.
+#' @param max_cluster_count_per_gene The maximum number of different clusters a gene is allowed to be associated with during the different iterations before it is marked as indecisive and removed.
 #'  Default is 1.
 #' @export 
 
 cluster_calculation <- function(cluster_algo = "cluster_leiden",
                                 no_of_iterations = 1,
+                                resolution = 1,
                                 max_cluster_count_per_gene = 1,
                                 return_result = F) {
 
   hcobject[["global_settings"]][["chosen_clustering_algo"]] <<- cluster_algo
 
   if(cluster_algo == "cluster_leiden"){
-    hcobject[["integrated_output"]][["cluster_calc"]][["cluster_information"]] <<- leiden_clustering(g = hcobject[["integrated_output"]][["merged_net"]], num_it = no_of_iterations)
+    hcobject[["integrated_output"]][["cluster_calc"]][["cluster_information"]] <<- leiden_clustering(g = hcobject[["integrated_output"]][["merged_net"]], num_it = no_of_iterations, resolution = resolution)
   }else{
 
     # count the number of graph components present in the network:
@@ -46,6 +48,7 @@ cluster_calculation <- function(cluster_algo = "cluster_leiden",
       df_modularity_score <- base::do.call("rbind", base::lapply(algos_to_use,
                                                     cluster_calculation_internal,
                                                     graph_obj = hcobject[["integrated_output"]][["merged_net"]],
+                                                    resolution = resolution,
                                                     case = "test"))
 
 
@@ -72,6 +75,7 @@ cluster_calculation <- function(cluster_algo = "cluster_leiden",
                                                cluster_calculation_internal,
                                                algo = cluster_algo_used,
                                                case = "best",
+                                               resolution = resolution,
                                                graph_obj = hcobject[["integrated_output"]][["merged_net"]]))
 
 

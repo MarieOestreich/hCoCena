@@ -4,7 +4,7 @@
 \alias{meta_correlation_num}
 \title{Numeric Metadata Correaltion}
 \usage{
-meta_correlation_num(set, meta, p_val = 0.05)
+meta_correlation_num(set, meta, p_val = 0.05, padj = "BH")
 }
 \arguments{
 \item{set}{An integer. The number of the datset for which to perform the calculation.}
@@ -12,9 +12,11 @@ meta_correlation_num(set, meta, p_val = 0.05)
 \item{meta}{A vector of strings. The names of the numeric annotation column(s) which to correlate to the cluster expression patterns.}
 
 \item{p_val}{The maximum p-value to determine a correlation as significant. Default is 0.05. Non-significant correlations are shown in grey.}
+
+\item{padj}{Method to use for multiple testing correction. Can be one of "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none".  Default is "BH" (Benjamini-Hochberg).}
 }
 \description{
-Calculates a matrix where columns are names of the meta categories and rows are clusters. Cells contain the Pearson correlation value between
+Calculates a matrix where columns are names of the meta categories and rows are modules Cells contain the Pearson correlation value between
 a) the mean expressions of cluster genes in each sample with
 b) the numeric meta value in each sample.
 }

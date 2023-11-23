@@ -1,33 +1,33 @@
 ---
 title: "hCoCena main markdown"
-author: "Marie Oestreich"
-date: "26 2 2021"
+author: "Marie Oestreich, Lisa Holsten, Kilian Dahm"
+date: "21 11 2023"
 output:
   html_document: default
   pdf_document: default
 ---
 
-# Introduction
+# 0 Introduction
 
 This Markdown contains the base workflow of hcocena. For a fully functional analysis, these steps are mandatory unless declared otherwise (flagged with OPTIONAL). Feel free to expand upon this base analysis with the provided satellite functions or your custom scripts. You will find detailed information on the satellite functions as well as intermediate outputs that you can use for your custom analyses in the repository's Wiki.
 
 
-# Pre-Integration Phase
+# 1 Pre-Integration Phase
 
-## load hCoCena package
+## 1.1 Load hCoCena package
 ```{r}
 library(hcocena)
 ```
 
 
-## create hCoCena-Object
+## 1.2 Create hCoCena-Object
 
 ```{r}
 init_object()
 ```
 
 
-## Working directory setup
+## 1.3 Set-up of the working directory
 
   Please set the following parameters to strings that state the path to your expression data, meta data, etc. For more information on the different files and how to pass them to the function, please refer to the following section of the wiki: https://github.com/MarieOestreich/hCoCena/wiki/General-Backgroud-Information#count-files-annotation-files--reference-files
   
@@ -40,8 +40,8 @@ init_object()
 
 ```{r}
 
-init_wd(dir_count_data = "PATH_TO_FOLDER_TAHT_HOLDS_YOUR_GENE_EXPRESSION_TABLES",
-        dir_annotation = "PATH_TO_FOLDER_TAHT_HOLDS_YOUR_ANNOTATION_TABLES",
+init_wd(dir_count_data = "PATH_TO_FOLDER_THAT_HOLDS_YOUR_GENE_EXPRESSION_TABLES",
+        dir_annotation = "PATH_TO_FOLDER_THAT_HOLDS_YOUR_ANNOTATION_TABLES",
         dir_reference_files = "PATH_TO_REFERENCE_FILES_FOLDER",
         dir_output = "PATH_TO_FOLDER_WHERE_HCOCENA_SHOULD_SAVE_ALL_ANALYSIS_OUTPUTS")
 
@@ -63,44 +63,26 @@ init_save_folder(name = "outputs")
 ```
 
 
-## Defining layers
+## 1.4 Defining layers
 
   For detailed information regarding the structures of the count and annotation data as well as different options for providing data, refer to the function documentation by entering ?hcocena::define_layers into the console.
+  For detailed information regarding the structures of custom pathway to gene files or databases, refer to the function documentation by entering ?hcocena::set_supp_files into the console.
+
     
 ```{r defining Omics Layers}
 
-define_layers(list( RNA_Seq = c("data_batch_donor.txt", "annotation_seq.txt") ,
-                    Array = c("data.txt", "annotation_array.txt"))
-              )
+define_layers(list(RNA_Seq = c("data_batch_donor.txt", "annotation_seq.txt") ,
+                   Array = c("data.txt", "annotation_array.txt")))
 
 set_supp_files(Tf = "TFcat.txt", 
-               Hall = "h.all.v6.1.symbols.gmt", 
-               Go = "c5.bp.v7.0.symbols.gmt")
+               Go = "c5.go.bp.v2023.1.Hs.symbols.gmt",
+               Hallmark = "h.all.v2023.1.Hs.symbols.gmt",
+               Kegg = "c2.cp.kegg.v2023.1.Hs.symbols.gmt")
 
 ```
 
 
-  
-
-## Define global settings
-
-  For detailed information regarding the different settings, enter ?hcocena::set_global_settings into the console.
-
-```{r global settings}
-
-set_global_settings(organism = "human", 
-    								control_keyword = "baseline", 
-    								variable_of_interest = "merged", 
-    								min_nodes_number_for_network = 40, 
-    								min_nodes_number_for_cluster = 50,
-    								range_GFC = 2.0,
-    								layout_algorithm = "layout_with_fr",
-    								data_in_log = T)
-
-```
-
-
-## Data import
+## 1.5 Data import
 
   For detailed information regarding the different parameters, enter ?hcocena::read_data into the console.
 
@@ -119,12 +101,32 @@ read_supplementary()
 ```
 
 
+
+## 1.6 Define global settings
+
+  For detailed information regarding the different settings, enter ?hcocena::set_global_settings into the console.
+
+```{r global settings}
+
+set_global_settings(organism = "human", 
+    								control_keyword = "baseline", 
+    								variable_of_interest = "merged", 
+    								min_nodes_number_for_network = 15, 
+    								min_nodes_number_for_cluster = 15,
+    								range_GFC = 2.0,
+    								layout_algorithm = "layout_with_fr",
+    								data_in_log = T)
+
+```
+
+
+
 ## OPTIONAL: Data-Based Definition of Top Most Variant Genes
 
-Find inflection points in the ranked variances to filter for the top most variant genes in a data-driven way. 
+  Find inflection points in the ranked variances to filter for the top most variant genes in a data-driven way. 
 
 
-## Define layer-specific settings
+## 1.7 Define layer-specific settings
 
   For detailed information regarding the different settings, enter ?hcocena::set_layer_settings into the console.
   
@@ -132,15 +134,15 @@ Find inflection points in the ranked variances to filter for the top most varian
 ```{r layer-specific settings}
 
 set_layer_settings(top_var = c("all", "all"), 
-                                     min_corr = rep(0.9, length(hcobject[["layers"]])), 
-                                     range_cutoff_length = rep(100, length(hcobject[["layers"]])),
-                                     print_distribution_plots = rep(F, length(hcobject[["layers"]])))
+                   min_corr = rep(0.9, length(hcobject[["layers"]])), 
+                   range_cutoff_length = rep(100, length(hcobject[["layers"]])),
+                   print_distribution_plots = rep(F, length(hcobject[["layers"]])))
 
 
 ```
 
 
-## OPTIONAL: Visualizing data distribution
+## OPTIONAL: Data distribution
 
   There is an option to plot the distribution of counts for each sample to check for outliers or prominent differences between samples. To do so, refer to "Checking data distribution" in the satellite markdown.
   
@@ -155,21 +157,22 @@ set_layer_settings(top_var = c("all", "all"),
   You can visualize your meta data using the "Meta data plots" section in the satellite markdown.
   
   
-## Data processing part I
+## 1.8 Data processing part I
 
   For detailed information on what happens in this step and what parameters can be set, enter ?hcocena::run_expression_analysis_1 into the console.
   
 
 ```{r expression analysis up to cutoff}
 
-run_expression_analysis_1()
+run_expression_analysis_1(corr_method = "pearson")
 
 ```
 
-## Data processing part II
+
+## 1.9 Data processing part II
 
 
-  Choosing the cut-offs:
+  **Choosing the cut-offs:**
 
   Set a correlation cut-off for each of your data sets. To aid this choice, the following plot presents the different cut-off statistics per data set. For more details on cut-offs and the information in this plot as well as the parameters, enter ?hcocena::plot_cutoffs into the console.
   
@@ -191,7 +194,7 @@ set_cutoff(cutoff_vector = c(0.974, 0.984))
 ```
 
 
-  Checking the scale-free topology
+  **Checking the scale-free topology**
 
   For each data set, the logged degree distribution and the linear regression are plotted to visualize the preservation of the scale-free topology criterion.
   NOTE: Even though biological networks are generally believed to follow a scale-free topology, experience has shown that a lot of transcriptomics data does not follow this principle perfectly. A deviation from the regression line is often observed at higher x-axis values. 
@@ -204,7 +207,7 @@ plot_deg_dist()
 ```
 
 
-  Heatmap of top most variant genes and GFC calculation
+  **Heatmap of top most variant genes and GFC calculation**
 
   This function plots a heatmap for the network genes in each data layer and computes the Group-Fold-Changes for each genes per layer.
 
@@ -215,11 +218,11 @@ run_expression_analysis_2()
 
 ```
 
-# Integration Phase
 
-## Layer integration
 
-  Integrating the layer-specific networks
+# 2 Integration Phase
+
+  **Integrating the layer-specific networks**
   
   Here, the previously constructed layer-specific networks will be integrated into one network that combines the information. The integration can be based on the union or intersection of layer-specific networks. Edges that are present in several networks with different lengths can be included based on different options. For detailed information, please refer to the Info Pages in the repository's Wiki.
   
@@ -231,28 +234,33 @@ build_integrated_network(mode = "u", multi_edges = "min")
 
   
 
-# Post-Integration Phase
+# 3 Post-Integration Phase
 
-## Module detection
+## 3.1 Module detection
 
-  Clustering the network
+  **Clustering the network**
   
-  In this step, modules of strong co-expression will be detected in the network and their expression pattern across conditions will be represented in a GFC heatmap. For more information on the available clustering algorithms, run ?hcocena::cluster_calculation and visit the repository's Wiki pages.
+  In this step, modules of strong co-expression will be detected in the network and their expression pattern across conditions will be represented in a GFC heatmap. For more information on the available clustering algorithms and setting the clustering resolution, run ?hcocena::cluster_calculation and visit the repository's Wiki pages.
   NOTE: You can export your clustering for future use. To do so, please refer to the satellite script, section "Export clustering".
   NOTE 2: Instead of clustering your network here, you can alternatively import a clustering model. To do so, please use the import_clusters() function (see satellite markdown for infos).
   
 ```{r compute clusters and plot module heatmap}
-cluster_calculation(no_of_iterations = 10)
+cluster_calculation(cluster_algo = "cluster_leiden", resolution = 1, no_of_iterations = 50, max_cluster_count_per_gene = 1)
 plot_cluster_heatmap()
 ```
 
 
-## OPTIONAL: correlate numeric meta data with clusters
+## OPTIONAL: Module scores
 
-  To see how numeric meta information correlates to the expression patterns of a cluster on a sample basis, refer to the satellite markdown, section "Correlate numeric meta data with clusters".
+  If you would like to evaluate how well each gene belongs to its asserted cluster, please refer to the satellite markdown, section "Module scores".
+  
+  
+## OPTIONAL: Evaluating the different community detection algorithms
 
+  If you want to compare the default Leiden clustering to other algorithms, please refer to the section "Evaluating different community detection algorithms" in the satellite markdown.
+  
 
-## Plotting the network coloured by module
+## 3.2 Plotting the network coloured by module
 
 NOTE: due to issues in the communication between R and Cytoscape, please refer to the satellite markdown, section "Cytoscape" if you chose Cytoscape as the option for the network layout in your global settings.
 
@@ -264,53 +272,90 @@ plot_integrated_network()
 ```
 
 
-## OPTIONAL: Cluster scores
+## OPTIONAL: Plotting network coloured by GFC
 
-  If you would like to evaluate how well each gene belongs to its asserted cluster, please refer to the satellite markdown, section "Cluster scores".
+  You can re-plot the network for each condition colouring the nodes according to their GFC in the different conditions. To do so, please refer to the section "Plotting network coloured by GFC" in the satellite markdown.
+
+
+## 3.3 Database enrichment
+
+  Enrichment analysis of the found modules using the GO, KEGG, Hallmark and Reactome databases or based on a user-defined enrichment file. For detailed information on parameter settings, please run ?hcocena::functional_enrichment.
+  The outputs all have a slot called "enrichment"(find the results at hcobject[["integrated_output"]][["enrichments"]]).
   
+```{r GO profiling, fig.width = 10, fig.height = 7, message = F, warning = F}
+
+functional_enrichment(gene_sets = c("Hallmark", "Go", "Kegg"), 
+                      clusters = "all",
+                      top = 5, 
+                      padj = "BH", 
+                      qval = 0.1)
+
+```
+
+
+## 3.4 Transcription factor enrichment analyses with ChEA3
+
+  Transcription factor enrichment analysis for each module and for the entire network based on ChEA3 (Kennan AB, 2019). For more details, refer to the function documentations with ?hcocena::TF_overrep and ?hcocena::TF_enrich_all. The plots can be found in the save folder, descriptions on how to read them can be found running ?hcocena::plot_TF_enrichment.
+  
+```{r , fig.width = 10, fig.height = 7}
+
+TF_overrep_module(clusters = "all", topTF = 5, topTarget = 5)
+
+```
+
+
+ 
+## OPTIONAL: Transcription factor enrichment analysis based on the entire network
+
+  The transcription factor enrichment analysis can also be performed network wide. Please refer to the satellite markdown, section "Transcription factor enrichment network".
+
 
 ## OPTIONAL: Hub gene detection
 
-  Hub gene detection is available for clusters or the entire network. Please refer to the satellite markdown, section "Hub gene detection".
+  Hub gene detection is available for selected modules or the entire network. Please refer to the satellite markdown, section "Hub gene detection".
   
 
-## OPTIONAL: Colour single cluster
-
-  You can plot the network with a cluster of interest highlighted (colour and node size), using the chunk in the satellite markdown in section "Colour single cluster".
-  
-  
-## OPTIONAL: Visualize specific gene set
+## OPTIONAL: Expression of a specific gene set
 
   You can plot the mean expression values per condition for a list of genes as a heatmap.
   You find the corresponding function in the satellite markdown under "Visualize specific gene set".
   
   
-## OPTIONAL: Colour specific gene set
+## OPTIONAL: Colour specific gene set within the network
 
   You further have the option of replotting the network and highlighting a particular gene set. To do so, please refer to the satellite markdown, section "Colour specific gene set".
-
-
-## OPTIONAL: Evaluating the different community detection algorithms
-
-  If you want to compare the default louvain clustering to other algorithms, please refer to the section "Evaluating different community detection algorithms" in the satellite markdown.
   
   
-## OPTIONAL: Regrouping samples
+## OPTIONAL: Colour single module within the network
 
-  If you noticed that the variable of interest ("voi") does not go well with the clustering of the heatmaps returned by "run_expression_analysis_2" or as seen in the PCA, when evaluating different clustering algorithms, you can assign new group labels to your samples based on the data structure rather than meta information. In this case, please refer to the section "Regrouping samples" in the satellite markdown.
+  You can plot the network with a module of interest highlighted (colour and node size), using the chunk in the satellite markdown in section "Colour single module".
   
+
+## OPTIONAL: Correlate numeric or categorical meta data with modules
+
+  To see how numeric or categorical meta information correlates to the expression patterns of a module, refer to the satellite markdown, section "Correlate numeric meta data with modules" and "Correlate categorical meta data with modules", respectively.
+
 
 ## OPTIONAL: Module analysis and meta-annotation
 
   You have the option to analyse the genes present in the found modules with regard to shared functionality or enriched gene sets as well as to annotate the groups of samples with meta information from your annotation file. To do so, please refer to the satellite markdown, section "Module analysis and meta-annotation".
-  
+
+
+## OPTIONAL: Replotting of heatmap with different variable of interest
+
+  In case you are uncertain if the "voi" you have initially chosen is the right choice for your analysis, you are given the opportunity to replot the final module heatmap based on a different annotation variable. To do so, please refer to the section "Replotting of heatmap with different variable of interest" in the satellite markdown.
+
+
+## OPTIONAL: Regrouping samples
+
+  If you noticed that the variable of interest ("voi") does not go well with the clustering of the heatmaps returned by "run_expression_analysis_2" or as seen in the PCA, when evaluating different clustering algorithms, you can assign new group labels to your samples based on the data structure rather than meta information. In this case, please refer to the section "Regrouping samples" in the satellite markdown.
+
 
 ## OPTIONAL: Final module heatmap and network
 
-  If you regrouped your samples AND/OR conducted any steps in the "Module analysis and meta-annotation"-section, the heatmap will be replotted updated with respect to the grouping and annotation information along with the network coloured by modules. Of You have neither regrouped your sample nor analysed your modules or samples groups, this chunk will provide the exact same output as the previous one and can be skipped. 
-  For detailed information on which parameters are available here run ?hcocena::plot_integrated_network in the console.
+  If you regrouped your samples AND/OR conducted any steps in the "Module analysis and meta-annotation"-section, the heatmap will be re-plotted updated with respect to the grouping and annotation information along with the network coloured by modules. If You have neither regrouped your sample nor analysed your modules or samples groups, this chunk will provide the exact same output as the previous one and can be skipped. 
   
-```{r create cluster heatmap, fig.width = 10, fig.height = 7}
+```{r create module heatmap, fig.width = 10, fig.height = 7}
 
 plot_cluster_heatmap()
 
@@ -319,55 +364,15 @@ plot_integrated_network(layout = hcobject[["integrated_output"]][["cluster_calc"
 
 ```
 
-## OPTIONAL: Replotting of heatmap with different variable of interest
 
-  In case you are uncertain if the "voi" you have initially chosen is the right choice for your analysis, you are given the opportunity to re-plot the final module heatmap based on a different annotation variable. To do so, please refer to the section "Replotting of heatmap with different variable of interest" in the satellite markdown.
+# 4. Save essential information
 
-
-## OPTIONAL: Plotting network coloured by GFC
-
-  You can re-plot the network for each condition colouring the nodes according to their GFC in the different conditions. To do so, please refer to the section "Plotting network coloured by GFC" in the satellite markdown.
+  The parameters of the analysis session are written to a text file to enhance reproducibility without keeping and sharing a markdown for every analysis. It documents the name of the files and their location used as count and annotation files, the global settings set in the session, the layer settings set for each dataset as well as the cut-offs and the clustering algorithm used. 
+  The file can be found in the save-folder.
   
-  
-## Database enrichment
+```{r write session info}
 
-  Enrichment analysis of the found modules using the GO, KEGG, Hallmark and Reactome databases. For detailed information on parameter settings, please run ?hcocena::go_profiling, ?hcocena::kegg_profiling, ?hcocena::Hallmark_profiling and ?hcocena::reactome_profiling
-  The outputs all have a slot called "enrichment"(find the results at hcobject[["integrated_output"]][["enrichments"]]), that contains the clusterProfiler enrich-object for each cluster. This can be used as input for further clusterProfiler visualisations. Please refer to the clusterProfiler documentation.
-  
-  PLEASE NOTE: hCoCena is accessing databases in this step. The gene sets in the databases change over time as the biological insight progresses. Hence, results might change over time based on changes to the database. That is not a bug in the hCoCena tool.
-  
-```{r GO profiling, fig.width = 10, fig.height = 7, message = F, warning = F}
-
-go_profiling(level = 6, top = 3, ont = "BP")
-
-kegg_profiling(top = 3)
-
-Hallmark_profiling(top = 3)
-
-reactome_profiling(top = 3)
+write_session_info()
 
 ```
-
-
-## Transcription factor enrichment analyses with ChEA3
-
-  Transcription factor enrichment analysis for each module and for the entire network based on ChEA3 (Kennan AB, 2019). For more details, refer to the function documentations with ?hcocena::TF_overrep and ?hcocena::TF_enrich_all. The plots can be found in the save folder, descriptions on how to read them can be found running ?hcocena::plot_TF_enrichment.
-  
-```{r , fig.width = 10, fig.height = 7}
-
-TF_overrep()
-TF_enrich_all(topTF = 100, topTarget = 30)
-
-plot_TF_enrichment()
-
-```
-  
-## OPTIONAL: Transcription factor query
-
-  To query the output of the "TF_enrich_all()" function for a specific transcription factor, please refer to the satellite markdown, section "Transcription factor query". 
-  
-
-
-
-
 

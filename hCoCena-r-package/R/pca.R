@@ -8,7 +8,7 @@
 #' @export
 
 
-PCA <- function(which = "all", color_by = "none", ellipses = F){
+PCA <- function(which = "all", color_by = "none", ellipses = F, cols = NULL){
 
   
   out <- base::lapply(1:base::length(hcobject[["layers"]]), function(x){
@@ -36,11 +36,15 @@ PCA <- function(which = "all", color_by = "none", ellipses = F){
       groups <- dplyr::pull(hcobject[["data"]][[base::paste0("set", x, "_anno")]], color_by[x])
     }
     
-    if(base::length(base::unique(groups)) > base::length(ggsci::pal_nejm(palette = base::c("default"), alpha = 1)(8))){
-      my_palette <- grDevices::colorRampPalette(ggsci::pal_nejm(palette = base::c("default"), alpha = 1)(8))(base::length(base::unique(groups)))
-    }else(
-      my_palette <- ggsci::pal_nejm(palette = base::c("default"), alpha = 1)(base::length(base::unique(groups)))
-    )
+    if(is.null(cols)){
+      if(base::length(base::unique(groups)) > base::length(ggsci::pal_nejm(palette = base::c("default"), alpha = 1)(8))){
+        my_palette <- grDevices::colorRampPalette(ggsci::pal_nejm(palette = base::c("default"), alpha = 1)(8))(base::length(base::unique(groups)))
+      }else{
+        my_palette <- ggsci::pal_nejm(palette = base::c("default"), alpha = 1)(base::length(base::unique(groups)))
+      }
+    } else {
+      my_palette <- cols
+    }
     
     g <- factoextra::fviz_pca_ind(res.pca,
                                    geom = "point",

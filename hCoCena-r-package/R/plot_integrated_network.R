@@ -23,11 +23,8 @@ plot_integrated_network <- function(layout = NULL,
   gene_to_cluster <- GeneToCluster()
   colnames(gene_to_cluster) <- c("name", "color")
  
-
-
   gene_to_cluster$name <- base::as.character(gene_to_cluster$name)
   gene_to_cluster$color <- base::as.character(gene_to_cluster$color)
- 
   
   if(base::length(igraph::V(network)$name[!igraph::V(network)$name %in% gene_to_cluster$name]) > 0){
     gene_to_cluster <- base::rbind(gene_to_cluster, base::data.frame(name = igraph::V(network)$name[!igraph::V(network)$name %in% gene_to_cluster$name],
@@ -67,7 +64,6 @@ plot_integrated_network <- function(layout = NULL,
   
   if(!base::is.null(gene_labels)){
     
-    
     new_genes_df <- base::data.frame(name = base::paste0("label_", base::c(1:base::length(gene_labels))), label = gene_labels %>% base::as.character())
     mean_coord_x <- stats::median(l[,1])
     mean_coord_y <- stats::median(l[,2])
@@ -82,8 +78,6 @@ plot_integrated_network <- function(layout = NULL,
       dplyr::pull(., label)
     right_down <- dplyr::filter(new_genes_df, coords_x > mean_coord_x & coords_y < mean_coord_y)%>%
       dplyr::pull(., label)
-    
-
     
     new_position_l <- base::matrix(base::cbind(base::rep(base::ceiling(base::min(l[,1]))-label_offset, base::length(left_up)+ base::length(left_down)), 
                                  base::seq(from=base::ceiling(base::max(l[,2])), to = base::ceiling(base::min(l[,2])), 
@@ -101,7 +95,6 @@ plot_integrated_network <- function(layout = NULL,
     new_genes_df_r <- new_genes_df[new_genes_df$label %in% base::c(right_up, right_down),]
     new_genes_df_r <- new_genes_df_r[base::order(new_genes_df_r$coords_y, decreasing = T),]
     new_genes_df <- base::rbind(new_genes_df_l, new_genes_df_r)
-    
     
     
     network2 <- igraph::add.vertices(network, nv = base::length(new_genes_df$name), 
@@ -152,11 +145,11 @@ plot_integrated_network <- function(layout = NULL,
     })%>% base::unlist()
     
     if(save == T){
-      Cairo::CairoPDF(file = base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]], "/network_col_by_module.pdf"), 
+      Cairo::CairoPDF(file = base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]], "/Network_col_by_module.pdf"), 
                       width = 15, height = 15)
       
       igraph::plot.igraph(network2, vertex.size = 3, vertex.label = new_labels, vertex.label.cex = 0.75,
-                          layout = l2, main = "co-expression network coloured by module",
+                          layout = l2, main = "Co-expression network coloured by module",
                           edge.color = new_edge_color, vertex.label.color = new_label_color,
                           vertex.frame.color = new_frame_color)
       
@@ -165,7 +158,7 @@ plot_integrated_network <- function(layout = NULL,
     
     
     igraph::plot.igraph(network2, vertex.size = 3, vertex.label = new_labels, vertex.label.cex = 0.75,
-                        layout = l2, main = "co-expression network coloured by module",
+                        layout = l2, main = "Co-expression network coloured by module",
                         edge.color = new_edge_color, vertex.label.color = new_label_color,
                         vertex.frame.color = new_frame_color)
     
@@ -174,18 +167,18 @@ plot_integrated_network <- function(layout = NULL,
   }else{
     
     if(save == T){
-      Cairo::CairoPDF(file = base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]], "/network_col_by_module.pdf"), 
+      Cairo::CairoPDF(file = base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]], "/Network_modules.pdf"), 
                       width = 15, height = 15)
       
       igraph::plot.igraph(network, vertex.label = NA, vertex.size = 3, 
-                          layout = l, main = "co-expression network coloured by cluster")
+                          layout = l, main = "Co-expression network coloured by module")
       
       grDevices::dev.off()
     }
     
     
     igraph::plot.igraph(network, vertex.label = NA, vertex.size = 3, 
-                        layout = l, main = "co-expression network coloured by cluster")
+                        layout = l, main = "Co-expression network coloured by module")
     
     hcobject[["integrated_output"]][["cluster_calc"]][["labelled_network"]] <<- list()
     hcobject[["integrated_output"]][["cluster_calc"]][["network_col_by_module"]] <<- network

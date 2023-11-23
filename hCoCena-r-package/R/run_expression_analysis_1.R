@@ -35,6 +35,7 @@ run_expression_analysis_1 <- function(padj = "none",
 	if(!corr_method %in% c("pearson","spearman", "rho")){
 		stop("Parameter 'corr_method' must be either 'pearson', 'spearman' or 'rho'.")
 	}
+  
 	# run first part of expression analysis for each data layer:
 	for(x in 1:base::length(hcobject[["layers"]])){
 		hcobject[["layer_specific_outputs"]][[base::paste0("set",x)]][["part1"]] <<- run_expression_analysis_1_body(x, 

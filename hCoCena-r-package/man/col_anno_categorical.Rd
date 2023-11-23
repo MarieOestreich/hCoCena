@@ -4,7 +4,7 @@
 \alias{col_anno_categorical}
 \title{Categorical Metadata Annotation For The Module Heatmap}
 \usage{
-col_anno_categorical(variables, variable_label = NULL)
+col_anno_categorical(variables, variable_label = NULL, type = "abs")
 }
 \arguments{
 \item{variables}{A vector of strings. The length of the vector must equal the number of datasets.
@@ -15,6 +15,8 @@ If the information only exists in some but not all datasets, then set the vector
 
 \item{variable_label}{A string that describes the meta information used. This string will be used to label the annotation in the heatmap.
 If none is provided, the first non-NA string from 'variables' is used as the label.}
+
+\item{type}{A string defining whether meta variables should be converted into percentages ("percent") or absolute ("abs"; default) values}
 }
 \description{
 Annotates the sample groups in the module heatmap with categorical metadata from the annotations.

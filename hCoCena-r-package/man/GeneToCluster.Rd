@@ -5,8 +5,8 @@
 \title{Gene To Cluster Dictionary}
 \usage{
 GeneToCluster(
- 
-    cluster_information = hcobject[["integrated_output"]][["cluster_calc"]][["cluster_information"]]
+  cluster_information =
+    hcobject[["integrated_output"]][["cluster_calc"]][["cluster_information"]]
 )
 }
 \value{

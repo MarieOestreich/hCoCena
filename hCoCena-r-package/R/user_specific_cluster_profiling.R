@@ -14,13 +14,17 @@
 #' @param from_file A Boolean. If the enrichment is based on option 1 (see above), set to TRUE.
 #' @param path The path to the enrichment file. Can be ignored if 'from_file' is FALSE.
 #' @param enrichment_keys A vector of keys, the database terms should be scanned for for each cluster. Will be ignored if 'from_file' is TRUE.
-#' @param db "GO" to use Gene Ontology database or "KEGG" to use KEGG database. Will be ignored when 'from_file' is TRUE.
+#' @param db "Go" to use Gene Ontology database, "Kegg" to use KEGG database, "Hallmark" to use Hallmark genesets or custom database. Will be ignored when 'from_file' is TRUE.
+#' @param padj Method to use for multiple testing correction. Can be one of "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none".  Default is "BH" (Benjamini-Hochberg).
+#' @param qval q-value cutoff to define terms to consider after pathway enrichment.
 #' @export 
 
 user_specific_cluster_profiling <- function(from_file = F, 
-							path = NULL, 
-							enrichment_keys = NULL,
-							db = "GO"){
+                              							path = NULL, 
+                              							enrichment_keys = NULL,
+                              							db = c("Go", "Kegg", "Hallmark"),
+                              							padj = "BH",
+                              							qval = 0.1){
 
   	cluster_info <- hcobject[["integrated_output"]][["cluster_calc"]][["cluster_information"]]
   	output <- list()
@@ -33,61 +37,35 @@ user_specific_cluster_profiling <- function(from_file = F,
         print("file is set to FALSE but no enrichment keys were provided")
         return()
       }
+      
       enriched_list <- list()
       categories_per_cluster <- NULL
+      
       for(c in clusters){
         
-        genes <- dplyr::filter(cluster_info, color == c)%>%
-          dplyr::pull(., "gene_n")%>%
-          base::strsplit(., split = ",")%>%
-          base::unlist(.)
+        genes <- dplyr::filter(cluster_info, color == c) %>% dplyr::pull(., "gene_n") %>% base::strsplit(., split = ",") %>% base::unlist(.)
         
-        if(db == "GO"){
-          if(hcobject[["global_settings"]][["organism"]] %in% base::c("human", "Human")){
-            enrich <- clusterProfiler::enrichGO(genes,
-                                                OrgDb = "org.Hs.eg.db",
-                                                keyType = "SYMBOL",
-                                                ont = "BP",
-                                                pvalueCutoff = 0.05)
-          }
-          if(hcobject[["global_settings"]][["organism"]] %in% base::c("mouse", "Mouse")){
-            enrich <- clusterProfiler::enrichGO(genes,
-                                                OrgDb = "org.Mm.eg.db",
-                                                keyType = "SYMBOL",
-                                                ont = "BP",
-                                                pvalueCutoff = 0.05)
+        if(stringr::str_to_title(db) %in% names(hcobject[["supplementary_data"]])){
+            enrich <- clusterProfiler::enricher(genes,
+                                                TERM2GENE = hcobject[["supplementary_data"]][[stringr::str_to_title(db)]],
+                                                pAdjustMethod = padj,
+                                                pvalueCutoff = 0.05,
+                                                qvalueCutoff = qval)
             
-          }
-          
-        }else if(db == "KEGG"){
-          if(hcobject[["global_settings"]][["organism"]] %in% base::c("human", "Human")){
-            entrez <- clusterProfiler::bitr(genes, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Hs.eg.db", drop = F)$ENTREZID
-            enrich <- clusterProfiler::enrichKEGG(entrez,
-                                                  organism = "hsa",
-                                                  pvalueCutoff = 0.05)
-          }
-          if(hcobject[["global_settings"]][["organism"]] %in% base::c("mouse", "Mouse")){
-            entrez <- clusterProfiler::bitr(genes, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Mm.eg.db", drop = F)$ENTREZID
-            enrich <- clusterProfiler::enrichKEGG(entrez,
-                                                  organism = "mmu",
-                                                  pvalueCutoff = 0.05)
-          }
-          
         }else{
           print("invalid database")
           return(NULL)
         }
         
         enriched_list[[c]] <- enrich
-
         
         cell_enrich <- list(counts = list(), genes = list())
 
         hits <- 0
-        top_10 <- enrich@result[base::order(enrich@result$qvalue, decreasing = T),][1:20,]
+        top_terms <- enrich@result[enrich@result$qvalue <= qval,] # [1:20,]
+        
         for(type in enrichment_keys){
-          
-          tmp <- dplyr::filter(top_10, base::grepl(type, top_10$Description,  ignore.case = T) == T) %>%
+          tmp <- dplyr::filter(top_terms, base::grepl(type, top_terms$Description,  ignore.case = T) == T) %>%
             dplyr::pull(., "geneID") %>%
             base::paste0(., collapse = "/") %>% 
             base::strsplit(., split = "/") %>% 
@@ -96,31 +74,33 @@ user_specific_cluster_profiling <- function(from_file = F,
           hits <- hits + base::length(tmp)
           cell_enrich$counts[[type]] <- base::length(tmp)
           cell_enrich$genes[[type]] <- tmp
-          
         }
 
-        tmp <- base::data.frame(base::matrix(base::unlist(cell_enrich$counts), ncol = base::length(cell_enrich$counts), byrow = T) %>% base::t(),stringsAsFactors = FALSE)%>%
+        tmp <- base::data.frame(base::matrix(base::unlist(cell_enrich$counts), 
+                                             ncol = base::length(cell_enrich$counts), 
+                                             byrow = T) %>% 
+                                  base::t(),stringsAsFactors = FALSE) %>%
           base::cbind(., base::names(cell_enrich$counts))%>%
           base::cbind(., base::rep(c, base::length(cell_enrich$counts)))
         
-        base::sink(file = base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]], "/enrichedInKeys_",c,".txt"))
-        for (n in base::names(cell_enrich$genes)){
-          base::cat(NULL, sep = "\n")
-          base::cat(n, sep = "\n\n")
-          base::cat(cell_enrich$genes[[n]], sep = "\n")
-        }
-        
-        base::sink()
         base::colnames(tmp) <- base::c("count", "cell_type", "cluster")
     
         tmp$hits <- base::rep(hits, base::nrow(tmp))
         
+        if(hits == 0){
+          tmp$count <- 0
+        }else{
+          tmp$count <- (tmp$count/tmp$hits)*100
+        }
+        
         categories_per_cluster <- base::rbind(categories_per_cluster, tmp)
       }
       output[["enrichlist"]] <- enriched_list
+      
     }else{
+      
       if(base::is.null(path)){
-        stop("File path mus be specified using the 'path' variable.")
+        stop("File path must be specified using the 'path' variable.")
       }
       f <- utils::read.csv(path)
       enrichment_keys <- base::colnames(f)
@@ -146,15 +126,7 @@ user_specific_cluster_profiling <- function(from_file = F,
         tmp <- base::data.frame(base::matrix(base::unlist(cell_enrich$counts), ncol = base::length(cell_enrich$counts), byrow=T) %>% base::t(),stringsAsFactors=FALSE)%>%
           base::cbind(., base::names(cell_enrich$counts))%>%
           base::cbind(., base::rep(c, base::length(cell_enrich$counts)))
-        
-        base::sink(file = base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]], "/enrichedInKeys_",c,".txt"))
-        for (n in base::names(cell_enrich$genes)){
-          base::cat(NULL, sep = "\n")
-          base::cat(n, sep = "\n\n")
-          base::cat(cell_enrich$genes[[n]], sep = "\n")
-        }
-        
-        base::sink()
+
         base::colnames(tmp) <- c("count", "cell_type", "cluster")
         if(hits == 0){
           tmp$count <- 0
@@ -170,8 +142,12 @@ user_specific_cluster_profiling <- function(from_file = F,
       }
     }
     output[["categories_per_cluster"]] <- categories_per_cluster
+    base::attr(output[["categories_per_cluster"]],"hidden") <- list(from_file, path, enrichment_keys, db, padj, qval)
     if("enriched_per_cluster" %in% base::names(hcobject[["satellite_outputs"]])){
-    	hcobject[["satellite_outputs"]][["enriched_per_cluster2"]] <<- output
+      if(identical(base::attr(output[["categories_per_cluster"]], "hidden"), base::attr(hcobject[["satellite_outputs"]][["enriched_per_cluster"]][["categories_per_cluster"]], "hidden")))
+        hcobject[["satellite_outputs"]][["enriched_per_cluster"]] <<- output
+      else
+    	  hcobject[["satellite_outputs"]][["enriched_per_cluster2"]] <<- output
     }else{
     	hcobject[["satellite_outputs"]][["enriched_per_cluster"]] <<- output
     }

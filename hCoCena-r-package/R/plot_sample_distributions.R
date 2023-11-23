@@ -8,14 +8,8 @@
 #' @export
 
 plot_sample_distributions <- function(plot_type = "boxplot", 
-										log_2 = T, 
-										plot = T){ #plot_type: one of "boxplot" or "freqdist"
-  
-  if(!"sample_distribution_plots" %in% base::list.dirs(base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]],"/"))){
-    
-    base::dir.create(base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]],"/","sample_distribution_plots"))
-    
-    }
+                  										log_2 = T, 
+                  										plot = T){ #plot_type: one of "boxplot" or "freqdist"
   
   data <- list()
   
@@ -35,9 +29,7 @@ plot_sample_distributions <- function(plot_type = "boxplot",
       plot_list_of_plots(plt)
       
     }
-    
-  }
-  else if(plot_type == "freqdist"){
+  } else if(plot_type == "freqdist"){
     
     plt <- freqdist_plot_from_list(data = data, log_2 = log_2, bool_plot = plot)
     

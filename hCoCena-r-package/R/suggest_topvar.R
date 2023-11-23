@@ -20,6 +20,7 @@ rank_variance <- function(expr){
 #' @noRd
 
 find_span <- function(var.df){
+
   for(i in base::rev(base::seq(0.5, 1, 0.01))){
     lo <- stats::loess(base::log(var.df$variance)~var.df$rank, span = i)
     xl <- base::seq(base::min(var.df$rank),base::max(var.df$rank), (base::max(var.df$rank) - base::min(var.df$rank))/1000)

@@ -38,6 +38,16 @@ read_data <- function(sep_counts = "\t",
 		  data[[base::paste0("set", x, "_counts")]] <- read_expression_data(file = base::paste0(hcobject[["working_directory"]][["dir_count_data"]], hcobject[["layers"]][[base::paste0("set",x)]][1]), rown = count_has_rn,
 		                                                              sep = sep_counts, gene_symbol_col = gene_symbol_col)
 		}
+	  # check for zero-variance genes
+	    var.df <- rank_variance(data[[base::paste0("set", x, "_counts")]])
+	    if(any(var.df$variance == 0)){
+	    message(base::paste0("Detected genes with 0 variance in dataset ", x, "."))
+	    data[[base::paste0("set", x, "_counts_unfiltered")]] <- data[[base::paste0("set", x, "_counts")]]
+	    data[[base::paste0("set", x, "_counts")]] <- data[[base::paste0("set", x, "_counts")]] %>%
+	      dplyr::filter(!(row.names(.) %in% (var.df %>% dplyr::filter(variance == 0) %>% dplyr::pull(gene))))
+	    message(base::paste0((nrow(data[[base::paste0("set", x, "_counts_unfiltered")]])-nrow(data[[base::paste0("set", x, "_counts")]])), " gene(s) were removed from dataset ", x, "."))
+	    } 
+	  
 
 		# read annotation data:
 

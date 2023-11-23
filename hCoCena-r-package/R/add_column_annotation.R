@@ -9,21 +9,24 @@
 #'  If the information only exists in some but not all datasets, then set the vector slots of those that don"t have it to NA, e.g., c(NA, "gender").
 #' @param variable_label A string that describes the meta information used. This string will be used to label the annotation in the heatmap. 
 #'  If none is provided, the first non-NA string from 'variables' is used as the label.
+#' @param type A string defining whether meta variables should be converted into percentages ("percent") or absolute ("abs"; default) values
 #' @export
 
-col_anno_categorical <- function(variables, variable_label = NULL){
+col_anno_categorical <- function(variables, variable_label = NULL, type = "abs"){
 
   ml <- get_anno_matrix(variables = variables)
   m <- unify_mats(ml)
-  m <- base::apply(m, 1, function(x){
-    if(base::sum(x) == 0){
-      x
-    }else{
-      x/base::sum(x)*100
-    }
-  })%>%
-    base::t()%>%
-    base::as.data.frame()
+  if(type == "percent"){
+    m <- base::apply(m, 1, function(x){
+      if(base::sum(x) == 0){
+        x
+      }else{
+        x/base::sum(x)*100
+      }
+    })%>%
+      base::t()%>%
+      base::as.data.frame()
+  }
   m[base::rowSums(m) == 0,] <- NA
   if(base::is.null(variable_label)){
     variable_label <- variables[!base::is.null(variables)][1]
@@ -33,6 +36,7 @@ col_anno_categorical <- function(variables, variable_label = NULL){
     variable_label <- variable_label[1]
     message("More than one label has been provided (parameter 'variable_label'). Only the first argument will be used as the label.")
   }
+  attr(m,"type") <- type
   hcobject[["satellite_outputs"]][["column_annos_categorical"]][[variable_label]] <<- m
 }
 

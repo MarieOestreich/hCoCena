@@ -1,27 +1,30 @@
 Package: hcocena
 Title: Horizontal Integration And Analysis Of Multiple Transcriptomics Datasets
-Version: 1.0.1
+Version: 1.2.0
 Authors@R: c(
-    person(given = "Marie",
-           family = "Oestreich",
-           role = c("aut", "cre"),
-           email = "mrstrch126@gmail.com",
-           comment = c(ORCID = "0000-0002-4754-1301")),
-    person(given = "Shobhit",
-           family = "Agrawal",
-           role = c("ctb")),
     person(given = "Lisa",
            family = "Holsten",
-           role = c("ctb")),
+           role = c("aut"),
+		   comment = c(ORCID = "0000-0001-6238-1273")),
+	person(given = "Kilian",
+           family = "Dahm",
+           role = c("aut", "cre"),
+		   email = "kilian.dahm@dzne.de",
+		   comment = c(ORCID = "0000-0002-6819-2622")),
+    person(given = "Marie",
+           family = "Oestreich",
+           role = c("aut"),
+           comment = c(ORCID = "0000-0002-4754-1301")),
     person(given = "Thomas",
            family = "Ulas",
-           role = c("aut")))
+           role = c("aut"),
+		   comment = c(ORCID = "0000-0002-9785-4197")))
 Description: The package allows the joint analysis of multile transcriptomics datasets, using a network-based approach for data integration.
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: True
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.3
 biocViews:
 Imports:
     base (>= 4.0.3),
@@ -52,20 +55,18 @@ Imports:
     MCDA (>= 0.0.21),
     networkD3 (>= 0.4),
     openxlsx (>= 4.2.4),
-    org.Mm.eg.db (>= 3.12.0),
-    org.Hs.eg.db (>= 3.12.0),
+	patchwork (>= 1.1.3),
     pheatmap (>= 1.0.12),
     plotly (>= 4.9.4.1),
     purrr (>= 0.3.4),
     RColorBrewer (>= 1.1-2),
     RCy3 (>= 2.10.2),
-    ReactomePA (>= 1.34.0),
     readr (>= 2.0.1),
     rlist (>= 0.4.6.1),
     scales (>= 1.1.1),
     stats (>= 4.0.3),
     stringi (>= 1.6.2),
+	stringr (>= 1.5.1),
     tibble (>= 3.1.2),
     tidyselect (>= 1.1.1),
-    utils (>= 4.0.3),
-    openxlsx (>= 4.2.4)
+    utils (>= 4.0.3)

@@ -8,7 +8,9 @@ user_specific_cluster_profiling(
   from_file = F,
   path = NULL,
   enrichment_keys = NULL,
-  db = "GO"
+  db = c("Go", "Kegg", "Hallmark"),
+  padj = "BH",
+  qval = 0.1
 )
 }
 \arguments{
@@ -18,7 +20,11 @@ user_specific_cluster_profiling(
 
 \item{enrichment_keys}{A vector of keys, the database terms should be scanned for for each cluster. Will be ignored if 'from_file' is TRUE.}
 
-\item{db}{"GO" to use Gene Ontology database or "KEGG" to use KEGG database. Will be ignored when 'from_file' is TRUE.}
+\item{db}{"Go" to use Gene Ontology database, "Kegg" to use KEGG database, "Hallmark" to use Hallmark genesets or custom database. Will be ignored when 'from_file' is TRUE.}
+
+\item{padj}{Method to use for multiple testing correction. Can be one of "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none".  Default is "BH" (Benjamini-Hochberg).}
+
+\item{qval}{q-value cutoff to define terms to consider after pathway enrichment.}
 }
 \description{
 Offers a user-defined enrichment analysis for the identified modules. There are two options:

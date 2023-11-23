@@ -20,9 +20,12 @@ plot_deg_dist <- function(){
       ggplot2::geom_point() +
       ggplot2::geom_smooth(method="lm") +
       ggplot2::theme_bw() + 
-      ggplot2::ggtitle(base::paste0("Cut-off: ", hcobject[["cutoff_vec"]][x], "; R²: ", base::round(stats[1],3), "; no. edges: ",
-                     stats[2], "; no. nodes: ", stats[3], "; no. networks: ", stats[4]))+
-      ggplot2::theme(plot.title = ggplot2::element_text(size = 10))
+      ggplot2::labs(x = "log(degree)",
+                    y = "log(Probs)",
+                    title = hcobject[["layers_names"]][x],
+                    subtitle = base::paste0("Cut-off: ", hcobject[["cutoff_vec"]][x], "; R²: ", base::round(stats[1],3), "; no. edges: ",
+                                            stats[2], "; no. nodes: ", stats[3], "; no. networks: ", stats[4]) )
+      ggplot2::theme(plot.title = ggplot2::element_text(size = 14), plot.subtitle = ggplot2::element_text(size = 10)) 
     
     print(dd_plot_calculated_optimal)
     ggplot2::ggsave(base::paste0("Degree_distribution_plot_", hcobject[["layers_names"]][x], "_", hcobject[["cutoff_vec"]][x], ".pdf"),

@@ -51,7 +51,7 @@ plot_GFC_network <- function(){
   for(x in base::colnames(colors)){
     if(! x == "name"){
       igraph::V(network)$color <- colors %>% dplyr::pull(., var = x)
-      Cairo::CairoPDF(file = base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]], "/GFC_network_", x, ".pdf"), 
+      Cairo::CairoPDF(file = base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]], "/Network_GFC_", x, ".pdf"), 
                       width = 15, height = 15)
       igraph::plot.igraph(network, vertex.label = NA, vertex.size = 3,
                           layout = l,

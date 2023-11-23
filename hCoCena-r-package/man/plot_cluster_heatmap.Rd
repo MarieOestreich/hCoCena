@@ -12,7 +12,7 @@ plot_cluster_heatmap(
   k = 0,
   return_HM = T,
   cat_as_bp = NULL,
-  file_name = "module_heatmap.pdf"
+  file_name = "Heatmap_modules.pdf"
 )
 }
 \arguments{
