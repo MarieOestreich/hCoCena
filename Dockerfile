@@ -1,4 +1,4 @@
-FROM bioconductor/bioconductor_docker:3.18-R-4.3.2
+FROM bioconductor/bioconductor_docker:RELEASE_3_18
 
 COPY ./STAR_protocol/ /home/rstudio/STAR_protocol/
 COPY ./reference_files/ /home/rstudio/reference_files/
