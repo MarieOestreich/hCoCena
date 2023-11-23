@@ -9,7 +9,7 @@ output:
 
 
 # 0 Introduction
-  This markdown, in combination with the markdown 'hcocena_satellite_STARprotocol.Rmd', illustrates how to use the hCoCena tool on a small example using two data sets based on the hCoCena package version 1.2.
+  This markdown, in combination with the markdown 'hcocena_satellite_STARprotocol.Rmd', illustrates how to use the hCoCena tool on a small example using two data sets based on the hCoCena package version 1.1.0.
 Both data sets measure the transcriptional profiles of human macrophages after treatment with Interferon Gamma (IFNg), Interleukin-4 (IL4) or untreated (baseline). One data set was generated using bulk RNA-sequencing, while the other was generated using a Microarray.
 
 The main Markdown contains the base workflow of hCoCena. For a fully functional analysis, these steps are mandatory unless declared otherwise (flagged with OPTIONAL). Feel free to expand upon this base analysis with the provided satellite functions or your custom scripts. You will find detailed information on the satellite functions as well as intermediate outputs that you can use for your custom analyses in the repository's Wiki (https://github.com/MarieOestreich/hCoCena/wiki).
