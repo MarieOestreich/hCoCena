@@ -1,7 +1,7 @@
 ---
 title: "hCoCena main markdown"
 author: "Marie Oestreich, Lisa Holsten, Kilian Dahm"
-date: "21 11 2023"
+date: "05 01 2024"
 output:
   html_document: default
   pdf_document: default
@@ -9,7 +9,7 @@ output:
 
 # 0 Introduction
 
-This Markdown contains the base workflow of hcocena. For a fully functional analysis, these steps are mandatory unless declared otherwise (flagged with OPTIONAL). Feel free to expand upon this base analysis with the provided satellite functions or your custom scripts. You will find detailed information on the satellite functions as well as intermediate outputs that you can use for your custom analyses in the repository's Wiki.
+This Markdown contains the base workflow of hCoCena. For a fully functional analysis, these steps are mandatory unless declared otherwise (flagged with OPTIONAL). Feel free to expand upon this base analysis with the provided satellite functions or your custom scripts. You will find detailed information on the satellite functions as well as intermediate outputs that you can use for your custom analyses in the repository's Wiki.
 
 
 # 1 Pre-Integration Phase

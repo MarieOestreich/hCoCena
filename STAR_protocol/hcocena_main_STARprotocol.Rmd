@@ -1,7 +1,7 @@
 ---
 title: "hCoCena - STAR protocol (main)"
 author: "Marie Oestreich, Lisa Holsten, Kilian Dahm"
-date: "21 11 2023"
+date: "05 01 2024"
 output:
   html_document: default
   pdf_document: default
@@ -47,7 +47,7 @@ init_object()
   
 ```{r}
 
-load(paste0(getwd(), "/start_envo.RData"))
+load("start_envo.RData")
 
 ```
   
@@ -58,14 +58,10 @@ load(paste0(getwd(), "/start_envo.RData"))
 
 ```{r}
 
-dir <- getwd() %>% stringr::str_remove(pattern = "/STAR_protocol")
-
 init_wd(dir_count_data = FALSE,
         dir_annotation = FALSE,
-        dir_reference_files = paste0(dir, "/reference_files/"), #the folder that contains the reference files
-        dir_output = paste0(dir, "/analyses/"))
-
-rm(dir)
+        dir_reference_files = "/home/lisa/reference_files/", #the folder that contains the reference files
+        dir_output = "/home/data/")
 
 ```
 
@@ -83,7 +79,7 @@ check_dirs()
   
 ```{r, warning = FALSE}
 
-init_save_folder(name = "STAR_protocol")
+init_save_folder(name = "STAR_protocol_output")
 
 ```
 
@@ -143,10 +139,13 @@ set_global_settings(organism = "human",
 ```
 
 
-
+## OPTIONAL: User-defined colors
+  This chunk in the satellite markdown ('hcocena_satellite_STAR_protocol.Rmd') allows to define user-specific color vectors for downstream visualizations.
+  
+  
 ## OPTIONAL: Data-based definition of top most variant genes
 
-  This chunk in the satellite markdown ('hcocena_satellite_STAR_protocol.Rmd') calculates the inflection points in the ranked variances to filter for the top most variant genes in a data-driven way. Running this function yields top 7700 for the array data and 7664 for the RNA-Seq data as the highest data-driven top-most-variant genes cutoff. 
+  This chunk in the satellite markdown calculates the inflection points in the ranked variances to filter for the top most variant genes in a data-driven way. Running this function yields top 7700 for the array data and 7664 for the RNA-Seq data as the highest data-driven top-most-variant genes cutoff. 
 
 
 ## 1.7 Define layer-specific settings
@@ -234,12 +233,11 @@ plot_deg_dist()
 
   **Heatmap of top most variant genes and GFC calculation**
 
-  This function plots a heatmap for the network genes in each data layer and computes the Group-Fold-Changes (GFCs) for each gene per layer.
+  This function plots a heatmap for the network genes in each data layer and computes the Group-Fold-Changes (GFCs) for each gene per layer. Defining a user-specific color vector is optional.
 
 ```{r, fig.width = 10, fig.height = 7}
 
-run_expression_analysis_2(cols = list("merged" = c("IL4_array" = "#00A1D5FF", "IFNg_array" = "#79AF97FF", "baseline_array" = "#374E55FF",
-                                                   "IL4_seq" = "#00A1D5FF", "IFNg_seq" = "#79AF97FF", "baseline_seq" = "#374E55FF")))
+run_expression_analysis_2(cols = list("merged" = color_voi))
 
 ```
 

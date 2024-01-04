@@ -5,7 +5,7 @@
 #' @export
 
 algo_alluvial <- function(){
-  library(igraph)
+  # library(igraph)
 
   network <- hcobject[["integrated_output"]][["merged_net"]]
 

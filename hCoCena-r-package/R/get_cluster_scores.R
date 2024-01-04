@@ -5,7 +5,7 @@
 #' @param save A Boolean. Whether or not to save the plot to PDF (default is TRUE).
 #' @export
 
-get_cluster_scores <- function(save = T){
+get_module_scores <- function(save = T){
 
   gtc <- GeneToCluster()
   # remove white cluster since not of interest:
@@ -44,14 +44,15 @@ get_cluster_scores <- function(save = T){
     ggplot2::geom_boxplot()+
     ggplot2::scale_color_manual(values = base::sort(base::unique(gtc$color))) +
     ggplot2::scale_fill_manual(values = grDevices::adjustcolor(base::sort(base::unique(gtc$color)), alpha.f = 0.5)) +
-    ggplot2::xlab("cluster")+
+    ggplot2::xlab("modules")+
     ggplot2::theme_bw()+ggplot2::coord_flip() + 
-    ggplot2::ggtitle("Cluster scores")
+    ggplot2::ggtitle("Module scores") + 
+    ggplot2::theme(legend.position = "none")
 
   graphics::plot(p)
 
   if(save){
-    Cairo::CairoPDF(file = base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]], "/Cluster_scores.pdf"), 
+    Cairo::CairoPDF(file = base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]], "/Module_scores.pdf"), 
                     width = 8)
     
     graphics::plot(p)
@@ -60,6 +61,6 @@ get_cluster_scores <- function(save = T){
   }
 
   gtc$label <- NULL
-  hcobject[["satellite_outputs"]][["cluster_scores"]] <<- list(scores_per_gene = gtc, plot = p)
+  hcobject[["satellite_outputs"]][["module_scores"]] <<- list(scores_per_gene = gtc, plot = p)
   
 }

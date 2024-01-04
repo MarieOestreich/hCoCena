@@ -1,7 +1,7 @@
 ---
 title: "hcocena satellite markdown"
 author: "Marie Oestreich, Lisa Holsten, Kilian Dahm"
-date: "21 11 2023"
+date: "05 01 2024"
 output: html_document
 ---
 
@@ -91,9 +91,9 @@ plot_cluster_heatmap()
 
   For every gene, the ratio of its edges that it shares with genes in the same cluster to its total number of edges is determined. The corresponding values are returned as a data frame and a box plot is generated showing the scores for each of the clusters.
   
-```{r cluster scores}
+```{r module scores}
 
-get_cluster_scores()
+get_module_scores()
 
 ```
 
