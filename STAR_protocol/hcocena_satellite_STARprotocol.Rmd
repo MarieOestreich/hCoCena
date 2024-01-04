@@ -146,8 +146,7 @@ algo_alluvial()
   
 ```{r PCAs before regrouping, fig.width=10, fig.height=4}
 
-PCA_algo_compare(cols = c("IL4_array" = "#00A1D5FF", "IFNg_array" = "#79AF97FF", "baseline_array" = "#374E55FF",
-                          "IL4_seq" = "#00A1D5FF", "IFNg_seq" = "#79AF97FF", "baseline_seq" = "#374E55FF"))
+PCA_algo_compare(cols = color_voi)
 
 ```
 
@@ -167,30 +166,59 @@ update_clustering_algorithm(new_algo = "cluster_leiden")
 
 ## Cytoscape
 
-  Model layout in Cytoscape (https://cytoscape.org/download.html). Cytoscape MUST BE OPEN for this to work. **To shorten the time needed, please read the docs to the export_to_cytoscape function (?export_to_cytoscape).** 
+
+### Using Cytoscape from within the docker container
+
+  If you are working within a docker container, a direct communication with Cytoscape is unfortunately not possible. Therefore, you first need to save the network and clustering information and import it into a local R session.
   
-  NOTE: instead of re-running this yourself (might take some time to load), you can also open the Cytoscape session that we created throughout the run and inspect the network. That will be faster and will still allow you to import the network coordinates from Cytoscape back into R (you can then immediately jump to 'import_layout_from_cytoscape' and can skip the export). You can find the Cytoscape file of the network in the repository's 'STAR_protocol' folder, it is called 'cytoscape_session_STAR.cys'.
-  
+```{r}
+export_to_localR()
+```
+
+
+  Import your hcobject into your local R session:
+
+```{r}
+hcobject <- load("[local_path_to_your_folder]/STAR_protocol_output/export_to_cytoscape.RData")
+```
+
+
 ### Export Network
 
   This function exports the network to Cytoscape. There you can apply a variety of Cytoscape's great layout algorithms.
   
+  Check Model layouts in Cytoscape (https://cytoscape.org/download.html). Cytoscape MUST BE OPEN for this to work. **To shorten the time needed, please read the docs to the export_to_cytoscape function (?export_to_cytoscape).** 
+  
+  NOTE: instead of re-running this yourself (might take some time to load), you can also open the Cytoscape session that we created throughout the run and inspect the network. That will be faster and will still allow you to import the network coordinates from Cytoscape back into R (you can then immediately jump to 'import_layout_from_cytoscape' and can skip the export). You can find the Cytoscape file of the network in the repository's 'STAR_protocol' folder, it is called 'cytoscape_session_STAR.cys' if you are working locally, or 'cytoscape_session_STAR_docker.cys' if you are working within a Docker container. Minor differences between the two networks are due to differences between the windows and linux systems.
+  
 ```{r Cytoscape export}
 
-export_to_cytoscape()
+export_to_cytoscape(docker_container = T) # if you are working locally, set docker_container = F
 
 ```
 
 
 ### Import Layout
 
-  After deciding on a layout that optimally visualises the network structure, this function imports the nodes' coordinates into R.
-
+  After deciding on a layout that optimally visualises the network structure, this function imports the nodes' coordinates into your local R session.
+  
+  If you want to reimport the layout into your R docker container, set the path to your local hCoCena output folder.
+  
 ```{r Import layout}
 
-import_layout_from_cytoscape()
+# if you are working locally, set docker_container = F and leave the path blank
+
+import_layout_from_cytoscape(docker_container = T, path = "[local_path_to_your_folder]") 
 
 ```
+
+
+### Reimport into your Docker container R session
+
+```{r}
+import_from_localR()
+```
+
 
 
 ### Plotting the network coloured by module
