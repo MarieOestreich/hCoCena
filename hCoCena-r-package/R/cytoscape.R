@@ -48,6 +48,12 @@ import_layout_from_cytoscape <- function(docker_container = FALSE, path){
   
   if(docker_container){
     
+    l <- RCy3::getNodePosition() %>% as.matrix()
+    rn <- rownames(l)
+    l <- apply(l, 2, as.numeric)
+    rownames(l) <- rn
+    
+    base::saveRDS(l, file = paste0(path, "/cytoscape_layout.rds"))
     
   } else {
     
@@ -56,17 +62,9 @@ import_layout_from_cytoscape <- function(docker_container = FALSE, path){
     l <- apply(l, 2, as.numeric)
     rownames(l) <- rn
     
-    base::saveRDS(l, file = paste0(path, "/cytoscape_layout.rds"))
+    hcobject[["integrated_output"]][["cluster_calc"]][["layout"]] <<- l
     
   }
-
-	l <- RCy3::getNodePosition() %>% as.matrix()
-	rn <- rownames(l)
-	l <- apply(l, 2, as.numeric)
-	rownames(l) <- rn
-
-	hcobject[["integrated_output"]][["cluster_calc"]][["layout"]] <<- l
-
 }
 
 
@@ -76,7 +74,7 @@ import_layout_from_cytoscape <- function(docker_container = FALSE, path){
 
 import_from_localR <- function(){
   
-  l <- base::loadRDS(base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]], "/cytoscape_layout.rds"))
+  l <- base::readRDS(base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]], "/cytoscape_layout.rds"))
   hcobject[["integrated_output"]][["cluster_calc"]][["layout"]] <<- l
   
 }

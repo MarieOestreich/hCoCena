@@ -179,6 +179,7 @@ export_to_localR()
   Import your hcobject into your local R session:
 
 ```{r}
+# local R
 load("[local_path_to_your_folder]/STAR_protocol_output/export_to_cytoscape.RData")
 ```
 
@@ -189,10 +190,10 @@ load("[local_path_to_your_folder]/STAR_protocol_output/export_to_cytoscape.RData
   
   Check Model layouts in Cytoscape (https://cytoscape.org/download.html). Cytoscape MUST BE OPEN for this to work. **To shorten the time needed, please read the docs to the export_to_cytoscape function (?export_to_cytoscape).** 
   
-  NOTE: instead of re-running this yourself (might take some time to load), you can also open the Cytoscape session that we created throughout the run and inspect the network. That will be faster and will still allow you to import the network coordinates from Cytoscape back into R (you can then immediately jump to 'import_layout_from_cytoscape' and can skip the export). You can find the Cytoscape file of the network in the repository's 'STAR_protocol' folder, it is called 'cytoscape_session_STAR.cys' if you are working locally, or 'cytoscape_session_STAR_docker.cys' if you are working within a Docker container. Minor differences between the two networks are due to differences between the windows and linux systems.
+  NOTE: instead of re-running this yourself, you can also open the Cytoscape session that we created throughout the run within the R Docker container and inspect the network (you can then immediately jump to 'import_layout_from_cytoscape' and can skip the export). You can find the Cytoscape file of the network in the repository's 'STAR_protocol' folder, it is called 'cytoscape_session_STAR_docker.cys'.
   
 ```{r Cytoscape export}
-
+# local R
 export_to_cytoscape(docker_container = T) # if you are working locally, set docker_container = F
 
 ```
@@ -205,7 +206,7 @@ export_to_cytoscape(docker_container = T) # if you are working locally, set dock
   If you want to reimport the layout into your R docker container, set the path to your local hCoCena output folder.
   
 ```{r Import layout}
-
+# local R
 # if you are working locally, set docker_container = F and leave the path blank
 
 import_layout_from_cytoscape(docker_container = T, path = "[local_path_to_your_folder]") 
@@ -216,6 +217,7 @@ import_layout_from_cytoscape(docker_container = T, path = "[local_path_to_your_f
 ### Reimport into your Docker container R session
 
 ```{r}
+# Docker container:
 import_from_localR()
 ```
 
@@ -304,7 +306,7 @@ A table of hubs per cluster will be exported as an Excel file. This table is als
   
 ```{r Hub gene detection}
 
-find_hubs(clusters = c("lightblue"),
+find_hubs(clusters = c("slategray"),
           top = 10, 
           tree_layout = F, 
           TF_only = "TF",
@@ -428,7 +430,7 @@ hcobject[["satellite_outputs"]][["column_annos_numerical"]] <- NULL
 
 ### Correlate numeric meta data with modules
 
-  Calculates a matrix where columns are names of the meta categories and rows are modules Cells contain the Pearson correlation value between a) the mean expressions of cluster genes in each sample with b) the numeric meta value in each sample.
+  Calculates a matrix where columns are names of the meta categories and rows are modules. Cells contain the Pearson correlation value between a) the mean expressions of cluster genes in each sample with b) the numeric meta value in each sample.
   For details on settable parameters, please refer to the function documentation with ?hcocena::meta_correlation_num.
 Our annotation does not contain any numeric data variable to use for correlation.
   
@@ -441,7 +443,7 @@ Our annotation does not contain any numeric data variable to use for correlation
 
 ### Correlate categorical meta data with modules
 
-  Calculates a matrix where columns are names of the meta categories and rows are modules Cells contain the Pearson correlation value between a) the mean expressions of cluster genes in each voi group with b) the counts of the meta value (e.g., "yes" or "no") across voi groups.
+  Calculates a matrix where columns are names of the meta categories and rows are modules. Cells contain the Pearson correlation value between a) the mean expressions of cluster genes in each voi group with b) the counts of the meta value (e.g., "yes" or "no") across voi groups.
   For details on settable parameters, please refer to the function documentation with ?hcocena::meta_correlation_cat.
   
 ```{r Correlate categorical meta data with modules}
