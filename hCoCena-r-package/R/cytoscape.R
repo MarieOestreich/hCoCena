@@ -27,7 +27,7 @@ export_to_cytoscape <- function(name = "my igraph", docker_container = FALSE){
     del_v <- igraph::V(network)$name[!igraph::V(network)$name %in% gtc$gene]
     network_filt <- igraph::delete.vertices(network, del_v)
 
-    RCy3::createNetworkFromIgraph(network_filt(), name)
+    RCy3::createNetworkFromIgraph(network_filt, name)
     
     
   } else {

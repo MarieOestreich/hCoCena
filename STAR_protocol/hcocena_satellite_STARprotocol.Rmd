@@ -179,7 +179,7 @@ export_to_localR()
   Import your hcobject into your local R session:
 
 ```{r}
-hcobject <- load("[local_path_to_your_folder]/STAR_protocol_output/export_to_cytoscape.RData")
+load("[local_path_to_your_folder]/STAR_protocol_output/export_to_cytoscape.RData")
 ```
 
 
