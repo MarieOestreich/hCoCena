@@ -2395,7 +2395,7 @@ get_anno_matrix <- function(variables){
       for(i in base::colnames(hcobject[["integrated_output"]][["GFC_all_layers"]])[!base::colnames(hcobject[["integrated_output"]][["GFC_all_layers"]]) == "Gene"]){
 
         if(i %in% dplyr::pull(anno, hcobject[["global_settings"]][["voi"]])){
-          tmp <- dplyr::filter(anno, anno[hcobject[["global_settings"]][["voi"]]] == i)%>%
+          tmp <- dplyr::filter(anno, base::as.vector(anno[hcobject[["global_settings"]][["voi"]]] == i)) %>%
             dplyr::pull(., variables[v])
 
           tmp <- base::table(tmp)%>%
