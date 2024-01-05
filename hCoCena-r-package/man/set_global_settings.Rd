@@ -16,7 +16,7 @@ set_global_settings(
 )
 }
 \arguments{
-\item{organism}{A string defining the organism tha data originates from. Analyses cannot be conducted across different organisms. Example: "human".}
+\item{organism}{Specification of the organism needed for all TF-related analyses. Set to "human" for human data and "mouse" for mouse data. Currently, hCoCena only supports human and mouse data, however, all analysis steps not related to TFs can be applied to other organisms.}
 
 \item{control_keyword}{Either 'none' if no controls are present (only possible when analysing one single dataset) or a string contained in the control sample descriptor of all annotation files, e.g. "healthy".
 The string must only be contained in the descriptor, e.g. "healthy" would work for "rhinovirusSetHealthy" and "influenzaSetHealthy", it does not have to match it perfectly.}

@@ -4,7 +4,7 @@
 \alias{export_to_cytoscape}
 \title{Export Integrated Network To Cytoscape}
 \usage{
-export_to_cytoscape(name = "my igraph")
+export_to_cytoscape(name = "my igraph", docker_container = FALSE)
 }
 \arguments{
 \item{name}{A string. The name given to the graph in Cytoscape. Default is "my igraph".}
