@@ -48,6 +48,7 @@ import_layout_from_cytoscape <- function(){
 
 #' Import network layout from file to your Docker container
 #' Imports the layout generated within a local R session and Cytoscape back into the Docker container
+#' @export
 
 import_layout_from_local_folder <- function(){
   

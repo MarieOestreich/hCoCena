@@ -109,7 +109,7 @@ TF_overrep_module <- function(clusters = "all", topTF = 5, topTarget = 5){
   edgelist$merged  <- base::paste0(base::as.character(edgelist$V1), base::as.character(edgelist$V2))
   edgelist$merged2 <- base::paste0(base::as.character(edgelist$V2), base::as.character(edgelist$V1))
   
-  Cairo::CairoPDF(file = paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]], "/TF_overrep.pdf"), 
+  Cairo::CairoPDF(file = paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]], "/TF_overrep_module.pdf"), 
                   width = 15, height = 8, onefile = T)
   
   # loop in pairs of two to create double plots: 
