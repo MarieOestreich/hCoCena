@@ -108,7 +108,8 @@ read_supplementary()
 
 ```{r global settings}
 
-set_global_settings(control_keyword = "baseline", 
+set_global_settings(organism = "human",
+                    control_keyword = "baseline", 
     								variable_of_interest = "merged", 
     								min_nodes_number_for_network = 15, 
     								min_nodes_number_for_cluster = 15,
