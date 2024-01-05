@@ -458,7 +458,7 @@ plot_cluster_heatmap <- function(col_order = NULL,
                                 row_names_gp = grid::gpar(fontsize = 8),
                                 column_names_gp = grid::gpar(fontsize = 8),
                                 rect_gp = grid::gpar(col = "black"),
-                                heatmap_legend_param = list(title = "", legend_height = grid::unit(3, "cm")), column_km = k)
+                                heatmap_legend_param = list(title = "GFC", legend_height = grid::unit(3, "cm")), column_km = k)
   if(base::is.null(anno_list)){
     anno_list <- hm 
   }else{

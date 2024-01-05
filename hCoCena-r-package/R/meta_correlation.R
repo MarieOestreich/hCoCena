@@ -65,11 +65,11 @@ meta_correlation_num <- function(set, meta, p_val = 0.05, padj = "BH"){
 
 #' Categorical Metadata Correaltion
 #' 
-#' Calculates as matrix where columns are the different values of the meta category (e.g. if meta = survival and "survival can have values "yes" or "no", then "yes" and "no" will be the columns) and rows are modues. 
+#' Calculates a matrix where columns are the different values of the meta category (e.g. if meta = survival and "survival can have values "yes" or "no", then "yes" and "no" will be the columns) and rows are modues. 
 #' 	Cells contain the Pearson correlation value between 
 #' 		a) the mean expressions of cluster genes in each voi group with 
 #' 		b) the counts of the meta value (e.g., "yes" or "no") across voi groups.
-#' @param set An integer. The number of the datset for which to perform the calculation.
+#' @param set An integer. The number of the dataset for which to perform the calculation.
 #' @param meta A single string. The name of the categorical annotation column which to correlate to the cluster expression patterns.
 #' @param p_val The maximum adjusted p-value to determine a correlation as significant. Default is 0.05. Non-significant correlations are shown in grey.
 #' @param padj Method to use for multiple testing correction. Can be one of "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none".  Default is "BH" (Benjamini-Hochberg).

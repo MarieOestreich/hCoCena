@@ -1,7 +1,7 @@
 #' Define Global Settings
 #' 
 #' Receives all settings that are globally valid, i.e., that are not dataset specific.
-#' @param organism A string defining the organism tha data originates from. Analyses cannot be conducted across different organisms. Example: "human".
+#' @param organism Specification of the organism needed for all TF-related analyses. Set to "human" for human data and "mouse" for mouse data. Currently, hCoCena only supports human and mouse data, however, all analysis steps not related to TFs can be applied to other organisms.
 #' @param control_keyword Either 'none' if no controls are present (only possible when analysing one single dataset) or a string contained in the control sample descriptor of all annotation files, e.g. "healthy".
 #' 	The string must only be contained in the descriptor, e.g. "healthy" would work for "rhinovirusSetHealthy" and "influenzaSetHealthy", it does not have to match it perfectly.
 #' @param variable_of_interest The name of the column that mus be rpesent in all annotation files and which will be used for grouping samples, e.g., "condition"".
@@ -24,9 +24,9 @@ set_global_settings <- function(organism,
 								layout_algorithm = "layout_with_fr",
 								data_in_log){
 
-	hcobject[["global_settings"]][["organism"]] <<- organism 
-
-	hcobject[["global_settings"]][["control"]] <<- control_keyword
+  hcobject[["global_settings"]][["organism"]] <<- organism 
+  
+  hcobject[["global_settings"]][["control"]] <<- control_keyword
 
 	hcobject[["global_settings"]][["voi"]] <<- variable_of_interest
 

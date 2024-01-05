@@ -1,13 +1,25 @@
 ---
 title: "hCoCena - STAR protocol (satellite)"
 author: "Marie Oestreich, Lisa Holsten, Kilian Dahm"
-date: "21 11 2023"
+date: "05 01 2024"
 output: html_document
 ---
 
 This markdown contains optional functions which can be used to expand the base hCoCena workflow functions displayed in the hcocena_main markdown script.
 
 # Pre-integration phase
+
+## User-defined colors
+
+```{r}
+color_voi <- c("IL4_array" = "#00A1D5FF", "IFNg_array" = "#79AF97FF", "baseline_array" = "#374E55FF",
+               "IL4_seq" = "#00A1D5FF", "IFNg_seq" = "#79AF97FF", "baseline_seq" = "#374E55FF")
+  
+color_donor <- c("BC9" = "#FBB4AE", "BC11" = "#B3CDE3", "BC13" = "#CCEBC5", "BC78" = "#DECBE4")
+  
+color_stimuli <- c("IL4" = "#00A1D5FF", "IFNg" = "#79AF97FF", "baseline" = "#374E55FF")
+```
+
 
 ## Suggest Top Most Variant Genes
 
@@ -28,13 +40,9 @@ hcocena::suggest_topvar()
 
 ```{r data distribution plots, warning = FALSE}
 
-plot_sample_distributions(plot_type = "boxplot",
-                          log_2 = F, 
-                          plot = T)
+plot_sample_distributions(plot_type = "boxplot", log_2 = F, plot = T)
 
-plot_sample_distributions(plot_type = "freqdist",
-                          log_2 = F, 
-                          plot = T)
+plot_sample_distributions(plot_type = "freqdist", log_2 = F, plot = T)
 
 ```
 
@@ -47,24 +55,15 @@ plot_sample_distributions(plot_type = "freqdist",
 
 ```{r PCA, warning = FALSE}
 
-PCA(which = "all", 
-    color_by = c("merged", "merged"), 
-    cols = c("IL4_array" = "#00A1D5FF", "IFNg_array" = "#79AF97FF", "baseline_array" = "#374E55FF",
-             "IL4_seq" = "#00A1D5FF", "IFNg_seq" = "#79AF97FF", "baseline_seq" = "#374E55FF"))
+PCA(which = "all", color_by = c("merged", "merged"), cols = color_voi)
 
 
 # The following chunk works only after you have run "1.8 Data processing part I" within the main markdown.
-PCA(which = "topvar",
-    color_by = c("merged", "merged"),
-    cols = c("IL4_array" = "#00A1D5FF", "IFNg_array" = "#79AF97FF", "baseline_array" = "#374E55FF",
-             "IL4_seq" = "#00A1D5FF", "IFNg_seq" = "#79AF97FF", "baseline_seq" = "#374E55FF"))
+PCA(which = "topvar", color_by = c("merged", "merged"), cols = color_voi)
 
 
 # The following chunk works only after you have run "1.9 Data processing part II" within the main markdown.
-PCA(which = "network",
-    color_by = c("merged", "merged"),
-    cols = c("IL4_array" = "#00A1D5FF", "IFNg_array" = "#79AF97FF", "baseline_array" = "#374E55FF",
-             "IL4_seq" = "#00A1D5FF", "IFNg_seq" = "#79AF97FF", "baseline_seq" = "#374E55FF"))
+PCA(which = "network", color_by = c("merged", "merged"), cols = color_voi)
 ```
 
 
@@ -76,16 +75,12 @@ For details on the settable parameters, refer to the function documentation with
 
 ```{r meta data plots}
 # For the array data
-meta_plot(set = 1, group_col = "merged", meta_col = "stimuli", type = "cat", 
-          cols = c("IL4" = "#00A1D5FF", "IFNg" = "#79AF97FF", "baseline" = "#374E55FF"))
-meta_plot(set = 1, group_col = "merged", meta_col = "Donor", type = "cat", 
-          cols = c("BC9" = "#FBB4AE", "BC11" = "#B3CDE3", "BC13" = "#CCEBC5", "BC78" = "#DECBE4"))
+meta_plot(set = 1, group_col = "merged", meta_col = "stimuli", type = "cat", cols = color_stimuli)
+meta_plot(set = 1, group_col = "merged", meta_col = "Donor", type = "cat", cols = color_donor)
 
 # For the RNA-seq data
-meta_plot(set = 2, group_col = "merged", meta_col = "Phenotype", type = "cat", 
-          cols = c("IL4" = "#00A1D5FF", "IFNg" = "#79AF97FF", "baseline" = "#374E55FF"))
-meta_plot(set = 2, group_col = "merged", meta_col = "Donor", type = "cat", 
-          cols = c("BC9" = "#FBB4AE", "BC11" = "#B3CDE3", "BC13" = "#CCEBC5", "BC78" = "#DECBE4"))
+meta_plot(set = 2, group_col = "merged", meta_col = "Phenotype", type = "cat",cols = color_stimuli)
+meta_plot(set = 2, group_col = "merged", meta_col = "Donor", type = "cat", cols = color_donor)
 
 ```
 
@@ -120,11 +115,11 @@ export_clusters()
 
 ## Module scores
 
-  For every gene, the ratio of its edges to genes in the same cluster to its total number of edges is determined. The corresponding values are returned as a data frame and a box plot is generated showing the scores for each of the clusters. The data frame and the plot object will be saved under hcobject[["satellite_outputs"]][["cluster_scores"]].
+  For every gene, the ratio of its edges to genes in the same cluster to its total number of edges is determined. The corresponding values are returned as a data frame and a box plot is generated showing the scores for each of the clusters. The data frame and the plot object will be saved under hcobject[["satellite_outputs"]][["module_scores"]].
   
-```{r cluster scores}
+```{r module scores}
 
-get_cluster_scores()
+get_module_scores()
 
 ```
 
@@ -151,8 +146,7 @@ algo_alluvial()
   
 ```{r PCAs before regrouping, fig.width=10, fig.height=4}
 
-PCA_algo_compare(cols = c("IL4_array" = "#00A1D5FF", "IFNg_array" = "#79AF97FF", "baseline_array" = "#374E55FF",
-                          "IL4_seq" = "#00A1D5FF", "IFNg_seq" = "#79AF97FF", "baseline_seq" = "#374E55FF"))
+PCA_algo_compare(cols = color_voi)
 
 ```
 
@@ -172,30 +166,83 @@ update_clustering_algorithm(new_algo = "cluster_leiden")
 
 ## Cytoscape
 
-  Model layout in Cytoscape (https://cytoscape.org/download.html). Cytoscape MUST BE OPEN for this to work. **To shorten the time needed, please read the docs to the export_to_cytoscape function (?export_to_cytoscape).** 
+
+### Using Cytoscape from within the docker container
+
+  If you are working within a docker container, a direct communication with Cytoscape is unfortunately not possible. Therefore, you first need to save the network and clustering information and import it into a local R session.
   
-  NOTE: instead of re-running this yourself (might take some time to load), you can also open the Cytoscape session that we created throughout the run and inspect the network. That will be faster and will still allow you to import the network coordinates from Cytoscape back into R (you can then immediately jump to 'import_layout_from_cytoscape' and can skip the export). You can find the Cytoscape file of the network in the repository's 'STAR_protocol' folder, it is called 'cytoscape_session_STAR.cys'.
+```{r}
+export_to_local_folder()
+```
+
+  **In Cytoscape**:
+  - press ""Import Network From File System" and select the "network.txt" file within your hCoCena output folder, which was generated by the above function
+  - set the "from" column to "Source Node" and the "to" column to "Target Node", then press "ok"
+  - the default layout algorithm "Prefuse Force Directed Layout" will be applied automatically, but you can apply any other algorithm available
+
+  NOTE: instead of re-running this yourself, you can also open the Cytoscape session that we created throughout the run within the R Docker container and inspect the network (you can then immediately jump to 'import_layout_from_cytoscape' and can skip the export). You can find the Cytoscape file of the network in the repository's 'STAR_protocol' folder, it is called 'cytoscape_session_STAR_docker.cys'.
   
-### Export Network
+  To export the node position open a local R session:
+  
+```{r}
+# execute this chunk within a local R session 
+
+# install RCy3
+BiocManager::install(package = "RCy3") 
+
+# import the layout from Cytoscape to your local R session
+layout <- base::as.matrix(RCy3::getNodePosition())
+
+# save the layout in your local hCoCena output folder 
+## Adapt the path to your hCoCena output folder, but don't rename the file
+utils::write.csv(x = layout, file = base::paste0("[path_to_local_hCoCena_output_directory]", "/network_layout.csv"), row.names = T)
+
+# in our case the path was the following:
+# utils::write.csv(x = layout, file = base::paste0("E:/hCoCena_docker/docker_container_test/STAR_protocol_output/", "/network_layout.csv"), row.names = T)
+
+```
+
+
+  NOTE: instead of re-running this yourself, you can skip the export and save the network_layout.csv file, which we have saved in the 'STAR_protocol' folder within your local output directory.
+
+  Now, proceed in your docker container to import the layout and save it within the hcobject:
+
+```{r}
+import_layout_from_local_folder()
+```
+
+
+
+
+### Using Cytoscape from a local R session
+
+Export Network
 
   This function exports the network to Cytoscape. There you can apply a variety of Cytoscape's great layout algorithms.
   
+  Cytoscape MUST BE OPEN for this to work. 
+  **To shorten the time needed, please read the docs to the export_to_cytoscape function (?export_to_cytoscape).** 
+
+  
 ```{r Cytoscape export}
+# local R only
 
-export_to_cytoscape()
+export_to_cytoscape() 
 
 ```
 
 
-### Import Layout
+Import Layout
 
-  After deciding on a layout that optimally visualises the network structure, this function imports the nodes' coordinates into R.
-
+  After deciding on a layout that optimally visualises the network structure, this function imports the nodes' coordinates into your local R session.
+  
 ```{r Import layout}
+# local R only
 
-import_layout_from_cytoscape()
+import_layout_from_cytoscape() 
 
 ```
+
 
 
 ### Plotting the network coloured by module
@@ -251,7 +298,6 @@ For details on parameters, please refer to the function documentation with ?hcoc
 ```
 
 
-
 ## Transcription factor analysis for the entire network
 
   To perform a transcription factor enrichment analysis based on the entire network you can run the following function. You can specify the number of TFs and their targets stored in hcobject[["integrated_output"]][["enrichall"]].
@@ -275,13 +321,15 @@ check_tf("IRF7")
   Hub gene detection is available for selected clusters or the entire network. Hub genes are determined using a combined ranking based on weighted degree centrality, weighted closeness centrality and weighted betweenness centrality. A high quality version of the plots will be available in your save folder.
   
   As an example, we will look for hub genes in the cluster 'lightblue'. We want the top 10 hub candidates (based on the centrality hub score), we don't want to save the network with the hub genes highlighted, the network should not be plotted using a tree layout, we are only interested in hubs that are also transcription factors (if there are less than 10 TFs in the cluster, we will get less than 10 hub candidates) and we set plot to TRUE so that the cluster network with hubs highlighted will be plotted (but not saved since save = FALSE).
+  
+  Note: The filtering for transcription factors only works for human and mouse data.
         
   Mean expression values of found hubs will be plotted as a heatmap per cluster, rows are scaled. 
 A table of hubs per cluster will be exported as an Excel file. This table is also returned as output to the hcobject.
   
 ```{r Hub gene detection}
 
-find_hubs(clusters = c("lightblue"),
+find_hubs(clusters = c("slategray"),
           top = 10, 
           tree_layout = F, 
           TF_only = "TF",
@@ -349,7 +397,7 @@ colour_single_cluster(cluster = "lightblue")
 
 ```{r enriched signatures, echo = F, fig.height=6, fig.width=10}
 
-user_specific_cluster_profiling(from_file =  T, path = paste0(hcobject$working_directory$dir_reference_files, "immune_sig_m.csv"))
+# user_specific_cluster_profiling(from_file =  T, path = paste0(hcobject$working_directory$dir_reference_files, "immune_sig_m.csv"))
 
 # user_specific_cluster_profiling(from_file = F, enrichment_keys = c("[term_1]", "[term_2]"), db = "Go", qval = 0.5)
 
@@ -382,7 +430,7 @@ The annotations will be shown in the heatmap when calling plot_cluster_heatmap()
 
 # some categorical annotations
 col_anno_categorical(variables = c("stimuli", "Phenotype"), variable_label = "Stimulation", type = "percent") 
-col_anno_categorical(variables = c("Donor", "Donor"), variable_label = "Donor", type = "abs")
+# col_anno_categorical(variables = c("Donor", "Donor"), variable_label = "Donor", type = "abs")
 
 # adding numerical annotations would be possible as well (not applicable for this showcase)
 # col_anno_numerical()
@@ -405,7 +453,7 @@ hcobject[["satellite_outputs"]][["column_annos_numerical"]] <- NULL
 
 ### Correlate numeric meta data with modules
 
-  Calculates a matrix where columns are names of the meta categories and rows are modules Cells contain the Pearson correlation value between a) the mean expressions of cluster genes in each sample with b) the numeric meta value in each sample.
+  Calculates a matrix where columns are names of the meta categories and rows are modules. Cells contain the Pearson correlation value between a) the mean expressions of cluster genes in each sample with b) the numeric meta value in each sample.
   For details on settable parameters, please refer to the function documentation with ?hcocena::meta_correlation_num.
 Our annotation does not contain any numeric data variable to use for correlation.
   
@@ -418,7 +466,7 @@ Our annotation does not contain any numeric data variable to use for correlation
 
 ### Correlate categorical meta data with modules
 
-  Calculates a matrix where columns are names of the meta categories and rows are modules Cells contain the Pearson correlation value between a) the mean expressions of cluster genes in each voi group with b) the counts of the meta value (e.g., "yes" or "no") across voi groups.
+  Calculates a matrix where columns are names of the meta categories and rows are modules. Cells contain the Pearson correlation value between a) the mean expressions of cluster genes in each voi group with b) the counts of the meta value (e.g., "yes" or "no") across voi groups.
   For details on settable parameters, please refer to the function documentation with ?hcocena::meta_correlation_cat.
   
 ```{r Correlate categorical meta data with modules}

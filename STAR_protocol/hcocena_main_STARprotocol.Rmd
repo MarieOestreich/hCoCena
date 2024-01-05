@@ -1,7 +1,7 @@
 ---
 title: "hCoCena - STAR protocol (main)"
 author: "Marie Oestreich, Lisa Holsten, Kilian Dahm"
-date: "21 11 2023"
+date: "05 01 2024"
 output:
   html_document: default
   pdf_document: default
@@ -9,7 +9,7 @@ output:
 
 
 # 0 Introduction
-  This markdown, in combination with the markdown 'hcocena_satellite_STARprotocol.Rmd', illustrates how to use the hCoCena tool on a small example using two data sets based on the hCoCena package version 1.1.0.
+  This markdown, in combination with the markdown 'hcocena_satellite_STARprotocol.Rmd', illustrates how to use the hCoCena tool on a small example using two data sets based on the hCoCena package version 1.1.1.
 Both data sets measure the transcriptional profiles of human macrophages after treatment with Interferon Gamma (IFNg), Interleukin-4 (IL4) or untreated (baseline). One data set was generated using bulk RNA-sequencing, while the other was generated using a Microarray.
 
 The main Markdown contains the base workflow of hCoCena. For a fully functional analysis, these steps are mandatory unless declared otherwise (flagged with OPTIONAL). Feel free to expand upon this base analysis with the provided satellite functions or your custom scripts. You will find detailed information on the satellite functions as well as intermediate outputs that you can use for your custom analyses in the repository's Wiki (https://github.com/MarieOestreich/hCoCena/wiki).
@@ -47,7 +47,7 @@ init_object()
   
 ```{r}
 
-load(paste0(getwd(), "/start_envo.RData"))
+load("start_envo.RData")
 
 ```
   
@@ -58,14 +58,10 @@ load(paste0(getwd(), "/start_envo.RData"))
 
 ```{r}
 
-dir <- getwd() %>% stringr::str_remove(pattern = "/STAR_protocol")
-
 init_wd(dir_count_data = FALSE,
         dir_annotation = FALSE,
-        dir_reference_files = paste0(dir, "/reference_files/"), #the folder that contains the reference files
-        dir_output = paste0(dir, "/analyses/"))
-
-rm(dir)
+        dir_reference_files = "/home/lisa/reference_files/", #the folder that contains the reference files
+        dir_output = "/home/data/")
 
 ```
 
@@ -83,7 +79,7 @@ check_dirs()
   
 ```{r, warning = FALSE}
 
-init_save_folder(name = "STAR_protocol")
+init_save_folder(name = "STAR_protocol_output")
 
 ```
 
@@ -131,8 +127,8 @@ read_supplementary()
 
 ```{r global settings}
 
-set_global_settings(organism = "human", 
-    								control_keyword = "none", 
+set_global_settings(organism = "human",
+                    control_keyword = "none", 
     								variable_of_interest = "merged", 
     								min_nodes_number_for_network = 25, 
     								min_nodes_number_for_cluster = 25,
@@ -143,10 +139,13 @@ set_global_settings(organism = "human",
 ```
 
 
-
+## OPTIONAL: User-defined colors
+  This chunk in the satellite markdown ('hcocena_satellite_STAR_protocol.Rmd') allows to define user-specific color vectors for downstream visualizations.
+  
+  
 ## OPTIONAL: Data-based definition of top most variant genes
 
-  This chunk in the satellite markdown ('hcocena_satellite_STAR_protocol.Rmd') calculates the inflection points in the ranked variances to filter for the top most variant genes in a data-driven way. Running this function yields top 7700 for the array data and 7664 for the RNA-Seq data as the highest data-driven top-most-variant genes cutoff. 
+  This chunk in the satellite markdown calculates the inflection points in the ranked variances to filter for the top most variant genes in a data-driven way. Running this function yields top 7700 for the array data and 7664 for the RNA-Seq data as the highest data-driven top-most-variant genes cutoff. 
 
 
 ## 1.7 Define layer-specific settings
@@ -234,12 +233,11 @@ plot_deg_dist()
 
   **Heatmap of top most variant genes and GFC calculation**
 
-  This function plots a heatmap for the network genes in each data layer and computes the Group-Fold-Changes (GFCs) for each gene per layer.
+  This function plots a heatmap for the network genes in each data layer and computes the Group-Fold-Changes (GFCs) for each gene per layer. Defining a user-specific color vector is optional.
 
 ```{r, fig.width = 10, fig.height = 7}
 
-run_expression_analysis_2(cols = list("merged" = c("IL4_array" = "#00A1D5FF", "IFNg_array" = "#79AF97FF", "baseline_array" = "#374E55FF",
-                                                   "IL4_seq" = "#00A1D5FF", "IFNg_seq" = "#79AF97FF", "baseline_seq" = "#374E55FF")))
+run_expression_analysis_2(cols = list("merged" = color_voi))
 
 ```
 
@@ -265,6 +263,7 @@ build_integrated_network(mode = "u", multi_edges = "min")
   In this step, modules of strong co-expression will be detected in the network and their expression pattern across conditions will be represented in a GFC heatmap. For more information on the available clustering algorithms, run ?hcocena::cluster_calculation and visit the repository's Wiki pages.
   NOTE: You can export your clustering for future use. To do so, please refer to the satellite script, section "Export clustering".
   NOTE 2: Instead of clustering your network here, you can alternatively import a clustering model. To do so, please use the import_clusters() function (see satellite markdown for more  information).
+  NOTE 3: Minor differences in the clustering might be observed depending on your system (Linux, Windows, ...). However, this does not influence the overall outcome of the analysis, but might lead to a different naming of clusters and small changes in the number of genes per cluster.
   
   Here, we will cluster our integrated network using the default clustering algorithm (Leiden). We will run the clustering 50 times (no_of_iterations = 50), we will leave the maximum cluster count per gene at its default value (1), meaning we only keep genes that can be associated with the same cluster in all runs. Plot_cluster_heatmap() then plots the result.
   
@@ -313,7 +312,7 @@ plot_integrated_network()
 ```{r GO profiling, fig.width = 8, fig.height = 7, message = F, warning = F}
 
 functional_enrichment(gene_sets = c("Hallmark"), 
-                      clusters = c("seagreen", "steelblue", "turquoise", "plum", "maroon", "lightblue", "gold"),
+                      clusters = c("seagreen", "steelblue", "turquoise", "plum", "maroon", "slategray", "gold"),
                       top = 5, 
                       padj = "BH", 
                       qval = 0.1)
@@ -332,9 +331,7 @@ functional_enrichment(gene_sets = c("Hallmark"),
   
 ```{r , fig.width = 10, fig.height = 7}
 
-TF_overrep_module(clusters = c("lightblue"),
-                  topTF = 5, 
-                  topTarget = 5)
+TF_overrep_module(clusters = "slategray", topTF = 5, topTarget = 5)
 
 ```
  
