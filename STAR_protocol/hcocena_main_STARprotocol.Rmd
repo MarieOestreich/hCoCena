@@ -61,7 +61,7 @@ load("start_envo.RData")
 init_wd(dir_count_data = FALSE,
         dir_annotation = FALSE,
         dir_reference_files = "~/reference_files/", #the folder that contains the reference files
-        dir_output = "~/data/")
+        dir_output = "~/output/")
 
 ```
 
