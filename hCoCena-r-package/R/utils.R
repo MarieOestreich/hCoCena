@@ -18,17 +18,29 @@ get_cluster_colours <- function(){
 #' Applies the Leiden community detection to the network.
 #' @param g The network, an igraph object.
 #' @param num_it The number of iteration the algorithm is supposed to run.
-#' @param resolution The resolution of the leiden clustering, higher values result in more clusters and vice versa.
+#' @param resolution The resolution of the leiden clustering, higher values result in more clusters and vice versa (Default: 0.1).
+#' @param partition_type Name of the partition type. Select from 'CPMVertexPartition', 'ModularityVertexPartition', 'RBConfigurationVertexPartition' and 'RBERVertexPartition' (Default: 'ModularityVertexPartition).
 #' @noRd
 
-leiden_clustering <- function(g, num_it, resolution){
+leiden_clustering <- function(g, num_it, resolution, partition_type){
   
   color.cluster <- get_cluster_colours()
   
   set.seed(168575)
   
   # run Leiden algorithm ion network:
-  partition <- leidenAlg::leiden.community(graph = g, n.iterations = num_it, resolution = resolution)
+  tmp.partition <- leidenbase::leiden_find_partition(igraph = g,
+                                                     partition_type = partition_type,
+                                                     edge_weights = igraph::E(g)$weight,
+                                                     resolution = resolution,
+                                                     num_iter = num_it,
+                                                     seed = 168575)
+  
+  fv <- as.factor(stats::setNames(tmp.partition$membership, igraph::V(g)$name))
+  partition <- list(membership = fv, dendrogram = NULL, algorithm = "leiden",
+                    resolution = resolution, n.iter = num_it, names = names(fv))
+  class(partition) <- rev("fakeCommunities")
+  
   
   # extract found clusters and the genes belonging to them:
   clusters_df <- base::data.frame(cluster = base::as.numeric(partition$membership), gene = partition$names)
@@ -95,36 +107,37 @@ leiden_clustering <- function(g, num_it, resolution){
   return(out)
 }
 
+
     
 #' Internal Function Used In cluster_calculation()
 #' @noRd
 
 cluster_calculation_internal <- function(graph_obj, 
-                                          algo, 
-                                          case,
-                                          resolution,
-                                          it = 1) {
-
-    library(igraph)
-
-    if(algo == "cluster_leiden"){
-      cfg <- leiden_clustering(g = graph_obj, num_it = no_of_iterations, resolution =resolution)
-    }
-    cfg <- base::get(algo)(graph_obj)
-
-    mod_score <- igraph::modularity(graph_obj, base::as.numeric(cfg$membership)) 
-
-    mod_df <- base::data.frame(modularity_score = mod_score, 
-                                cluster_algorithm = algo, 
-                                stringsAsFactors = F)
-
-    # making switch so that in the end when only the best algorithm is to be used then the same function can be used
-    output <- base::switch(case, best = cfg$membership, test = mod_df, final = cfg)
-
-    print(base::paste0(algo," algorithm tested"))
-    return(output)
+                                         algo, 
+                                         case,
+                                         resolution,
+                                         partition_type = "ModularityVertexPartition",
+                                         it = no_of_iterations) {
+  
+  library(igraph)
+  
+  if(algo == "cluster_leiden"){
+    cfg <- leiden_clustering(g = graph_obj, num_it = it, resolution = resolution, partition_type = partition_type)
   }
-
+  cfg <- base::get(algo)(graph_obj)
+  
+  mod_score <- igraph::modularity(graph_obj, base::as.numeric(cfg$membership)) 
+  
+  mod_df <- base::data.frame(modularity_score = mod_score, 
+                             cluster_algorithm = algo, 
+                             stringsAsFactors = F)
+  
+  # making switch so that in the end when only the best algorithm is to be used then the same function can be used
+  output <- base::switch(case, best = cfg$membership, test = mod_df, final = cfg)
+  
+  print(base::paste0(algo," algorithm tested"))
+  return(output)
+}
 
 #'Internal Function Used In cluster_calculation()
 #' @noRd
