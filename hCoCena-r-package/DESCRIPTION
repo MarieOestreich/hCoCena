@@ -51,6 +51,7 @@ Imports:
     jsonlite (>= 1.7.2),
     knitr (>= 1.33),
     leidenAlg (>= 0.1.1),
+    leidenbase (>= 0.1.25),
     magrittr (>= 2.0.1),
     MCDA (>= 0.0.21),
     networkD3 (>= 0.4),
