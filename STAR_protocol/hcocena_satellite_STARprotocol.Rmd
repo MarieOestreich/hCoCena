@@ -198,7 +198,7 @@ layout <- base::as.matrix(RCy3::getNodePosition())
 utils::write.csv(x = layout, file = base::paste0("[path_to_local_hCoCena_output_directory]", "/network_layout.csv"), row.names = T)
 
 # in our case the path was the following:
-utils::write.csv(x = layout, file = base::paste0("E:/hCoCena_docker/hCoCena_v1.1.1_adjusted/STAR_protocol_output/", "/network_layout.csv"), row.names = T)
+# utils::write.csv(x = layout, file = base::paste0("E:/hCoCena_docker/hCoCena_v1.1.1/STAR_protocol_output/", "/network_layout.csv"), row.names = T)
 
 ```
 
