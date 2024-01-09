@@ -245,7 +245,11 @@ build_integrated_network(mode = "u", multi_edges = "min")
   NOTE 2: Instead of clustering your network here, you can alternatively import a clustering model. To do so, please use the import_clusters() function (see satellite markdown for infos).
   
 ```{r compute clusters and plot module heatmap}
-cluster_calculation(cluster_algo = "cluster_leiden", resolution = 1, no_of_iterations = 50, max_cluster_count_per_gene = 1)
+cluster_calculation(cluster_algo = "cluster_leiden", 
+                    no_of_iterations = 2, 
+                    resolution = 0.1, 
+                    partition_type = "ModularityVertexPartition",  
+                    max_cluster_count_per_gene = 1)
 plot_cluster_heatmap()
 ```
 

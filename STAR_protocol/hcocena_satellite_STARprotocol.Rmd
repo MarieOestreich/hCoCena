@@ -198,7 +198,7 @@ layout <- base::as.matrix(RCy3::getNodePosition())
 utils::write.csv(x = layout, file = base::paste0("[path_to_local_hCoCena_output_directory]", "/network_layout.csv"), row.names = T)
 
 # in our case the path was the following:
-# utils::write.csv(x = layout, file = base::paste0("E:/hCoCena_docker/docker_container_test/STAR_protocol_output/", "/network_layout.csv"), row.names = T)
+# utils::write.csv(x = layout, file = base::paste0("E:/hCoCena_docker/hCoCena_v1.1.1/STAR_protocol_output/", "/network_layout.csv"), row.names = T)
 
 ```
 
@@ -329,7 +329,7 @@ A table of hubs per cluster will be exported as an Excel file. This table is als
   
 ```{r Hub gene detection}
 
-find_hubs(clusters = c("slategray"),
+find_hubs(clusters = c("lightblue"),
           top = 10, 
           tree_layout = F, 
           TF_only = "TF",
@@ -430,7 +430,7 @@ The annotations will be shown in the heatmap when calling plot_cluster_heatmap()
 
 # some categorical annotations
 col_anno_categorical(variables = c("stimuli", "Phenotype"), variable_label = "Stimulation", type = "percent") 
-# col_anno_categorical(variables = c("Donor", "Donor"), variable_label = "Donor", type = "abs")
+col_anno_categorical(variables = c("Donor", "Donor"), variable_label = "Donor", type = "abs")
 
 # adding numerical annotations would be possible as well (not applicable for this showcase)
 # col_anno_numerical()

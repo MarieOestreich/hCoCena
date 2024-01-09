@@ -52,16 +52,16 @@ load("start_envo.RData")
 ```
   
 
-  Since we are not reading our data from files, we will set the directory for the count data ('dir_count_data'), as well as for the annotation ('dir_annotation') to FALSE. The reference files are stored within the "hcocena" folder, which also holds the folder STAR_protocol from where we are running this markdown. Hence the parameter 'dir_reference_files' is set accordingly. The files can be downloaded from the Github repository folder named 'reference files', after downloading, the path must be adapted according to where it was downloaded to.
+  Since we are not reading our data from files, we will set the directory for the count data ('dir_count_data'), as well as for the annotation ('dir_annotation') to FALSE. The reference files are stored within a separate folder in the Home directory of the docker container. Hence the parameter 'dir_reference_files' is set accordingly. If you are working locally, the files can be downloaded from the Github repository folder named 'reference_files'. After downloading, the path must be adapted according to where it was downloaded to.
 
-  Lastly, we define a directory where we want to create our analysis folder. Within my "hcocena" folder, which contains the "STAR_protocol" folder with the scripts and the R environment, we also have a folder "analyses" where we store the results for my different analyses. In this folder, hCoCena will create a new folder specifically for this analysis and store all plots and other outputs there.
+  Lastly, we define a directory where we want to create our output folder. Since we want to store the results on our local computer, we set this path to the folder within the Docker container to which we have mounted our local folder. If you are working locally, adapt the path to you desired output folder. In this folder, hCoCena will create a new folder specifically for this analysis and store all plots and other outputs there.
 
 ```{r}
 
 init_wd(dir_count_data = FALSE,
         dir_annotation = FALSE,
-        dir_reference_files = "/home/lisa/reference_files/", #the folder that contains the reference files
-        dir_output = "/home/data/")
+        dir_reference_files = "~/reference_files/", #the folder that contains the reference files
+        dir_output = "~/output/")
 
 ```
 
@@ -263,12 +263,15 @@ build_integrated_network(mode = "u", multi_edges = "min")
   In this step, modules of strong co-expression will be detected in the network and their expression pattern across conditions will be represented in a GFC heatmap. For more information on the available clustering algorithms, run ?hcocena::cluster_calculation and visit the repository's Wiki pages.
   NOTE: You can export your clustering for future use. To do so, please refer to the satellite script, section "Export clustering".
   NOTE 2: Instead of clustering your network here, you can alternatively import a clustering model. To do so, please use the import_clusters() function (see satellite markdown for more  information).
-  NOTE 3: Minor differences in the clustering might be observed depending on your system (Linux, Windows, ...). However, this does not influence the overall outcome of the analysis, but might lead to a different naming of clusters and small changes in the number of genes per cluster.
   
   Here, we will cluster our integrated network using the default clustering algorithm (Leiden). We will run the clustering 50 times (no_of_iterations = 50), we will leave the maximum cluster count per gene at its default value (1), meaning we only keep genes that can be associated with the same cluster in all runs. Plot_cluster_heatmap() then plots the result.
   
 ```{r compute clusters}
-cluster_calculation(no_of_iterations = 50, cluster_algo = "cluster_leiden", resolution = 1)
+cluster_calculation(cluster_algo = "cluster_leiden", 
+                    no_of_iterations = 2, 
+                    resolution = 0.1, 
+                    partition_type = "ModularityVertexPartition",  
+                    max_cluster_count_per_gene = 1)
 
 plot_cluster_heatmap()
 ```
@@ -312,7 +315,7 @@ plot_integrated_network()
 ```{r GO profiling, fig.width = 8, fig.height = 7, message = F, warning = F}
 
 functional_enrichment(gene_sets = c("Hallmark"), 
-                      clusters = c("seagreen", "steelblue", "turquoise", "plum", "maroon", "slategray", "gold"),
+                      clusters = c("seagreen", "steelblue", "turquoise", "plum", "maroon", "lightblue", "gold"),
                       top = 5, 
                       padj = "BH", 
                       qval = 0.1)
@@ -331,7 +334,7 @@ functional_enrichment(gene_sets = c("Hallmark"),
   
 ```{r , fig.width = 10, fig.height = 7}
 
-TF_overrep_module(clusters = "slategray", topTF = 5, topTarget = 5)
+TF_overrep_module(clusters = "lightblue", topTF = 5, topTarget = 5)
 
 ```
  
