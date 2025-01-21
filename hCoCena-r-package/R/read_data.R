@@ -2,6 +2,7 @@
 #' Function To Read All Count And Annotation Files
 #' 
 #' The function loads the count and annotation data for each layer and saves it in the hCoCena-Object's "data" slot.
+#' Genes with a variance of 0 will be automatically be excluded from the analysis.
 #' @param sep_counts The separator of the count files. Default is tab separated files. Ignore when loading data from objects instead of files.
 #' @param sep_anno The separator of the annotation files. Default is tab separated files. Ignore when loading data from objects instead of files.
 #' @param gene_symbol_col A String. Name of the column that contains the gene symbols. Ignore when loading data from objects instead of files.
