@@ -82,6 +82,8 @@ meta_correlation_cat <- function(meta, set, p_val = 0.05, padj = "BH"){
     stop("More than one group is needed to caclulate a correlation. The only group present is:    ",
          base::colnames(hcobject[["layer_specific_outputs"]][[base::paste0("set", set)]][["part2"]][["GFC_all_genes"]])[1])
   }
+  # check length of meta
+  if(base::length(meta) > 1) stop("Assign only one variable to the parameter 'meta'!")
   
   #  extract anno of given data set:
   anno <- hcobject[["data"]][[base::paste0("set", set, "_anno")]]

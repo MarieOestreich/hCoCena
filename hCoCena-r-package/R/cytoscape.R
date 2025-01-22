@@ -48,11 +48,12 @@ import_layout_from_cytoscape <- function(){
 
 #' Import network layout from file to your Docker container
 #' Imports the layout generated within a local R session and Cytoscape back into the Docker container
+#' @param file Exact path containing the Cytoscape layout. Default path is set to the save folder defined in the global settings.
 #' @export
 
-import_layout_from_local_folder <- function(){
+import_layout_from_local_folder <- function(file = base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]], "/network_layout.csv")){
   
-  l <- utils::read.csv(file = base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]], "/network_layout.csv"), 
+  l <- utils::read.csv(file = file, 
                        row.names = 1)
   
   rn <- rownames(l)
