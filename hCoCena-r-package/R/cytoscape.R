@@ -1,13 +1,14 @@
 #' Export Integrated Network to local R session
 #' Due to a lacking possibility of communication with Cytoscape from within Docker container, you need to export all necessary information for import into a local R session.
+#' @param file Path to the folder where the network information should be saved. Default path is set to the save folder defined in the global settings.
 #' @export
 
-export_to_local_folder <- function(){
+export_to_local_folder <- function(file = base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]])){
   
   network_df <- igraph::as_data_frame(network_filt())
   network_df$weight <- NULL
   
-  readr::write_delim(network_df, file = base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]], "/network.txt"), 
+  readr::write_delim(network_df, file = paste0(file, "/network.txt"), 
                      delim = "\t", 
                      col_names = T)
 }
@@ -48,7 +49,7 @@ import_layout_from_cytoscape <- function(){
 
 #' Import network layout from file to your Docker container
 #' Imports the layout generated within a local R session and Cytoscape back into the Docker container
-#' @param file Exact path containing the Cytoscape layout. Default path is set to the save folder defined in the global settings.
+#' @param file Exact path and file name containing the Cytoscape layout. Default path is set to the save folder defined in the global settings.
 #' @export
 
 import_layout_from_local_folder <- function(file = base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]], "/network_layout.csv")){

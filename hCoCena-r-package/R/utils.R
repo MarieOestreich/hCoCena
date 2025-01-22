@@ -1627,7 +1627,7 @@ freqdist_plot_from_df <- function(data, log_2, bool_plot, it = NULL){
         
       }
       
-      p <- base::do.call(gridExtra::grid.arrange, plot_list) + ggplot2::ggtitle(it)
+      p <- base::do.call(gridExtra::grid.arrange, plot_list)
       
       ggplot2::ggsave(filename = base::paste0("Sample_distribution_freq_", it, "_", x, ".pdf"), plot = p, device = cairo_pdf,
              path = base::paste0(hcobject[["working_directory"]][["dir_output"]], hcobject[["global_settings"]][["save_folder"]],"/"), width = 17, height = 7.8,  units = "in")
@@ -1893,7 +1893,16 @@ weighted_CC <- function(network){
   message("Calculating weighted closeness centrality.")
   # get |v|x|v| distance table with weighted shortest distances between all nodes:
   if(igraph::count_components(network) > 1){
-    
+    message("Module consists of disconnected components. Values are set to 'number of module nodes + 1'.")
+    dt <- igraph::distances(network, 
+                            mode = "all", 
+                            weights = 1-igraph::edge_attr(network, "weight", index = igraph::E(network)))
+    dt <- base::apply(dt,2,function(x){
+      base::sapply(x, function(y){
+        if(!is.finite(y)) igraph::vcount(network)+1
+        else y
+      }) %>% base::invisible()
+    })
   }else{
     dt <- igraph::distances(network, 
                             mode = "all", 

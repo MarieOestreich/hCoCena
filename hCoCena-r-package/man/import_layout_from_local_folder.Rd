@@ -11,7 +11,7 @@ import_layout_from_local_folder(
 )
 }
 \arguments{
-\item{file}{Exact path containing the Cytoscape layout. Default path is set to the save folder defined in the global settings.}
+\item{file}{Exact path and file name containing the Cytoscape layout. Default path is set to the save folder defined in the global settings.}
 }
 \description{
 Import network layout from file to your Docker container
