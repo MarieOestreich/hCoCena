@@ -50,7 +50,7 @@ For details on the settable parameters, refer to the function documentation with
 
 ```{r meta data plots}
 
-meta_plot(setnum = 2, group_col = "status", meta_col = "Age", type = "num")
+meta_plot(set = 2, group_col = "status", meta_col = "Age", type = "num")
 
 ```
 
@@ -283,13 +283,13 @@ check_tf("IRF7")
   
   Note: The filtering for transcription factors only works for human and mouse data.
   
-```{r Hub gene detection}
+```{r Hub gene detection, warning=F}
 
 find_hubs(top = 10, 
           save = F, 
           tree_layout = F, 
           TF_only = "TF", 
-          Plot = T)
+          plot = T)
 
 ```
 

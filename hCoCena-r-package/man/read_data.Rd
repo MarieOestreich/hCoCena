@@ -28,4 +28,5 @@ read_data(
 }
 \description{
 The function loads the count and annotation data for each layer and saves it in the hCoCena-Object's "data" slot.
+Genes with a variance of 0 will be automatically be excluded from the analysis.
 }

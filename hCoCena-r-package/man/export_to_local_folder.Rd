@@ -5,7 +5,13 @@
 \title{Export Integrated Network to local R session
 Due to a lacking possibility of communication with Cytoscape from within Docker container, you need to export all necessary information for import into a local R session.}
 \usage{
-export_to_local_folder()
+export_to_local_folder(
+  file = base::paste0(hcobject[["working_directory"]][["dir_output"]],
+    hcobject[["global_settings"]][["save_folder"]])
+)
+}
+\arguments{
+\item{file}{Path to the folder where the network information should be saved. Default path is set to the save folder defined in the global settings.}
 }
 \description{
 Export Integrated Network to local R session

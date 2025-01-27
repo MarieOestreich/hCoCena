@@ -38,7 +38,7 @@ visualize_gene_expression <- function(genes, name = NULL, width = 15, height = 1
     conditions <- base::unique(hm_anno$voi) %>% base::sort(.)
     
     mexp <- base::lapply(conditions, function(y){
-      samples <- dplyr::filter(hm_anno, voi == y) %>% base::rownames()
+      samples <- base::subset(hm_anno, voi == y) %>% base::rownames()
       tmp_exp <- dplyr::select(exp, dplyr::all_of(samples))
       tmp_mexp <- base::data.frame(V1 = base::apply(tmp_exp, 1, base::mean))
       base::colnames(tmp_mexp) <- y
