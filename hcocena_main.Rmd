@@ -9,7 +9,7 @@ output:
 
 # 0 Introduction
 
-This Markdown contains the base workflow of hCoCena (v1.1.1). For a fully functional analysis, these steps are mandatory unless declared otherwise (flagged with OPTIONAL). Feel free to expand upon this base analysis with the provided satellite functions or your custom scripts. You will find detailed information on the satellite functions as well as intermediate outputs that you can use for your custom analyses in the repository's Wiki.
+This Markdown contains the base workflow of hCoCena (v1.1.2). For a fully functional analysis, these steps are mandatory unless declared otherwise (flagged with OPTIONAL). Feel free to expand upon this base analysis with the provided satellite functions or your custom scripts. You will find detailed information on the satellite functions as well as intermediate outputs that you can use for your custom analyses in the repository's Wiki.
 
 
 # 1 Pre-Integration Phase
