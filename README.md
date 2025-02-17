@@ -1,3 +1,8 @@
+```diff
+- I have taken on a new role and the repository will therefore be continued by Thomas Ulas' lab:
+```
+https://github.com/Ulas-lab/hcocena
+
 # hCoCena - Horizontal integration and analysis of transcriptomics datasets [[paper](https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/btac589/6677225)]
 
 hCoCena is an R-package that allows you to integrate and jointly analyse multiple transcriptomic datasets or simply analyse a single dataset if you don't want to do any data integration! hCoCena uses network representations of the data as the basis for integration. You can find more details of how that works in our [paper](https://academic.oup.com/bioinformatics/advance-article/doi/10.1093/bioinformatics/btac589/6677225) . Below, you will find some info on how to install the package and tips for using it. 
